@@ -386,6 +386,10 @@ def replay(trace, _resume=None):
                 if found:
                     corpse['map']=r.u32();corpse['position_xyz']=r.floats(3);corpse['corpse_map']=r.u32();corpse['unknown']=r.u32()
                 r.end();events.append({'sequence':seq,'kind':'corpse','corpse':corpse});decoded=[]
+            elif op in (0x250,0x24e):
+                events.append({'sequence':seq,'kind':'spell_damage_raw','opcode':op,
+                               'payload_base64':base64.b64encode(data).decode(),
+                               'semantics':'captured only; damage fields not decoded'});decoded=[]
             elif op in (0x378,0x269,0xc7):
                 events.append({'sequence':seq,'kind':'recovery','opcode':op,'payload_base64':base64.b64encode(data).decode()});decoded=[]
             else: raise DecodeError(f"unexpected capture opcode {op:#x}")

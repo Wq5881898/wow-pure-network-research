@@ -1,0 +1,121 @@
+{
+  "status": "unknown",
+  "scope": "stationary wait <=90s, one fight <=35s, no pursuit",
+  "samples": [
+    {
+      "at": 1793261971.6475475,
+      "nearest_distance": 2.0634458218207476,
+      "guid": "17379391014048896448"
+    }
+  ],
+  "attack_dispatch_recorded": true,
+  "before": {
+    "backend": "pure-network",
+    "character": "9",
+    "session_id": "aw-2630335860",
+    "sequence": 3,
+    "sampled_at": 1793261971.637623,
+    "map_id": 1,
+    "position": [
+      -251.59620666503906,
+      -4338.8388671875,
+      63.020050048828125
+    ],
+    "health": 108,
+    "max_health": 108,
+    "ghost": false,
+    "in_combat": false,
+    "level": 3,
+    "quest_log": [
+      {
+        "slot": 0,
+        "quest": 792,
+        "state": 0,
+        "counters": [
+          0,
+          0
+        ]
+      }
+    ],
+    "item_totals": {
+      "6125": 1,
+      "139": 1,
+      "140": 1,
+      "12282": 1,
+      "6948": 1,
+      "7098": 1,
+      "4915": 1,
+      "4867": 10,
+      "7099": 1,
+      "4919": 1,
+      "7101": 4,
+      "2652": 1
+    },
+    "available": [
+      "creature_templates",
+      "errors",
+      "event_log",
+      "events",
+      "field_semantics",
+      "login",
+      "motions",
+      "packets",
+      "scope",
+      "self",
+      "session_id",
+      "status",
+      "visible_objects"
+    ],
+    "context": {
+      "target": null,
+      "position_evidence": {
+        "source": "last server object movement update",
+        "movement_sequence": 3,
+        "current_position_confirmed": false,
+        "submitted_position": [
+          -251.59620666503906,
+          -4338.8388671875,
+          63.020050048828125
+        ],
+        "submitted_position_semantics": "local movement submission, not server acknowledgement"
+      },
+      "position_model": {
+        "identity": [
+          "aw-2630335860",
+          "9",
+          1
+        ],
+        "observed": {
+          "xyz": [
+            -251.59620666503906,
+            -4338.8388671875,
+            63.020050048828125
+          ],
+          "at": 17.584545468,
+          "sequence": 3,
+          "source": "movement",
+          "action_id": ""
+        },
+        "predicted": null,
+        "usable_for_estimation": true,
+        "selected_age_seconds": 0.01078189999999779,
+        "reason": null,
+        "position_confirmed": true,
+        "teleport_evidence": null,
+        "timestamp_semantics": "host first processing of position event, not server time",
+        "correction_coverage": "incomplete; estimate is not authorized for action success"
+      },
+      "login_position": [
+        -251.59620666503906,
+        -4338.8388671875,
+        63.020050048828125
+      ]
+    }
+  },
+  "target": {
+    "guid": "17379391014048896448",
+    "entry": 3101,
+    "level": 3
+  },
+  "error": "RuntimeError: world state decode error: [{'sequence': 46, 'opcode': 592, 'error': 'unexpected capture opcode 0x250'}]"
+}
