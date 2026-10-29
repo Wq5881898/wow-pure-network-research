@@ -1,0 +1,55 @@
+api_version: 1
+enabled: true
+description: Bounded read-only world-state event bridge
+compose:
+  file: compose.yaml
+  service: module
+grpc:
+  descriptor_set: module.pb
+rpc:
+  spirit_healer: /research.bridge.v1.Bridge/SpiritHealer
+  start_attack: /research.bridge.v1.Bridge/StartAttack
+  release_spirit: /research.bridge.v1.Bridge/ReleaseSpirit
+  query_corpse: /research.bridge.v1.Bridge/QueryCorpse
+  reclaim_corpse: /research.bridge.v1.Bridge/ReclaimCorpse
+  complete_quest: /research.bridge.v1.Bridge/CompleteQuest
+  reward_quest: /research.bridge.v1.Bridge/RewardQuest
+  quest_hello: /research.bridge.v1.Bridge/QuestHello
+  query_quest: /research.bridge.v1.Bridge/QueryQuest
+  accept_quest: /research.bridge.v1.Bridge/AcceptQuest
+  open_loot: /research.bridge.v1.Bridge/OpenLoot
+  take_loot: /research.bridge.v1.Bridge/TakeLoot
+  release_loot: /research.bridge.v1.Bridge/ReleaseLoot
+  face: /research.bridge.v1.Bridge/Face
+  stop_attack: /research.bridge.v1.Bridge/StopAttack
+  follow_path: /research.bridge.v1.Bridge/FollowPath
+  attack_once: /research.bridge.v1.Bridge/AttackOnce
+  step: /research.bridge.v1.Bridge/Step
+  query_creature: /research.bridge.v1.Bridge/QueryCreature
+  poll: /research.bridge.v1.Bridge/Poll
+packets:
+  MSG_CORPSE_QUERY: /research.bridge.v1.Bridge/OnPacket
+  SMSG_DEATH_RELEASE_LOC: /research.bridge.v1.Bridge/OnPacket
+  SMSG_CORPSE_RECLAIM_DELAY: /research.bridge.v1.Bridge/OnPacket
+  MSG_MOVE_TELEPORT_ACK: /research.bridge.v1.Bridge/OnPacket
+  SMSG_QUESTUPDATE_ADD_KILL: /research.bridge.v1.Bridge/OnPacket
+  SMSG_QUESTUPDATE_COMPLETE: /research.bridge.v1.Bridge/OnPacket
+  SMSG_GOSSIP_MESSAGE: /research.bridge.v1.Bridge/OnPacket
+  SMSG_QUESTGIVER_REQUEST_ITEMS: /research.bridge.v1.Bridge/OnPacket
+  SMSG_QUESTGIVER_OFFER_REWARD: /research.bridge.v1.Bridge/OnPacket
+  SMSG_QUESTGIVER_QUEST_COMPLETE: /research.bridge.v1.Bridge/OnPacket
+  SMSG_QUESTGIVER_QUEST_LIST: /research.bridge.v1.Bridge/OnPacket
+  SMSG_QUESTGIVER_QUEST_DETAILS: /research.bridge.v1.Bridge/OnPacket
+  SMSG_LOOT_RESPONSE: /research.bridge.v1.Bridge/OnPacket
+  SMSG_LOOT_RELEASE_RESPONSE: /research.bridge.v1.Bridge/OnPacket
+  SMSG_LOOT_REMOVED: /research.bridge.v1.Bridge/OnPacket
+  SMSG_ITEM_PUSH_RESULT: /research.bridge.v1.Bridge/OnPacket
+  SMSG_ATTACKSTART: /research.bridge.v1.Bridge/OnPacket
+  SMSG_ATTACKSTOP: /research.bridge.v1.Bridge/OnPacket
+  SMSG_ATTACKERSTATEUPDATE: /research.bridge.v1.Bridge/OnPacket
+  SMSG_MONSTER_MOVE: /research.bridge.v1.Bridge/OnPacket
+  SMSG_CREATURE_QUERY_RESPONSE: /research.bridge.v1.Bridge/OnPacket
+  SMSG_LOGIN_VERIFY_WORLD: /research.bridge.v1.Bridge/OnPacket
+  SMSG_UPDATE_OBJECT: /research.bridge.v1.Bridge/OnPacket
+  SMSG_COMPRESSED_UPDATE_OBJECT: /research.bridge.v1.Bridge/OnPacket
+  SMSG_DESTROY_OBJECT: /research.bridge.v1.Bridge/OnPacket

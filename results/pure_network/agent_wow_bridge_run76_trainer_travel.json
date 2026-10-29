@@ -1,0 +1,7381 @@
+{
+  "status": "PASS",
+  "gateway": "172.22.112.1",
+  "scope": "Docker bridge world-state substream",
+  "operations": [
+    {
+      "cursor": 4,
+      "last_sequence": "6",
+      "page_count": 4
+    },
+    {
+      "cursor": 7,
+      "last_sequence": "7",
+      "page_count": 3
+    },
+    {
+      "cursor": 8,
+      "last_sequence": "8",
+      "page_count": 1
+    },
+    {
+      "cursor": 8,
+      "last_sequence": "8",
+      "page_count": 0
+    },
+    {
+      "cursor": 8,
+      "last_sequence": "8",
+      "page_count": 0
+    },
+    {
+      "cursor": 8,
+      "last_sequence": "8",
+      "page_count": 0
+    },
+    {
+      "cursor": 9,
+      "last_sequence": "9",
+      "page_count": 1
+    },
+    {
+      "cursor": 11,
+      "last_sequence": "11",
+      "page_count": 2
+    },
+    {
+      "cursor": 11,
+      "last_sequence": "11",
+      "page_count": 0
+    },
+    {
+      "cursor": 11,
+      "last_sequence": "11",
+      "page_count": 0
+    },
+    {
+      "cursor": 12,
+      "last_sequence": "12",
+      "page_count": 1
+    },
+    {
+      "cursor": 12,
+      "last_sequence": "12",
+      "page_count": 0
+    }
+  ],
+  "future_cursor_rejection": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "error": {
+      "code": -32000,
+      "message": "rpc error: code = InvalidArgument desc = cursor is ahead of stream",
+      "data": {
+        "grpc_details": null,
+        "grpc_message": "cursor is ahead of stream",
+        "grpc_status": "InvalidArgument",
+        "method": "poll",
+        "module": "bridge"
+      }
+    }
+  },
+  "oversize_page_rejection": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "error": {
+      "code": -32000,
+      "message": "rpc error: code = InvalidArgument desc = limit exceeds 128",
+      "data": {
+        "grpc_details": null,
+        "grpc_message": "limit exceeds 128",
+        "grpc_status": "InvalidArgument",
+        "method": "poll",
+        "module": "bridge"
+      }
+    }
+  },
+  "initial_self": {
+    "guid": "9",
+    "type_id": 4,
+    "created_seq": 3,
+    "movement": {
+      "update_flags": 97,
+      "position_xyzo": [
+        -600.1320190429688,
+        -4186.18994140625,
+        41.180789947509766,
+        1.4560896158218384
+      ],
+      "movement_flags": 0,
+      "movement_clock": 560735586,
+      "speeds": [
+        2.5,
+        7.0,
+        4.5,
+        4.722221851348877,
+        2.5,
+        7.0,
+        4.5,
+        3.1415939331054688,
+        3.140000104904175
+      ]
+    },
+    "last_seq": 3,
+    "field_count": 133,
+    "entry": 0,
+    "health": 89,
+    "max_health": 89,
+    "level": 2,
+    "bytes0": 16777474,
+    "powers": [
+      0,
+      0,
+      0,
+      100,
+      0,
+      0,
+      0
+    ],
+    "max_powers": [
+      0,
+      1000,
+      0,
+      100,
+      0,
+      0,
+      1000
+    ],
+    "unit_flags": 8,
+    "unit_flags_transmitted": true,
+    "in_combat": false,
+    "player_flags": 0,
+    "ghost": false,
+    "quest_log": [
+      {
+        "slot": 0,
+        "quest": 789,
+        "state": 0,
+        "counters": [
+          0,
+          0
+        ]
+      },
+      {
+        "slot": 1,
+        "quest": 2383,
+        "state": 1,
+        "counters": [
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  "queries": [
+    {
+      "entry": 3124,
+      "guid": "17379391014434767591",
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "result": {}
+      }
+    },
+    {
+      "entry": 3281,
+      "guid": "17379391017068790536",
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "result": {}
+      }
+    },
+    {
+      "entry": 3161,
+      "guid": "17379391015055524590",
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "result": {}
+      }
+    },
+    {
+      "entry": 3159,
+      "guid": "17379391015021970141",
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "result": {}
+      }
+    },
+    {
+      "entry": 3160,
+      "guid": "17379391015038747356",
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "result": {}
+      }
+    }
+  ],
+  "invalid_query_rejection": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "error": {
+      "code": -32000,
+      "message": "rpc error: code = InvalidArgument desc = entry and GUID must be valid nonzero values",
+      "data": {
+        "grpc_details": null,
+        "grpc_message": "entry and GUID must be valid nonzero values",
+        "grpc_status": "InvalidArgument",
+        "method": "query_creature",
+        "module": "bridge"
+      }
+    }
+  },
+  "missing_template_request": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {}
+  },
+  "creature_templates": {
+    "3124": {
+      "entry": 3124,
+      "found": true,
+      "name": "Scorpid Worker",
+      "alternate_names": [
+        "",
+        "",
+        ""
+      ],
+      "title": "",
+      "icon": "",
+      "type_flags": 1,
+      "creature_type": 1,
+      "family": 20,
+      "rank": 0,
+      "kill_credit": [
+        0,
+        0
+      ],
+      "models": [
+        2485,
+        0,
+        0,
+        0
+      ],
+      "modifiers": [
+        1.0,
+        1.0
+      ],
+      "racial_leader": 0,
+      "quest_items": [
+        4862,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "movement_id": 100
+    },
+    "3281": {
+      "entry": 3281,
+      "found": true,
+      "name": "Sarkoth",
+      "alternate_names": [
+        "",
+        "",
+        ""
+      ],
+      "title": "",
+      "icon": "",
+      "type_flags": 1,
+      "creature_type": 1,
+      "family": 20,
+      "rank": 0,
+      "kill_credit": [
+        0,
+        0
+      ],
+      "models": [
+        6068,
+        0,
+        0,
+        0
+      ],
+      "modifiers": [
+        1.0,
+        1.0
+      ],
+      "racial_leader": 0,
+      "quest_items": [
+        4862,
+        4905,
+        0,
+        0,
+        0,
+        0
+      ],
+      "movement_id": 100
+    },
+    "3161": {
+      "entry": 3161,
+      "found": true,
+      "name": "Rarc",
+      "alternate_names": [
+        "",
+        "",
+        ""
+      ],
+      "title": "Armorer & Shieldcrafter",
+      "icon": "",
+      "type_flags": 0,
+      "creature_type": 7,
+      "family": 0,
+      "rank": 0,
+      "kill_credit": [
+        0,
+        0
+      ],
+      "models": [
+        1885,
+        0,
+        0,
+        0
+      ],
+      "modifiers": [
+        1.0,
+        1.0
+      ],
+      "racial_leader": 0,
+      "quest_items": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "movement_id": 0
+    },
+    "3159": {
+      "entry": 3159,
+      "found": true,
+      "name": "Kzan Thornslash",
+      "alternate_names": [
+        "",
+        "",
+        ""
+      ],
+      "title": "Weaponsmith",
+      "icon": "",
+      "type_flags": 0,
+      "creature_type": 7,
+      "family": 0,
+      "rank": 0,
+      "kill_credit": [
+        0,
+        0
+      ],
+      "models": [
+        1883,
+        0,
+        0,
+        0
+      ],
+      "modifiers": [
+        1.100000023841858,
+        1.0
+      ],
+      "racial_leader": 0,
+      "quest_items": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "movement_id": 0
+    },
+    "3160": {
+      "entry": 3160,
+      "found": true,
+      "name": "Huklah",
+      "alternate_names": [
+        "",
+        "",
+        ""
+      ],
+      "title": "Cloth & Leather Armor Merchant",
+      "icon": "",
+      "type_flags": 0,
+      "creature_type": 7,
+      "family": 0,
+      "rank": 0,
+      "kill_credit": [
+        0,
+        0
+      ],
+      "models": [
+        1881,
+        0,
+        0,
+        0
+      ],
+      "modifiers": [
+        1.0,
+        1.0
+      ],
+      "racial_leader": 0,
+      "quest_items": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "movement_id": 0
+    },
+    "2147483647": {
+      "entry": 2147483647,
+      "found": false
+    }
+  },
+  "login_position": {
+    "map": 1,
+    "position_xyzo": [
+      -600.1320190429688,
+      -4186.18994140625,
+      41.180789947509766,
+      1.4560896158218384
+    ]
+  },
+  "invalid_path_rejection": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "error": {
+      "code": -32000,
+      "message": "rpc error: code = InvalidArgument desc = segment exceeds 15 yards or 3-yard height change",
+      "data": {
+        "grpc_details": null,
+        "grpc_message": "segment exceeds 15 yards or 3-yard height change",
+        "grpc_status": "InvalidArgument",
+        "method": "follow_path",
+        "module": "bridge"
+      }
+    }
+  },
+  "path_request": {
+    "points": [
+      {
+        "x": -601.4369726953125,
+        "y": -4189.0188809375,
+        "z": 41.18078996500651
+      },
+      {
+        "x": -602.7419263476562,
+        "y": -4191.84782046875,
+        "z": 41.180789982503256
+      },
+      {
+        "x": -604.04688,
+        "y": -4194.67676,
+        "z": 41.18079
+      },
+      {
+        "x": -605.04846,
+        "y": -4196.84814,
+        "z": 41.18079
+      },
+      {
+        "x": -606.1333,
+        "y": -4199.19971,
+        "z": 41.18079
+      },
+      {
+        "x": -608.3999650000001,
+        "y": -4200.933105,
+        "z": 40.11412
+      },
+      {
+        "x": -610.66663,
+        "y": -4202.6665,
+        "z": 39.04745
+      },
+      {
+        "x": -612.5330633333334,
+        "y": -4204.747066666667,
+        "z": 38.78078333333333
+      },
+      {
+        "x": -614.3994966666667,
+        "y": -4206.827633333333,
+        "z": 38.514116666666666
+      },
+      {
+        "x": -616.26593,
+        "y": -4208.9082,
+        "z": 38.24745
+      },
+      {
+        "x": -616.65009,
+        "y": -4209.33643,
+        "z": 38.24745
+      }
+    ]
+  },
+  "path_response": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+      "submittedPosition": [
+        -616.6501,
+        -4209.3364,
+        38.24745,
+        3.9811828
+      ],
+      "elapsedMs": 4176
+    }
+  },
+  "post_action_state": {
+    "status": "PASS",
+    "session_id": "aw-4001214636",
+    "field_semantics": "Raw fields retain transmitted indices only; absent summary fields use creation zero-default, not proof of public visibility.",
+    "scope": "object lifecycle, last update position and server-directed motion paths; no position interpolation",
+    "packets": 41,
+    "events": 90,
+    "login": {
+      "map": 1,
+      "position_xyzo": [
+        -600.1320190429688,
+        -4186.18994140625,
+        41.180789947509766,
+        1.4560896158218384
+      ]
+    },
+    "self": {
+      "guid": "9",
+      "type_id": 4,
+      "created_seq": 3,
+      "movement": {
+        "update_flags": 97,
+        "position_xyzo": [
+          -600.1320190429688,
+          -4186.18994140625,
+          41.180789947509766,
+          1.4560896158218384
+        ],
+        "movement_flags": 0,
+        "movement_clock": 560735586,
+        "speeds": [
+          2.5,
+          7.0,
+          4.5,
+          4.722221851348877,
+          2.5,
+          7.0,
+          4.5,
+          3.1415939331054688,
+          3.140000104904175
+        ]
+      },
+      "last_seq": 3,
+      "field_count": 133,
+      "entry": 0,
+      "health": 89,
+      "max_health": 89,
+      "level": 2,
+      "bytes0": 16777474,
+      "powers": [
+        0,
+        0,
+        0,
+        100,
+        0,
+        0,
+        0
+      ],
+      "max_powers": [
+        0,
+        1000,
+        0,
+        100,
+        0,
+        0,
+        1000
+      ],
+      "unit_flags": 8,
+      "unit_flags_transmitted": true,
+      "in_combat": false,
+      "player_flags": 0,
+      "ghost": false,
+      "quest_log": [
+        {
+          "slot": 0,
+          "quest": 789,
+          "state": 0,
+          "counters": [
+            0,
+            0
+          ]
+        },
+        {
+          "slot": 1,
+          "quest": 2383,
+          "state": 1,
+          "counters": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    "visible_objects": [
+      {
+        "guid": "17374887362395373569",
+        "type_id": 5,
+        "created_seq": 2,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            -1028.0400390625,
+            -28.356800079345703,
+            69.02259826660156,
+            2.9147000312805176
+          ]
+        },
+        "last_seq": 2,
+        "field_count": 11,
+        "entry": 47296
+      },
+      {
+        "guid": "2287828610704211971",
+        "type_id": 5,
+        "created_seq": 2,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            8191.703125,
+            1272.70068359375,
+            0.0,
+            3.3658788204193115
+          ]
+        },
+        "last_seq": 2,
+        "field_count": 11,
+        "entry": 176244
+      },
+      {
+        "guid": "2287828610704211988",
+        "type_id": 5,
+        "created_seq": 2,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            -646.3544921875,
+            -1080.855224609375,
+            264.9124450683594,
+            4.914114952087402
+          ]
+        },
+        "last_seq": 2,
+        "field_count": 11,
+        "entry": 190549
+      },
+      {
+        "guid": "2287828610704211976",
+        "type_id": 5,
+        "created_seq": 2,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            -4352.35986328125,
+            2441.196533203125,
+            0.0,
+            0.050187502056360245
+          ]
+        },
+        "last_seq": 2,
+        "field_count": 11,
+        "entry": 177233
+      },
+      {
+        "guid": "17374887362395373570",
+        "type_id": 5,
+        "created_seq": 2,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            -1037.27001953125,
+            -49.23550033569336,
+            140.4949951171875,
+            3.07177996635437
+          ]
+        },
+        "last_seq": 2,
+        "field_count": 11,
+        "entry": 47297
+      },
+      {
+        "guid": "17374887362395373571",
+        "type_id": 5,
+        "created_seq": 2,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            -1286.239990234375,
+            189.72000122070312,
+            130.0800018310547,
+            -1.0733799934387207
+          ]
+        },
+        "last_seq": 2,
+        "field_count": 11,
+        "entry": 4170
+      },
+      {
+        "guid": "17374887362395373572",
+        "type_id": 5,
+        "created_seq": 2,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            -1308.3800048828125,
+            185.2899932861328,
+            68.58580017089844,
+            -0.2705250084400177
+          ]
+        },
+        "last_seq": 2,
+        "field_count": 11,
+        "entry": 4171
+      },
+      {
+        "guid": "2287828610704211977",
+        "type_id": 5,
+        "created_seq": 2,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            6585.15771484375,
+            928.0081787109375,
+            0.0,
+            2.8929388523101807
+          ]
+        },
+        "last_seq": 2,
+        "field_count": 11,
+        "entry": 181646
+      },
+      {
+        "guid": "2287828610704211974",
+        "type_id": 5,
+        "created_seq": 2,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            1318.10693359375,
+            -4658.0478515625,
+            71.86043548583984,
+            4.807309627532959
+          ]
+        },
+        "last_seq": 2,
+        "field_count": 11,
+        "entry": 164871
+      },
+      {
+        "guid": "2287828610704211970",
+        "type_id": 5,
+        "created_seq": 2,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            6405.34033203125,
+            820.5170288085938,
+            0.0,
+            4.426337242126465
+          ]
+        },
+        "last_seq": 2,
+        "field_count": 11,
+        "entry": 176310
+      },
+      {
+        "guid": "4611686018427388600",
+        "type_id": 1,
+        "created_seq": 3,
+        "movement": {
+          "update_flags": 16
+        },
+        "last_seq": 3,
+        "field_count": 8,
+        "entry": 6125
+      },
+      {
+        "guid": "4611686018427388602",
+        "type_id": 1,
+        "created_seq": 3,
+        "movement": {
+          "update_flags": 16
+        },
+        "last_seq": 3,
+        "field_count": 10,
+        "entry": 139
+      },
+      {
+        "guid": "4611686018427388604",
+        "type_id": 1,
+        "created_seq": 3,
+        "movement": {
+          "update_flags": 16
+        },
+        "last_seq": 3,
+        "field_count": 8,
+        "entry": 140
+      },
+      {
+        "guid": "4611686018427388608",
+        "type_id": 1,
+        "created_seq": 3,
+        "movement": {
+          "update_flags": 16
+        },
+        "last_seq": 3,
+        "field_count": 10,
+        "entry": 12282
+      },
+      {
+        "guid": "4611686018427388606",
+        "type_id": 1,
+        "created_seq": 3,
+        "movement": {
+          "update_flags": 16
+        },
+        "last_seq": 3,
+        "field_count": 9,
+        "entry": 6948
+      },
+      {
+        "guid": "4611686018427388609",
+        "type_id": 1,
+        "created_seq": 3,
+        "movement": {
+          "update_flags": 16
+        },
+        "last_seq": 3,
+        "field_count": 8,
+        "entry": 7098
+      },
+      {
+        "guid": "4611686018427388610",
+        "type_id": 1,
+        "created_seq": 3,
+        "movement": {
+          "update_flags": 16
+        },
+        "last_seq": 3,
+        "field_count": 11,
+        "entry": 4915
+      },
+      {
+        "guid": "4611686018427388611",
+        "type_id": 1,
+        "created_seq": 3,
+        "movement": {
+          "update_flags": 16
+        },
+        "last_seq": 3,
+        "field_count": 9,
+        "entry": 12635
+      },
+      {
+        "guid": "9",
+        "type_id": 4,
+        "created_seq": 3,
+        "movement": {
+          "update_flags": 97,
+          "position_xyzo": [
+            -600.1320190429688,
+            -4186.18994140625,
+            41.180789947509766,
+            1.4560896158218384
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735586,
+          "speeds": [
+            2.5,
+            7.0,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 3,
+        "field_count": 133,
+        "entry": 0,
+        "health": 89,
+        "max_health": 89,
+        "level": 2,
+        "bytes0": 16777474,
+        "powers": [
+          0,
+          0,
+          0,
+          100,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          1000,
+          0,
+          100,
+          0,
+          0,
+          1000
+        ],
+        "unit_flags": 8,
+        "unit_flags_transmitted": true,
+        "in_combat": false,
+        "player_flags": 0,
+        "ghost": false,
+        "quest_log": [
+          {
+            "slot": 0,
+            "quest": 789,
+            "state": 0,
+            "counters": [
+              0,
+              0
+            ]
+          },
+          {
+            "slot": 1,
+            "quest": 2383,
+            "state": 1,
+            "counters": [
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "guid": "17370386647408969369",
+        "type_id": 5,
+        "created_seq": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -516.8889770507812,
+            -4187.0400390625,
+            77.13960266113281,
+            -1.2217299938201904
+          ]
+        },
+        "last_seq": 5,
+        "field_count": 10,
+        "entry": 171938
+      },
+      {
+        "guid": "17370386647408969351",
+        "type_id": 5,
+        "created_seq": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -523.0759887695312,
+            -4182.39013671875,
+            76.93609619140625,
+            0.5061450004577637
+          ]
+        },
+        "last_seq": 5,
+        "field_count": 10,
+        "entry": 171938
+      },
+      {
+        "guid": "17370386543507669213",
+        "type_id": 5,
+        "created_seq": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -583.1069946289062,
+            -4123.9501953125,
+            44.09700012207031,
+            2.4725699424743652
+          ]
+        },
+        "last_seq": 5,
+        "field_count": 9,
+        "entry": 165745
+      },
+      {
+        "guid": "17370386543490891991",
+        "type_id": 5,
+        "created_seq": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -580.5549926757812,
+            -4112.2099609375,
+            43.42340087890625,
+            0.07079820334911346
+          ]
+        },
+        "last_seq": 5,
+        "field_count": 9,
+        "entry": 165744
+      },
+      {
+        "guid": "17370386543440560341",
+        "type_id": 5,
+        "created_seq": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -593.5130004882812,
+            -4116.580078125,
+            44.445701599121094,
+            4.419449806213379
+          ]
+        },
+        "last_seq": 5,
+        "field_count": 9,
+        "entry": 165741
+      },
+      {
+        "guid": "17370386543574778067",
+        "type_id": 5,
+        "created_seq": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -594.9000244140625,
+            -4131.9501953125,
+            42.297298431396484,
+            3.598249912261963
+          ]
+        },
+        "last_seq": 5,
+        "field_count": 9,
+        "entry": 165749
+      },
+      {
+        "guid": "17370386543541223646",
+        "type_id": 5,
+        "created_seq": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -595.906005859375,
+            -4153.56005859375,
+            42.839599609375,
+            4.6184401512146
+          ]
+        },
+        "last_seq": 5,
+        "field_count": 9,
+        "entry": 165747
+      },
+      {
+        "guid": "17370386543558000857",
+        "type_id": 5,
+        "created_seq": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -587.9869995117188,
+            -4146.89990234375,
+            40.8484001159668,
+            4.633080005645752
+          ]
+        },
+        "last_seq": 5,
+        "field_count": 9,
+        "entry": 165748
+      },
+      {
+        "guid": "17370384066150400209",
+        "type_id": 5,
+        "created_seq": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -557.6790161132812,
+            -4219.2099609375,
+            41.59040069580078,
+            3.115339994430542
+          ]
+        },
+        "last_seq": 5,
+        "field_count": 9,
+        "entry": 18083
+      },
+      {
+        "guid": "17370383975251443920",
+        "type_id": 5,
+        "created_seq": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -563.0159912109375,
+            -4217.509765625,
+            41.5900993347168,
+            2.7870399951934814
+          ]
+        },
+        "last_seq": 5,
+        "field_count": 9,
+        "entry": 12665
+      },
+      {
+        "guid": "17370386543608332508",
+        "type_id": 5,
+        "created_seq": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -607.0050048828125,
+            -4115.1298828125,
+            42.975799560546875,
+            2.9730899333953857
+          ]
+        },
+        "last_seq": 5,
+        "field_count": 9,
+        "entry": 165751
+      },
+      {
+        "guid": "17370386543591555290",
+        "type_id": 5,
+        "created_seq": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -608.4639892578125,
+            -4171.93994140625,
+            41.249698638916016,
+            5.571020126342773
+          ]
+        },
+        "last_seq": 5,
+        "field_count": 9,
+        "entry": 165750
+      },
+      {
+        "guid": "17370386543524446424",
+        "type_id": 5,
+        "created_seq": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -609.531982421875,
+            -4153.8798828125,
+            43.5010986328125,
+            3.03371000289917
+          ]
+        },
+        "last_seq": 5,
+        "field_count": 9,
+        "entry": 165746
+      },
+      {
+        "guid": "17370386543423783124",
+        "type_id": 5,
+        "created_seq": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -607.802001953125,
+            -4191.009765625,
+            40.951900482177734,
+            5.7253499031066895
+          ]
+        },
+        "last_seq": 5,
+        "field_count": 9,
+        "entry": 165740
+      },
+      {
+        "guid": "17370383814508937422",
+        "type_id": 5,
+        "created_seq": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -602.4249877929688,
+            -4250.56982421875,
+            37.51150131225586,
+            3.141590118408203
+          ]
+        },
+        "last_seq": 5,
+        "field_count": 9,
+        "entry": 3084
+      },
+      {
+        "guid": "17379391014434767619",
+        "type_id": 3,
+        "created_seq": 6,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -548.6412963867188,
+            -4146.82373046875,
+            73.6683578491211,
+            -2.7291197776794434
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 6,
+        "server_motion": {
+          "guid": "17379391014434767619",
+          "start_xyz": [
+            -541.6878662109375,
+            -4148.10986328125,
+            72.71410369873047
+          ],
+          "spline_id": 220734617,
+          "move_type": 0,
+          "toggle": 0,
+          "spline_flags": 0,
+          "duration_ms": 2518,
+          "path_kind": "linear",
+          "path_xyz": [
+            [
+              -541.6878662109375,
+              -4148.10986328125,
+              72.71410369873047
+            ],
+            [
+              -544.5509338378906,
+              -4145.53125,
+              72.69563293457031
+            ],
+            [
+              -546.4140014648438,
+              -4143.95263671875,
+              72.67716217041016
+            ]
+          ],
+          "position_semantics": "server-directed path, not observed arrival",
+          "source_sequence": 24,
+          "received_monotonic_ms": 5839
+        },
+        "field_count": 23,
+        "entry": 3124,
+        "health": 71,
+        "max_health": 71,
+        "level": 3,
+        "bytes0": 131328,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 0,
+        "unit_flags_transmitted": false,
+        "in_combat": null
+      },
+      {
+        "guid": "17379391014434767618",
+        "type_id": 3,
+        "created_seq": 6,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -589.1383056640625,
+            -4149.45458984375,
+            76.3396987915039,
+            1.7889556884765625
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 6,
+        "server_motion": {
+          "guid": "17379391014434767618",
+          "start_xyz": [
+            -589.1383056640625,
+            -4149.45458984375,
+            76.3396987915039
+          ],
+          "spline_id": 220733963,
+          "move_type": 0,
+          "toggle": 0,
+          "spline_flags": 0,
+          "duration_ms": 2541,
+          "path_kind": "linear",
+          "path_xyz": [
+            [
+              -589.1383056640625,
+              -4149.45458984375,
+              76.3396987915039
+            ],
+            [
+              -588.4509582519531,
+              -4153.30517578125,
+              76.34978485107422
+            ],
+            [
+              -587.7636108398438,
+              -4155.65576171875,
+              76.35987091064453
+            ]
+          ],
+          "position_semantics": "server-directed path, not observed arrival",
+          "source_sequence": 13,
+          "received_monotonic_ms": 4152
+        },
+        "field_count": 23,
+        "entry": 3124,
+        "health": 71,
+        "max_health": 71,
+        "level": 3,
+        "bytes0": 131328,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 0,
+        "unit_flags_transmitted": false,
+        "in_combat": null
+      },
+      {
+        "guid": "17379391061880734452",
+        "type_id": 3,
+        "created_seq": 6,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -599.9390258789062,
+            -4191.990234375,
+            41.18239974975586,
+            4.171339988708496
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 6,
+        "field_count": 26,
+        "entry": 5952,
+        "health": 11828,
+        "max_health": 11828,
+        "level": 65,
+        "bytes0": 65792,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 32768,
+        "unit_flags_transmitted": true,
+        "in_combat": false
+      },
+      {
+        "guid": "17379391014954861293",
+        "type_id": 3,
+        "created_seq": 6,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -588.7030029296875,
+            -4144.93994140625,
+            41.10329818725586,
+            3.6302900314331055
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 6,
+        "field_count": 25,
+        "entry": 3155,
+        "health": 156,
+        "max_health": 156,
+        "level": 8,
+        "bytes0": 256,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 768,
+        "unit_flags_transmitted": true,
+        "in_combat": false
+      },
+      {
+        "guid": "17379391061880734441",
+        "type_id": 3,
+        "created_seq": 6,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -585.1564331054688,
+            -4233.79345703125,
+            38.29439163208008,
+            -0.5464646816253662
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 10
+        },
+        "last_seq": 6,
+        "server_motion": {
+          "guid": "17379391061880734441",
+          "start_xyz": [
+            -582.0390014648438,
+            -4235.68994140625,
+            38.06683349609375
+          ],
+          "spline_id": 220733414,
+          "move_type": 0,
+          "toggle": 0,
+          "spline_flags": 0,
+          "duration_ms": 6543,
+          "path_kind": "linear",
+          "path_xyz": [
+            [
+              -582.0390014648438,
+              -4235.68994140625,
+              38.06683349609375
+            ],
+            [
+              -580.6094970703125,
+              -4239.6650390625,
+              38.029518127441406
+            ],
+            [
+              -579.3594970703125,
+              -4243.4150390625,
+              38.029518127441406
+            ],
+            [
+              -578.1094970703125,
+              -4246.9150390625,
+              38.029518127441406
+            ],
+            [
+              -576.8594970703125,
+              -4250.6650390625,
+              38.029518127441406
+            ],
+            [
+              -576.6799926757812,
+              -4251.14013671875,
+              37.99220275878906
+            ]
+          ],
+          "position_semantics": "server-directed path, not observed arrival",
+          "source_sequence": 9,
+          "received_monotonic_ms": 2792
+        },
+        "field_count": 26,
+        "entry": 5952,
+        "health": 11828,
+        "max_health": 11828,
+        "level": 65,
+        "bytes0": 256,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 32768,
+        "unit_flags_transmitted": true,
+        "in_combat": false
+      },
+      {
+        "guid": "17379391061880734444",
+        "type_id": 3,
+        "created_seq": 6,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -583.41357421875,
+            -4234.28076171875,
+            38.1676025390625,
+            -0.5937158465385437
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 8
+        },
+        "last_seq": 6,
+        "server_motion": {
+          "guid": "17379391061880734444",
+          "start_xyz": [
+            -577.0590209960938,
+            -4238.56982421875,
+            38.072898864746094
+          ],
+          "spline_id": 220734028,
+          "move_type": 0,
+          "toggle": 0,
+          "spline_flags": 0,
+          "duration_ms": 6930,
+          "path_kind": "linear",
+          "path_xyz": [
+            [
+              -577.0590209960938,
+              -4238.56982421875,
+              38.072898864746094
+            ],
+            [
+              -577.030517578125,
+              -4242.72998046875,
+              38.019561767578125
+            ],
+            [
+              -577.030517578125,
+              -4246.72998046875,
+              38.019561767578125
+            ],
+            [
+              -577.030517578125,
+              -4250.47998046875,
+              38.019561767578125
+            ],
+            [
+              -577.030517578125,
+              -4254.47998046875,
+              38.019561767578125
+            ],
+            [
+              -577.0020141601562,
+              -4255.89013671875,
+              37.966224670410156
+            ]
+          ],
+          "position_semantics": "server-directed path, not observed arrival",
+          "source_sequence": 17,
+          "received_monotonic_ms": 4376
+        },
+        "field_count": 26,
+        "entry": 5952,
+        "health": 11828,
+        "max_health": 11828,
+        "level": 65,
+        "bytes0": 65792,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 32768,
+        "unit_flags_transmitted": true,
+        "in_combat": false
+      },
+      {
+        "guid": "17379391027151897336",
+        "type_id": 3,
+        "created_seq": 6,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -560.125,
+            -4217.2001953125,
+            41.67369842529297,
+            3.3335800170898438
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 6,
+        "field_count": 25,
+        "entry": 3882,
+        "health": 176,
+        "max_health": 176,
+        "level": 9,
+        "bytes0": 256,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 768,
+        "unit_flags_transmitted": true,
+        "in_combat": false
+      },
+      {
+        "guid": "17379391015005192939",
+        "type_id": 3,
+        "created_seq": 6,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -565.427978515625,
+            -4214.2001953125,
+            41.67369842529297,
+            5.183629989624023
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 6,
+        "field_count": 25,
+        "entry": 3158,
+        "health": 198,
+        "max_health": 198,
+        "level": 10,
+        "bytes0": 65792,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 768,
+        "unit_flags_transmitted": true,
+        "in_combat": false
+      },
+      {
+        "guid": "17379391126372352725",
+        "type_id": 3,
+        "created_seq": 6,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -561.6279907226562,
+            -4221.7998046875,
+            41.67369842529297,
+            3.036870002746582
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 6,
+        "field_count": 24,
+        "entry": 9796,
+        "health": 156,
+        "max_health": 156,
+        "level": 8,
+        "bytes0": 256,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 768,
+        "unit_flags_transmitted": true,
+        "in_combat": false
+      },
+      {
+        "guid": "17379391061880734525",
+        "type_id": 3,
+        "created_seq": 6,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -565.9849853515625,
+            -4269.39013671875,
+            38.487998962402344,
+            4.223700046539307
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 6,
+        "field_count": 26,
+        "entry": 5952,
+        "health": 11828,
+        "max_health": 11828,
+        "level": 65,
+        "bytes0": 256,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 32768,
+        "unit_flags_transmitted": true,
+        "in_combat": false
+      },
+      {
+        "guid": "17379391014434767621",
+        "type_id": 3,
+        "created_seq": 6,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -607.0759887695312,
+            -4108.3037109375,
+            75.63431549072266,
+            1.1674463748931885
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 6,
+        "server_motion": {
+          "guid": "17379391014434767621",
+          "start_xyz": [
+            -608.7122192382812,
+            -4115.8740234375,
+            74.6625747680664
+          ],
+          "spline_id": 220735898,
+          "move_type": 0,
+          "toggle": 0,
+          "spline_flags": 0,
+          "duration_ms": 2106,
+          "path_kind": "linear",
+          "path_xyz": [
+            [
+              -608.7122192382812,
+              -4115.8740234375,
+              74.6625747680664
+            ],
+            [
+              -610.1727294921875,
+              -4112.18017578125,
+              74.84181213378906
+            ],
+            [
+              -610.6332397460938,
+              -4110.986328125,
+              75.02104949951172
+            ]
+          ],
+          "position_semantics": "server-directed path, not observed arrival",
+          "source_sequence": 41,
+          "received_monotonic_ms": 8974
+        },
+        "field_count": 23,
+        "entry": 3124,
+        "health": 71,
+        "max_health": 71,
+        "level": 3,
+        "bytes0": 131328,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 0,
+        "unit_flags_transmitted": false,
+        "in_combat": null
+      },
+      {
+        "guid": "17379391014971638496",
+        "type_id": 3,
+        "created_seq": 6,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -606.8740234375,
+            -4111.8701171875,
+            43.02799987792969,
+            0.2443459928035736
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 6,
+        "field_count": 25,
+        "entry": 3156,
+        "health": 176,
+        "max_health": 176,
+        "level": 9,
+        "bytes0": 256,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 768,
+        "unit_flags_transmitted": true,
+        "in_combat": false
+      },
+      {
+        "guid": "17379391061880734440",
+        "type_id": 3,
+        "created_seq": 6,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -604.4761352539062,
+            -4171.59521484375,
+            40.95957946777344,
+            1.6339280605316162
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 5
+        },
+        "last_seq": 6,
+        "server_motion": {
+          "guid": "17379391061880734440",
+          "start_xyz": [
+            -601.385986328125,
+            -4154.3701171875,
+            43.23813247680664
+          ],
+          "spline_id": 220735892,
+          "move_type": 0,
+          "toggle": 0,
+          "spline_flags": 0,
+          "duration_ms": 3720,
+          "path_kind": "linear",
+          "path_xyz": [
+            [
+              -601.385986328125,
+              -4154.3701171875,
+              43.23813247680664
+            ],
+            [
+              -598.156982421875,
+              -4151.56494140625,
+              42.83916091918945
+            ],
+            [
+              -595.406982421875,
+              -4149.31494140625,
+              42.83916091918945
+            ],
+            [
+              -594.427978515625,
+              -4148.259765625,
+              42.440189361572266
+            ]
+          ],
+          "position_semantics": "server-directed path, not observed arrival",
+          "source_sequence": 40,
+          "received_monotonic_ms": 8964
+        },
+        "field_count": 26,
+        "entry": 5952,
+        "health": 11828,
+        "max_health": 11828,
+        "level": 65,
+        "bytes0": 256,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 32768,
+        "unit_flags_transmitted": true,
+        "in_combat": false
+      },
+      {
+        "guid": "17379391061880734447",
+        "type_id": 3,
+        "created_seq": 6,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -606.7969970703125,
+            -4193.8701171875,
+            41.18239974975586,
+            4.694940090179443
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 6,
+        "field_count": 26,
+        "entry": 5952,
+        "health": 11828,
+        "max_health": 11828,
+        "level": 65,
+        "bytes0": 256,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 32768,
+        "unit_flags_transmitted": true,
+        "in_combat": false
+      },
+      {
+        "guid": "17379391014753534681",
+        "type_id": 3,
+        "created_seq": 6,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -600.1320190429688,
+            -4186.18994140625,
+            41.266300201416016,
+            4.1538801193237305
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 6,
+        "field_count": 25,
+        "entry": 3143,
+        "health": 102,
+        "max_health": 102,
+        "level": 5,
+        "bytes0": 256,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 768,
+        "unit_flags_transmitted": true,
+        "in_combat": false
+      },
+      {
+        "guid": "17379391014921306871",
+        "type_id": 3,
+        "created_seq": 6,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -639.343994140625,
+            -4230.18994140625,
+            38.56050109863281,
+            5.724679946899414
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 6,
+        "field_count": 25,
+        "entry": 3153,
+        "health": 222,
+        "max_health": 222,
+        "level": 11,
+        "bytes0": 256,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 768,
+        "unit_flags_transmitted": true,
+        "in_combat": false
+      },
+      {
+        "guid": "17379391061880734454",
+        "type_id": 3,
+        "created_seq": 6,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -645.4229736328125,
+            -4260.6298828125,
+            38.16299819946289,
+            5.148719787597656
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 6,
+        "field_count": 26,
+        "entry": 5952,
+        "health": 11828,
+        "max_health": 11828,
+        "level": 65,
+        "bytes0": 256,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 32768,
+        "unit_flags_transmitted": true,
+        "in_combat": false
+      },
+      {
+        "guid": "17379391014938084085",
+        "type_id": 3,
+        "created_seq": 6,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -635.4619750976562,
+            -4227.52001953125,
+            38.37099838256836,
+            5.096360206604004
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 6,
+        "field_count": 25,
+        "entry": 3154,
+        "health": 156,
+        "max_health": 156,
+        "level": 8,
+        "bytes0": 65792,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 768,
+        "unit_flags_transmitted": true,
+        "in_combat": false
+      },
+      {
+        "guid": "17379391014988415722",
+        "type_id": 3,
+        "created_seq": 6,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -623.9390258789062,
+            -4203.8798828125,
+            38.42850112915039,
+            5.480329990386963
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 6,
+        "field_count": 25,
+        "entry": 3157,
+        "health": 198,
+        "max_health": 198,
+        "level": 10,
+        "bytes0": 65792,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 768,
+        "unit_flags_transmitted": true,
+        "in_combat": false
+      },
+      {
+        "guid": "17379391024215884513",
+        "type_id": 3,
+        "created_seq": 6,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -617.39501953125,
+            -4202.39990234375,
+            38.296600341796875,
+            4.869470119476318
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 6,
+        "field_count": 25,
+        "entry": 3707,
+        "health": 198,
+        "max_health": 198,
+        "level": 10,
+        "bytes0": 256,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 768,
+        "unit_flags_transmitted": true,
+        "in_combat": false
+      },
+      {
+        "guid": "17379391060739883742",
+        "type_id": 3,
+        "created_seq": 6,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -625.2960205078125,
+            -4210.169921875,
+            38.296600341796875,
+            0.8028510212898254
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 6,
+        "field_count": 25,
+        "entry": 5884,
+        "health": 198,
+        "max_health": 198,
+        "level": 10,
+        "bytes0": 65792,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 768,
+        "unit_flags_transmitted": true,
+        "in_combat": false
+      },
+      {
+        "guid": "17379391058743395035",
+        "type_id": 3,
+        "created_seq": 6,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -624.0239868164062,
+            -4214.41015625,
+            38.21730041503906,
+            5.619959831237793
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 6,
+        "field_count": 25,
+        "entry": 5765,
+        "health": 198,
+        "max_health": 198,
+        "level": 10,
+        "bytes0": 256,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 768,
+        "unit_flags_transmitted": true,
+        "in_combat": false
+      },
+      {
+        "guid": "17379391014787089114",
+        "type_id": 3,
+        "created_seq": 6,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -629.052001953125,
+            -4228.06005859375,
+            38.2333984375,
+            5.009099960327148
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 6,
+        "field_count": 25,
+        "entry": 3145,
+        "health": 247,
+        "max_health": 247,
+        "level": 12,
+        "bytes0": 65792,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 768,
+        "unit_flags_transmitted": true,
+        "in_combat": false
+      },
+      {
+        "guid": "17379391132747694808",
+        "type_id": 3,
+        "created_seq": 6,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -610.072998046875,
+            -4253.52001953125,
+            39.03929901123047,
+            3.281219959259033
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 6,
+        "field_count": 24,
+        "entry": 10176,
+        "health": 484,
+        "max_health": 484,
+        "level": 20,
+        "bytes0": 256,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 768,
+        "unit_flags_transmitted": true,
+        "in_combat": false
+      },
+      {
+        "guid": "17379391060790215383",
+        "type_id": 3,
+        "created_seq": 6,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -630.02001953125,
+            -4204.5498046875,
+            38.21730041503906,
+            5.445429801940918
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 6,
+        "field_count": 25,
+        "entry": 5887,
+        "health": 156,
+        "max_health": 156,
+        "level": 8,
+        "bytes0": 256,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 768,
+        "unit_flags_transmitted": true,
+        "in_combat": false
+      },
+      {
+        "guid": "17379391162393035478",
+        "type_id": 3,
+        "created_seq": 6,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -638.1589965820312,
+            -4237.93994140625,
+            38.21730041503906,
+            0.01745299994945526
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 6,
+        "field_count": 24,
+        "entry": 11943,
+        "health": 102,
+        "max_health": 102,
+        "level": 5,
+        "bytes0": 65792,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 768,
+        "unit_flags_transmitted": true,
+        "in_combat": false
+      },
+      {
+        "guid": "17379391014434767615",
+        "type_id": 3,
+        "created_seq": 6,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -678.1356811523438,
+            -4149.4541015625,
+            37.94427490234375,
+            -1.2712949514389038
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 6,
+        "server_motion": {
+          "guid": "17379391014434767615",
+          "start_xyz": [
+            -678.1356811523438,
+            -4149.4541015625,
+            37.94427490234375
+          ],
+          "spline_id": 220734395,
+          "move_type": 0,
+          "toggle": 0,
+          "spline_flags": 0,
+          "duration_ms": 3952,
+          "path_kind": "linear",
+          "path_xyz": [
+            [
+              -678.1356811523438,
+              -4149.4541015625,
+              37.94427490234375
+            ],
+            [
+              -680.2205505371094,
+              -4145.91015625,
+              36.342742919921875
+            ],
+            [
+              -681.9705505371094,
+              -4142.66015625,
+              35.342742919921875
+            ],
+            [
+              -682.805419921875,
+              -4141.3662109375,
+              34.7412109375
+            ]
+          ],
+          "position_semantics": "server-directed path, not observed arrival",
+          "source_sequence": 23,
+          "received_monotonic_ms": 5348
+        },
+        "field_count": 23,
+        "entry": 3124,
+        "health": 71,
+        "max_health": 71,
+        "level": 3,
+        "bytes0": 131328,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 0,
+        "unit_flags_transmitted": false,
+        "in_combat": null
+      },
+      {
+        "guid": "2287828610704211975",
+        "type_id": 5,
+        "created_seq": 11,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            -1264.9373779296875,
+            -4139.87109375,
+            0.0,
+            4.144296169281006
+          ]
+        },
+        "last_seq": 11,
+        "field_count": 11,
+        "entry": 20808
+      },
+      {
+        "guid": "17370386647408967940",
+        "type_id": 5,
+        "created_seq": 28,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -556.4249877929688,
+            -4288.72021484375,
+            37.442298889160156,
+            0.8203049898147583
+          ]
+        },
+        "last_seq": 28,
+        "field_count": 10,
+        "entry": 171938
+      },
+      {
+        "guid": "17370383816975188212",
+        "type_id": 5,
+        "created_seq": 33,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -591.9349975585938,
+            -4300.2998046875,
+            40.376399993896484,
+            -1.7191499471664429
+          ]
+        },
+        "last_seq": 33,
+        "field_count": 10,
+        "entry": 3231
+      },
+      {
+        "guid": "17366161638117343235",
+        "type_id": 7,
+        "created_seq": 34,
+        "movement": {
+          "update_flags": 336,
+          "position_xyzo": [
+            -664.8888549804688,
+            -4287.92724609375,
+            40.91183090209961,
+            0.9872596859931946
+          ]
+        },
+        "last_seq": 34,
+        "field_count": 10,
+        "entry": 0
+      },
+      {
+        "guid": "17379391013998559993",
+        "type_id": 3,
+        "created_seq": 35,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -711.4616088867188,
+            -4220.53662109375,
+            40.2580451965332,
+            2.372767448425293
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 560742315,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 5
+        },
+        "last_seq": 35,
+        "field_count": 23,
+        "entry": 3098,
+        "health": 42,
+        "max_health": 42,
+        "level": 1,
+        "bytes0": 131328,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 0,
+        "unit_flags_transmitted": false,
+        "in_combat": null
+      },
+      {
+        "guid": "17370386647408967939",
+        "type_id": 5,
+        "created_seq": 39,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -551.5759887695312,
+            -4292.259765625,
+            37.09349822998047,
+            -1.9198600053787231
+          ]
+        },
+        "last_seq": 39,
+        "field_count": 10,
+        "entry": 171938
+      }
+    ],
+    "creature_templates": {
+      "3124": {
+        "entry": 3124,
+        "found": true,
+        "name": "Scorpid Worker",
+        "alternate_names": [
+          "",
+          "",
+          ""
+        ],
+        "title": "",
+        "icon": "",
+        "type_flags": 1,
+        "creature_type": 1,
+        "family": 20,
+        "rank": 0,
+        "kill_credit": [
+          0,
+          0
+        ],
+        "models": [
+          2485,
+          0,
+          0,
+          0
+        ],
+        "modifiers": [
+          1.0,
+          1.0
+        ],
+        "racial_leader": 0,
+        "quest_items": [
+          4862,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "movement_id": 100
+      },
+      "3281": {
+        "entry": 3281,
+        "found": true,
+        "name": "Sarkoth",
+        "alternate_names": [
+          "",
+          "",
+          ""
+        ],
+        "title": "",
+        "icon": "",
+        "type_flags": 1,
+        "creature_type": 1,
+        "family": 20,
+        "rank": 0,
+        "kill_credit": [
+          0,
+          0
+        ],
+        "models": [
+          6068,
+          0,
+          0,
+          0
+        ],
+        "modifiers": [
+          1.0,
+          1.0
+        ],
+        "racial_leader": 0,
+        "quest_items": [
+          4862,
+          4905,
+          0,
+          0,
+          0,
+          0
+        ],
+        "movement_id": 100
+      },
+      "3161": {
+        "entry": 3161,
+        "found": true,
+        "name": "Rarc",
+        "alternate_names": [
+          "",
+          "",
+          ""
+        ],
+        "title": "Armorer & Shieldcrafter",
+        "icon": "",
+        "type_flags": 0,
+        "creature_type": 7,
+        "family": 0,
+        "rank": 0,
+        "kill_credit": [
+          0,
+          0
+        ],
+        "models": [
+          1885,
+          0,
+          0,
+          0
+        ],
+        "modifiers": [
+          1.0,
+          1.0
+        ],
+        "racial_leader": 0,
+        "quest_items": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "movement_id": 0
+      },
+      "3159": {
+        "entry": 3159,
+        "found": true,
+        "name": "Kzan Thornslash",
+        "alternate_names": [
+          "",
+          "",
+          ""
+        ],
+        "title": "Weaponsmith",
+        "icon": "",
+        "type_flags": 0,
+        "creature_type": 7,
+        "family": 0,
+        "rank": 0,
+        "kill_credit": [
+          0,
+          0
+        ],
+        "models": [
+          1883,
+          0,
+          0,
+          0
+        ],
+        "modifiers": [
+          1.100000023841858,
+          1.0
+        ],
+        "racial_leader": 0,
+        "quest_items": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "movement_id": 0
+      },
+      "3160": {
+        "entry": 3160,
+        "found": true,
+        "name": "Huklah",
+        "alternate_names": [
+          "",
+          "",
+          ""
+        ],
+        "title": "Cloth & Leather Armor Merchant",
+        "icon": "",
+        "type_flags": 0,
+        "creature_type": 7,
+        "family": 0,
+        "rank": 0,
+        "kill_credit": [
+          0,
+          0
+        ],
+        "models": [
+          1881,
+          0,
+          0,
+          0
+        ],
+        "modifiers": [
+          1.0,
+          1.0
+        ],
+        "racial_leader": 0,
+        "quest_items": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "movement_id": 0
+      },
+      "2147483647": {
+        "entry": 2147483647,
+        "found": false
+      }
+    },
+    "motions": [
+      {
+        "guid": "17379391061880734440",
+        "start_xyz": [
+          -604.4840087890625,
+          -4171.47021484375,
+          40.959999084472656
+        ],
+        "spline_id": 220732797,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 4879,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -604.4840087890625,
+            -4171.47021484375,
+            40.959999084472656
+          ],
+          [
+            -604.9324951171875,
+            -4167.237060546875,
+            41.50297164916992
+          ],
+          [
+            -604.9324951171875,
+            -4163.737060546875,
+            42.00297164916992
+          ],
+          [
+            -605.3809814453125,
+            -4159.50390625,
+            43.04594421386719
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 7,
+        "received_monotonic_ms": 1295
+      },
+      {
+        "guid": "17379391061880734441",
+        "start_xyz": [
+          -582.0390014648438,
+          -4235.68994140625,
+          38.06683349609375
+        ],
+        "spline_id": 220733414,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 6543,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -582.0390014648438,
+            -4235.68994140625,
+            38.06683349609375
+          ],
+          [
+            -580.6094970703125,
+            -4239.6650390625,
+            38.029518127441406
+          ],
+          [
+            -579.3594970703125,
+            -4243.4150390625,
+            38.029518127441406
+          ],
+          [
+            -578.1094970703125,
+            -4246.9150390625,
+            38.029518127441406
+          ],
+          [
+            -576.8594970703125,
+            -4250.6650390625,
+            38.029518127441406
+          ],
+          [
+            -576.6799926757812,
+            -4251.14013671875,
+            37.99220275878906
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 9,
+        "received_monotonic_ms": 2792
+      },
+      {
+        "guid": "17379391014434767619",
+        "start_xyz": [
+          -548.6412963867188,
+          -4146.82373046875,
+          73.6683578491211
+        ],
+        "spline_id": 220733483,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 2858,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -548.6412963867188,
+            -4146.82373046875,
+            73.6683578491211
+          ],
+          [
+            -544.9145812988281,
+            -4147.466796875,
+            73.19123077392578
+          ],
+          [
+            -541.6878662109375,
+            -4148.10986328125,
+            72.71410369873047
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 10,
+        "received_monotonic_ms": 2895
+      },
+      {
+        "guid": "17379391014434767618",
+        "start_xyz": [
+          -589.1383056640625,
+          -4149.45458984375,
+          76.3396987915039
+        ],
+        "spline_id": 220733963,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 2541,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -589.1383056640625,
+            -4149.45458984375,
+            76.3396987915039
+          ],
+          [
+            -588.4509582519531,
+            -4153.30517578125,
+            76.34978485107422
+          ],
+          [
+            -587.7636108398438,
+            -4155.65576171875,
+            76.35987091064453
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 13,
+        "received_monotonic_ms": 4152
+      },
+      {
+        "guid": "17379391061880734444",
+        "start_xyz": [
+          -577.0590209960938,
+          -4238.56982421875,
+          38.072898864746094
+        ],
+        "spline_id": 220734028,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 6930,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -577.0590209960938,
+            -4238.56982421875,
+            38.072898864746094
+          ],
+          [
+            -577.030517578125,
+            -4242.72998046875,
+            38.019561767578125
+          ],
+          [
+            -577.030517578125,
+            -4246.72998046875,
+            38.019561767578125
+          ],
+          [
+            -577.030517578125,
+            -4250.47998046875,
+            38.019561767578125
+          ],
+          [
+            -577.030517578125,
+            -4254.47998046875,
+            38.019561767578125
+          ],
+          [
+            -577.0020141601562,
+            -4255.89013671875,
+            37.966224670410156
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 17,
+        "received_monotonic_ms": 4376
+      },
+      {
+        "guid": "17379391014434772260",
+        "start_xyz": [
+          -508.6736145019531,
+          -4172.5927734375,
+          77.08184051513672
+        ],
+        "spline_id": 220734314,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 1850,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -508.6736145019531,
+            -4172.5927734375,
+            77.08184051513672
+          ],
+          [
+            -509.4307556152344,
+            -4176.348876953125,
+            77.07223129272461
+          ],
+          [
+            -509.6878967285156,
+            -4177.10498046875,
+            77.0626220703125
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 22,
+        "received_monotonic_ms": 5097
+      },
+      {
+        "guid": "17379391014434767615",
+        "start_xyz": [
+          -678.1356811523438,
+          -4149.4541015625,
+          37.94427490234375
+        ],
+        "spline_id": 220734395,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 3952,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -678.1356811523438,
+            -4149.4541015625,
+            37.94427490234375
+          ],
+          [
+            -680.2205505371094,
+            -4145.91015625,
+            36.342742919921875
+          ],
+          [
+            -681.9705505371094,
+            -4142.66015625,
+            35.342742919921875
+          ],
+          [
+            -682.805419921875,
+            -4141.3662109375,
+            34.7412109375
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 23,
+        "received_monotonic_ms": 5348
+      },
+      {
+        "guid": "17379391014434767619",
+        "start_xyz": [
+          -541.6878662109375,
+          -4148.10986328125,
+          72.71410369873047
+        ],
+        "spline_id": 220734617,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 2518,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -541.6878662109375,
+            -4148.10986328125,
+            72.71410369873047
+          ],
+          [
+            -544.5509338378906,
+            -4145.53125,
+            72.69563293457031
+          ],
+          [
+            -546.4140014648438,
+            -4143.95263671875,
+            72.67716217041016
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 24,
+        "received_monotonic_ms": 5839
+      },
+      {
+        "guid": "17379391014434767621",
+        "start_xyz": [
+          -607.0759887695312,
+          -4108.3037109375,
+          75.63431549072266
+        ],
+        "spline_id": 220734618,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 3122,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -607.0759887695312,
+            -4108.3037109375,
+            75.63431549072266
+          ],
+          [
+            -607.8941040039062,
+            -4112.0888671875,
+            75.14844512939453
+          ],
+          [
+            -608.7122192382812,
+            -4115.8740234375,
+            74.6625747680664
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 25,
+        "received_monotonic_ms": 5840
+      },
+      {
+        "guid": "17379391014434772194",
+        "start_xyz": [
+          -516.85107421875,
+          -4156.6298828125,
+          76.60347747802734
+        ],
+        "spline_id": 220734700,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 2574,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -516.85107421875,
+            -4156.6298828125,
+            76.60347747802734
+          ],
+          [
+            -512.998779296875,
+            -4157.354248046875,
+            77.22000503540039
+          ],
+          [
+            -510.646484375,
+            -4158.07861328125,
+            77.33653259277344
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 26,
+        "received_monotonic_ms": 6087
+      },
+      {
+        "guid": "17379391061880734440",
+        "start_xyz": [
+          -605.3809814453125,
+          -4159.50390625,
+          43.04594421386719
+        ],
+        "spline_id": 220734776,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 2612,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -605.3809814453125,
+            -4159.50390625,
+            43.04594421386719
+          ],
+          [
+            -603.1334838867188,
+            -4156.43701171875,
+            43.392038345336914
+          ],
+          [
+            -601.385986328125,
+            -4154.3701171875,
+            43.23813247680664
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 27,
+        "received_monotonic_ms": 6323
+      },
+      {
+        "guid": "17379391014434772260",
+        "start_xyz": [
+          -509.6878967285156,
+          -4177.10498046875,
+          77.0626220703125
+        ],
+        "spline_id": 220735050,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 1850,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -509.6878967285156,
+            -4177.10498046875,
+            77.0626220703125
+          ],
+          [
+            -508.9307556152344,
+            -4173.348876953125,
+            77.07223129272461
+          ],
+          [
+            -508.6736145019531,
+            -4172.5927734375,
+            77.08184051513672
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 30,
+        "received_monotonic_ms": 6956
+      },
+      {
+        "guid": "17379391014434767616",
+        "start_xyz": [
+          -586.7511596679688,
+          -4110.16357421875,
+          73.67675018310547
+        ],
+        "spline_id": 220735051,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 6769,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -586.7511596679688,
+            -4110.16357421875,
+            73.67675018310547
+          ],
+          [
+            -583.8634948730469,
+            -4113.204833984375,
+            74.27483367919922
+          ],
+          [
+            -581.1134948730469,
+            -4115.954833984375,
+            74.27483367919922
+          ],
+          [
+            -578.6134948730469,
+            -4118.704833984375,
+            74.02483367919922
+          ],
+          [
+            -575.6134948730469,
+            -4121.454833984375,
+            73.77483367919922
+          ],
+          [
+            -574.975830078125,
+            -4122.24609375,
+            73.87291717529297
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 31,
+        "received_monotonic_ms": 6957
+      },
+      {
+        "guid": "17379391061880734440",
+        "start_xyz": [
+          -601.385986328125,
+          -4154.3701171875,
+          43.23813247680664
+        ],
+        "spline_id": 220735892,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 3720,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -601.385986328125,
+            -4154.3701171875,
+            43.23813247680664
+          ],
+          [
+            -598.156982421875,
+            -4151.56494140625,
+            42.83916091918945
+          ],
+          [
+            -595.406982421875,
+            -4149.31494140625,
+            42.83916091918945
+          ],
+          [
+            -594.427978515625,
+            -4148.259765625,
+            42.440189361572266
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 40,
+        "received_monotonic_ms": 8964
+      },
+      {
+        "guid": "17379391014434767621",
+        "start_xyz": [
+          -608.7122192382812,
+          -4115.8740234375,
+          74.6625747680664
+        ],
+        "spline_id": 220735898,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 2106,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -608.7122192382812,
+            -4115.8740234375,
+            74.6625747680664
+          ],
+          [
+            -610.1727294921875,
+            -4112.18017578125,
+            74.84181213378906
+          ],
+          [
+            -610.6332397460938,
+            -4110.986328125,
+            75.02104949951172
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 41,
+        "received_monotonic_ms": 8974
+      }
+    ],
+    "errors": [],
+    "event_log": [
+      {
+        "sequence": 2,
+        "kind": 2,
+        "guid": "17374887362395373569",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            -1028.0400390625,
+            -28.356800079345703,
+            69.02259826660156,
+            2.9147000312805176
+          ]
+        },
+        "fields": {
+          "0": 1,
+          "1": 4045406208,
+          "2": 33,
+          "3": 47296,
+          "4": 1065353216,
+          "8": 360,
+          "9": 40,
+          "12": 1065245372,
+          "13": 1038604025,
+          "14": 4294901760,
+          "17": 1677724417
+        }
+      },
+      {
+        "sequence": 2,
+        "kind": 2,
+        "guid": "2287828610704211971",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            8191.703125,
+            1272.70068359375,
+            0.0,
+            3.3658788204193115
+          ]
+        },
+        "fields": {
+          "0": 3,
+          "1": 532676608,
+          "2": 33,
+          "3": 176244,
+          "4": 1065353216,
+          "8": 7087,
+          "9": 40,
+          "13": 1065353216,
+          "14": 4194304000,
+          "16": 312177,
+          "17": 4278193921
+        }
+      },
+      {
+        "sequence": 2,
+        "kind": 2,
+        "guid": "2287828610704211988",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            -646.3544921875,
+            -1080.855224609375,
+            264.9124450683594,
+            4.914114952087402
+          ]
+        },
+        "fields": {
+          "0": 20,
+          "1": 532676608,
+          "2": 33,
+          "3": 190549,
+          "4": 1065353216,
+          "8": 3031,
+          "9": 40,
+          "13": 1065353216,
+          "14": 3993763840,
+          "16": 566366,
+          "17": 4278193921
+        }
+      },
+      {
+        "sequence": 2,
+        "kind": 2,
+        "guid": "2287828610704211976",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            -4352.35986328125,
+            2441.196533203125,
+            0.0,
+            0.050187502056360245
+          ]
+        },
+        "fields": {
+          "0": 8,
+          "1": 532676608,
+          "2": 33,
+          "3": 177233,
+          "4": 1065353216,
+          "8": 7087,
+          "9": 40,
+          "13": 1065353216,
+          "14": 554696704,
+          "16": 260879,
+          "17": 4278193921
+        }
+      },
+      {
+        "sequence": 2,
+        "kind": 2,
+        "guid": "17374887362395373570",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            -1037.27001953125,
+            -49.23550033569336,
+            140.4949951171875,
+            3.07177996635437
+          ]
+        },
+        "fields": {
+          "0": 2,
+          "1": 4045406208,
+          "2": 33,
+          "3": 47297,
+          "4": 1065353216,
+          "8": 360,
+          "9": 40,
+          "12": 1065342999,
+          "13": 1024389778,
+          "14": 4294901760,
+          "17": 1677724417
+        }
+      },
+      {
+        "sequence": 2,
+        "kind": 2,
+        "guid": "17374887362395373571",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            -1286.239990234375,
+            189.72000122070312,
+            130.0800018310547,
+            -1.0733799934387207
+          ]
+        },
+        "fields": {
+          "0": 3,
+          "1": 4045406208,
+          "2": 33,
+          "3": 4170,
+          "4": 1065353216,
+          "8": 360,
+          "9": 40,
+          "12": 3204637738,
+          "13": 1062994440,
+          "14": 4294901760,
+          "17": 1677724417
+        }
+      },
+      {
+        "sequence": 2,
+        "kind": 2,
+        "guid": "17374887362395373572",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            -1308.3800048828125,
+            185.2899932861328,
+            68.58580017089844,
+            -0.2705250084400177
+          ]
+        },
+        "fields": {
+          "0": 4,
+          "1": 4045406208,
+          "2": 33,
+          "3": 4171,
+          "4": 1065353216,
+          "8": 360,
+          "9": 40,
+          "12": 3188332062,
+          "13": 1065199973,
+          "14": 4294901760,
+          "17": 1677724417
+        }
+      },
+      {
+        "sequence": 2,
+        "kind": 2,
+        "guid": "2287828610704211980",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            1056.6136474609375,
+            -4646.44873046875,
+            101.70655059814453,
+            1.6589094400405884
+          ]
+        },
+        "fields": {
+          "0": 12,
+          "1": 532676608,
+          "2": 33,
+          "3": 186238,
+          "4": 1065353216,
+          "8": 7546,
+          "9": 40,
+          "13": 1065353216,
+          "14": 4137156608,
+          "16": 302413,
+          "17": 4278193921
+        }
+      },
+      {
+        "sequence": 2,
+        "kind": 2,
+        "guid": "2287828610704211977",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            6585.15771484375,
+            928.0081787109375,
+            0.0,
+            2.8929388523101807
+          ]
+        },
+        "fields": {
+          "0": 9,
+          "1": 532676608,
+          "2": 33,
+          "3": 181646,
+          "4": 1065353216,
+          "8": 7087,
+          "9": 40,
+          "13": 1065353216,
+          "14": 3851419648,
+          "16": 239610,
+          "17": 4278193921
+        }
+      },
+      {
+        "sequence": 2,
+        "kind": 2,
+        "guid": "2287828610704211974",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            1318.10693359375,
+            -4658.0478515625,
+            71.86043548583984,
+            4.807309627532959
+          ]
+        },
+        "fields": {
+          "0": 6,
+          "1": 532676608,
+          "2": 33,
+          "3": 164871,
+          "4": 1065353216,
+          "8": 3031,
+          "9": 40,
+          "13": 1065353216,
+          "14": 1288699904,
+          "16": 239262,
+          "17": 4278193921
+        }
+      },
+      {
+        "sequence": 2,
+        "kind": 2,
+        "guid": "2287828610704211970",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            6405.34033203125,
+            820.5170288085938,
+            0.0,
+            4.426337242126465
+          ]
+        },
+        "fields": {
+          "0": 2,
+          "1": 532676608,
+          "2": 33,
+          "3": 176310,
+          "4": 1065353216,
+          "8": 3015,
+          "9": 40,
+          "13": 1065353216,
+          "14": 2443182080,
+          "16": 234433,
+          "17": 4278193921
+        }
+      },
+      {
+        "sequence": 3,
+        "kind": 2,
+        "guid": "4611686018427388600",
+        "type_id": 1,
+        "movement": {
+          "update_flags": 16
+        },
+        "fields": {
+          "0": 696,
+          "1": 1073741824,
+          "2": 3,
+          "3": 6125,
+          "4": 1065353216,
+          "6": 9,
+          "8": 9,
+          "14": 1
+        }
+      },
+      {
+        "sequence": 3,
+        "kind": 2,
+        "guid": "4611686018427388602",
+        "type_id": 1,
+        "movement": {
+          "update_flags": 16
+        },
+        "fields": {
+          "0": 698,
+          "1": 1073741824,
+          "2": 3,
+          "3": 139,
+          "4": 1065353216,
+          "6": 9,
+          "8": 9,
+          "14": 1,
+          "60": 19,
+          "61": 25
+        }
+      },
+      {
+        "sequence": 3,
+        "kind": 2,
+        "guid": "4611686018427388604",
+        "type_id": 1,
+        "movement": {
+          "update_flags": 16
+        },
+        "fields": {
+          "0": 700,
+          "1": 1073741824,
+          "2": 3,
+          "3": 140,
+          "4": 1065353216,
+          "6": 9,
+          "8": 9,
+          "14": 1
+        }
+      },
+      {
+        "sequence": 3,
+        "kind": 2,
+        "guid": "4611686018427388608",
+        "type_id": 1,
+        "movement": {
+          "update_flags": 16
+        },
+        "fields": {
+          "0": 704,
+          "1": 1073741824,
+          "2": 3,
+          "3": 12282,
+          "4": 1065353216,
+          "6": 9,
+          "8": 9,
+          "14": 1,
+          "60": 19,
+          "61": 25
+        }
+      },
+      {
+        "sequence": 3,
+        "kind": 2,
+        "guid": "4611686018427388606",
+        "type_id": 1,
+        "movement": {
+          "update_flags": 16
+        },
+        "fields": {
+          "0": 702,
+          "1": 1073741824,
+          "2": 3,
+          "3": 6948,
+          "4": 1065353216,
+          "6": 9,
+          "8": 9,
+          "14": 1,
+          "21": 1
+        }
+      },
+      {
+        "sequence": 3,
+        "kind": 2,
+        "guid": "4611686018427388609",
+        "type_id": 1,
+        "movement": {
+          "update_flags": 16
+        },
+        "fields": {
+          "0": 705,
+          "1": 1073741824,
+          "2": 3,
+          "3": 7098,
+          "4": 1065353216,
+          "6": 9,
+          "8": 9,
+          "14": 1
+        }
+      },
+      {
+        "sequence": 3,
+        "kind": 2,
+        "guid": "4611686018427388610",
+        "type_id": 1,
+        "movement": {
+          "update_flags": 16
+        },
+        "fields": {
+          "0": 706,
+          "1": 1073741824,
+          "2": 3,
+          "3": 4915,
+          "4": 1065353216,
+          "6": 9,
+          "8": 9,
+          "14": 1,
+          "21": 1,
+          "60": 20,
+          "61": 20
+        }
+      },
+      {
+        "sequence": 3,
+        "kind": 2,
+        "guid": "4611686018427388611",
+        "type_id": 1,
+        "movement": {
+          "update_flags": 16
+        },
+        "fields": {
+          "0": 707,
+          "1": 1073741824,
+          "2": 3,
+          "3": 12635,
+          "4": 1065353216,
+          "6": 9,
+          "8": 9,
+          "14": 1,
+          "21": 1
+        }
+      },
+      {
+        "sequence": 3,
+        "kind": 3,
+        "guid": "9",
+        "type_id": 4,
+        "movement": {
+          "update_flags": 97,
+          "position_xyzo": [
+            -600.1320190429688,
+            -4186.18994140625,
+            41.180789947509766,
+            1.4560896158218384
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735586,
+          "speeds": [
+            2.5,
+            7.0,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 9,
+          "2": 25,
+          "4": 1065353216,
+          "23": 16777474,
+          "24": 89,
+          "28": 100,
+          "32": 89,
+          "34": 1000,
+          "36": 100,
+          "39": 1000,
+          "54": 2,
+          "55": 2,
+          "59": 8,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2900,
+          "63": 2000,
+          "64": 2000,
+          "65": 1053240066,
+          "66": 1069547520,
+          "67": 51,
+          "68": 51,
+          "70": 1093964362,
+          "71": 1096061514,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "84": 27,
+          "85": 18,
+          "86": 24,
+          "87": 17,
+          "88": 22,
+          "99": 38,
+          "121": 29,
+          "122": 285212672,
+          "123": 40,
+          "126": 10,
+          "129": 1075539383,
+          "130": 1079733687,
+          "146": 1065353216,
+          "153": 67108865,
+          "154": 33554436,
+          "158": 789,
+          "163": 2383,
+          "164": 1,
+          "289": 6125,
+          "295": 139,
+          "297": 140,
+          "313": 12282,
+          "330": 696,
+          "331": 1073741824,
+          "336": 698,
+          "337": 1073741824,
+          "338": 700,
+          "339": 1073741824,
+          "354": 704,
+          "355": 1073741824,
+          "370": 702,
+          "371": 1073741824,
+          "372": 705,
+          "373": 1073741824,
+          "374": 706,
+          "375": 1073741824,
+          "376": 707,
+          "377": 1073741824,
+          "634": 399,
+          "635": 900,
+          "636": 26,
+          "637": 655370,
+          "639": 43,
+          "640": 655361,
+          "642": 44,
+          "643": 655361,
+          "645": 54,
+          "646": 655361,
+          "648": 55,
+          "649": 655361,
+          "651": 95,
+          "652": 655368,
+          "654": 109,
+          "655": 19661100,
+          "657": 125,
+          "658": 655370,
+          "660": 162,
+          "661": 655361,
+          "663": 172,
+          "664": 655367,
+          "666": 173,
+          "667": 655361,
+          "669": 176,
+          "670": 655361,
+          "672": 183,
+          "673": 655370,
+          "675": 256,
+          "676": 655370,
+          "678": 257,
+          "679": 655370,
+          "681": 413,
+          "682": 65537,
+          "684": 414,
+          "685": 65537,
+          "687": 415,
+          "688": 65537,
+          "690": 433,
+          "691": 65537,
+          "693": 777,
+          "694": 655361,
+          "696": 778,
+          "697": 655361,
+          "1021": 2,
+          "1024": 1084059812,
+          "1025": 1087574858,
+          "1027": 5,
+          "1029": 1088724507,
+          "1030": 1088137304,
+          "1031": 1088137304,
+          "1039": 3,
+          "1043": 100663296,
+          "1185": 1065353216,
+          "1186": 1065353216,
+          "1187": 1065353216,
+          "1188": 1065353216,
+          "1189": 1065353216,
+          "1190": 1065353216,
+          "1191": 1065353216,
+          "1230": 4294967295,
+          "1279": 80,
+          "1312": 21,
+          "1313": 22,
+          "1314": 23,
+          "1315": 24,
+          "1316": 25,
+          "1317": 26
+        }
+      },
+      {
+        "sequence": 5,
+        "kind": 2,
+        "guid": "17370386647408969369",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -516.8889770507812,
+            -4187.0400390625,
+            77.13960266113281,
+            -1.2217299938201904
+          ]
+        },
+        "fields": {
+          "0": 2717910681,
+          "1": 4044358303,
+          "2": 33,
+          "3": 171938,
+          "4": 1065353216,
+          "8": 3451,
+          "9": 4,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 1677722369
+        }
+      },
+      {
+        "sequence": 5,
+        "kind": 2,
+        "guid": "17370386647408969351",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -523.0759887695312,
+            -4182.39013671875,
+            76.93609619140625,
+            0.5061450004577637
+          ]
+        },
+        "fields": {
+          "0": 2717910663,
+          "1": 4044358303,
+          "2": 33,
+          "3": 171938,
+          "4": 1065353216,
+          "8": 3451,
+          "9": 4,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 1677722369
+        }
+      },
+      {
+        "sequence": 5,
+        "kind": 2,
+        "guid": "17370386543507669213",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -583.1069946289062,
+            -4123.9501953125,
+            44.09700012207031,
+            2.4725699424743652
+          ]
+        },
+        "fields": {
+          "0": 1895825629,
+          "1": 4044358279,
+          "2": 33,
+          "3": 165745,
+          "4": 1065353216,
+          "8": 201,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 4278192129
+        }
+      },
+      {
+        "sequence": 5,
+        "kind": 2,
+        "guid": "17370386543457337563",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -586.10400390625,
+            -4099.2900390625,
+            42.786598205566406,
+            0.3952699899673462
+          ]
+        },
+        "fields": {
+          "0": 1845493979,
+          "1": 4044358279,
+          "2": 33,
+          "3": 165742,
+          "4": 1065353216,
+          "8": 201,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 4278192129
+        }
+      },
+      {
+        "sequence": 5,
+        "kind": 2,
+        "guid": "17370386543490891991",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -580.5549926757812,
+            -4112.2099609375,
+            43.42340087890625,
+            0.07079820334911346
+          ]
+        },
+        "fields": {
+          "0": 1879048407,
+          "1": 4044358279,
+          "2": 33,
+          "3": 165744,
+          "4": 1065353216,
+          "8": 201,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 4278192129
+        }
+      },
+      {
+        "sequence": 5,
+        "kind": 2,
+        "guid": "17370386543474114774",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -596.18701171875,
+            -4105.72021484375,
+            43.64500045776367,
+            0.07128140330314636
+          ]
+        },
+        "fields": {
+          "0": 1862271190,
+          "1": 4044358279,
+          "2": 33,
+          "3": 165743,
+          "4": 1065353216,
+          "8": 201,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 4278192129
+        }
+      },
+      {
+        "sequence": 5,
+        "kind": 2,
+        "guid": "17370386543440560341",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -593.5130004882812,
+            -4116.580078125,
+            44.445701599121094,
+            4.419449806213379
+          ]
+        },
+        "fields": {
+          "0": 1828716757,
+          "1": 4044358279,
+          "2": 33,
+          "3": 165741,
+          "4": 1065353216,
+          "8": 201,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 4278192129
+        }
+      },
+      {
+        "sequence": 5,
+        "kind": 2,
+        "guid": "17370386543574778067",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -594.9000244140625,
+            -4131.9501953125,
+            42.297298431396484,
+            3.598249912261963
+          ]
+        },
+        "fields": {
+          "0": 1962934483,
+          "1": 4044358279,
+          "2": 33,
+          "3": 165749,
+          "4": 1065353216,
+          "8": 201,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 4278192129
+        }
+      },
+      {
+        "sequence": 5,
+        "kind": 2,
+        "guid": "17370386543541223646",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -595.906005859375,
+            -4153.56005859375,
+            42.839599609375,
+            4.6184401512146
+          ]
+        },
+        "fields": {
+          "0": 1929380062,
+          "1": 4044358279,
+          "2": 33,
+          "3": 165747,
+          "4": 1065353216,
+          "8": 201,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 4278192129
+        }
+      },
+      {
+        "sequence": 5,
+        "kind": 2,
+        "guid": "17370386543558000857",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -587.9869995117188,
+            -4146.89990234375,
+            40.8484001159668,
+            4.633080005645752
+          ]
+        },
+        "fields": {
+          "0": 1946157273,
+          "1": 4044358279,
+          "2": 33,
+          "3": 165748,
+          "4": 1065353216,
+          "8": 201,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 4278192129
+        }
+      },
+      {
+        "sequence": 5,
+        "kind": 2,
+        "guid": "17370384066150400209",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -557.6790161132812,
+            -4219.2099609375,
+            41.59040069580078,
+            3.115339994430542
+          ]
+        },
+        "fields": {
+          "0": 2734686417,
+          "1": 4044357702,
+          "2": 33,
+          "3": 18083,
+          "4": 1065353216,
+          "8": 216,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 4278192129
+        }
+      },
+      {
+        "sequence": 5,
+        "kind": 2,
+        "guid": "17370383975251443920",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -563.0159912109375,
+            -4217.509765625,
+            41.5900993347168,
+            2.7870399951934814
+          ]
+        },
+        "fields": {
+          "0": 2030043344,
+          "1": 4044357681,
+          "2": 33,
+          "3": 12665,
+          "4": 1065353216,
+          "8": 331,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 1677723649
+        }
+      },
+      {
+        "sequence": 5,
+        "kind": 2,
+        "guid": "17370386647408967905",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -601.5759887695312,
+            -4075.6201171875,
+            75.86409759521484,
+            -0.907571017742157
+          ]
+        },
+        "fields": {
+          "0": 2717909217,
+          "1": 4044358303,
+          "2": 33,
+          "3": 171938,
+          "4": 1065353216,
+          "8": 3451,
+          "9": 4,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 1677722369
+        }
+      },
+      {
+        "sequence": 5,
+        "kind": 2,
+        "guid": "17370386543608332508",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -607.0050048828125,
+            -4115.1298828125,
+            42.975799560546875,
+            2.9730899333953857
+          ]
+        },
+        "fields": {
+          "0": 1996488924,
+          "1": 4044358279,
+          "2": 33,
+          "3": 165751,
+          "4": 1065353216,
+          "8": 201,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 4278192129
+        }
+      },
+      {
+        "sequence": 5,
+        "kind": 2,
+        "guid": "17370386543591555290",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -608.4639892578125,
+            -4171.93994140625,
+            41.249698638916016,
+            5.571020126342773
+          ]
+        },
+        "fields": {
+          "0": 1979711706,
+          "1": 4044358279,
+          "2": 33,
+          "3": 165750,
+          "4": 1065353216,
+          "8": 201,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 4278192129
+        }
+      },
+      {
+        "sequence": 5,
+        "kind": 2,
+        "guid": "17370386543524446424",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -609.531982421875,
+            -4153.8798828125,
+            43.5010986328125,
+            3.03371000289917
+          ]
+        },
+        "fields": {
+          "0": 1912602840,
+          "1": 4044358279,
+          "2": 33,
+          "3": 165746,
+          "4": 1065353216,
+          "8": 201,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 4278192129
+        }
+      },
+      {
+        "sequence": 5,
+        "kind": 2,
+        "guid": "17370386543423783124",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -607.802001953125,
+            -4191.009765625,
+            40.951900482177734,
+            5.7253499031066895
+          ]
+        },
+        "fields": {
+          "0": 1811939540,
+          "1": 4044358279,
+          "2": 33,
+          "3": 165740,
+          "4": 1065353216,
+          "8": 201,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 4278192129
+        }
+      },
+      {
+        "sequence": 5,
+        "kind": 2,
+        "guid": "17370383814508937422",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -602.4249877929688,
+            -4250.56982421875,
+            37.51150131225586,
+            3.141590118408203
+          ]
+        },
+        "fields": {
+          "0": 201326798,
+          "1": 4044357644,
+          "2": 33,
+          "3": 3084,
+          "4": 1070973583,
+          "8": 307,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 4278192129
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391014434772260",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -508.6736145019531,
+            -4172.5927734375,
+            77.08184051513672,
+            -0.062202781438827515
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 872420644,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3124,
+          "4": 1065353216,
+          "23": 131328,
+          "24": 71,
+          "32": 71,
+          "54": 3,
+          "55": 7,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052102067,
+          "66": 1060490659,
+          "67": 2485,
+          "68": 2485,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391014434772194",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -516.85107421875,
+            -4156.6298828125,
+            76.60347747802734,
+            2.912276268005371
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 872420578,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3124,
+          "4": 1065353216,
+          "23": 131328,
+          "24": 71,
+          "32": 71,
+          "54": 3,
+          "55": 7,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052102067,
+          "66": 1060490659,
+          "67": 2485,
+          "68": 2485,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391017068790536",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -550.8252563476562,
+            -4103.17578125,
+            70.7916259765625,
+            -1.815049648284912
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 10
+        },
+        "fields": {
+          "0": 3506438920,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3281,
+          "4": 1065353216,
+          "23": 131328,
+          "24": 86,
+          "32": 86,
+          "54": 4,
+          "55": 14,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1061158912,
+          "66": 1069547520,
+          "67": 6068,
+          "68": 6068,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391014434767616",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -585.4154052734375,
+            -4110.57275390625,
+            73.78582000732422,
+            2.844411611557007
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 7
+        },
+        "fields": {
+          "0": 872416000,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3124,
+          "4": 1065353216,
+          "23": 131328,
+          "24": 71,
+          "32": 71,
+          "54": 3,
+          "55": 7,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052102067,
+          "66": 1060490659,
+          "67": 2485,
+          "68": 2485,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391014434767612",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -539.7424926757812,
+            -4120.4892578125,
+            64.81402587890625,
+            3.076115608215332
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 6
+        },
+        "fields": {
+          "0": 872415996,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3124,
+          "4": 1065353216,
+          "23": 131328,
+          "24": 71,
+          "32": 71,
+          "54": 3,
+          "55": 7,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052102067,
+          "66": 1060490659,
+          "67": 2485,
+          "68": 2485,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391015055524590",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -582.4340209960938,
+            -4102.68017578125,
+            42.704898834228516,
+            4.0142598152160645
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 1493172974,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3161,
+          "4": 1065353216,
+          "23": 256,
+          "24": 198,
+          "32": 198,
+          "54": 10,
+          "55": 29,
+          "57": 1961,
+          "59": 768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052669641,
+          "66": 1069547520,
+          "67": 1885,
+          "68": 1885,
+          "79": 0,
+          "80": 1065353216,
+          "82": 4224,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391015021970141",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -588.8289794921875,
+            -4102.27001953125,
+            43.54650115966797,
+            4.677480220794678
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 1459618525,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3159,
+          "4": 1065353216,
+          "23": 256,
+          "24": 1280,
+          "32": 1280,
+          "54": 34,
+          "55": 29,
+          "56": 1896,
+          "59": 768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052669641,
+          "66": 1069547520,
+          "67": 1883,
+          "68": 1883,
+          "79": 0,
+          "80": 1065353216,
+          "82": 4224,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391015038747356",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -581.7340087890625,
+            -4109.509765625,
+            43.60770034790039,
+            3.75246000289917
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 1476395740,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3160,
+          "4": 1065353216,
+          "23": 256,
+          "24": 222,
+          "32": 222,
+          "54": 11,
+          "55": 29,
+          "59": 768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052669641,
+          "66": 1069547520,
+          "67": 1881,
+          "68": 1881,
+          "79": 0,
+          "80": 1065353216,
+          "82": 4226,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391014434767619",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -548.6412963867188,
+            -4146.82373046875,
+            73.6683578491211,
+            -2.7291197776794434
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 872416003,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3124,
+          "4": 1065353216,
+          "23": 131328,
+          "24": 71,
+          "32": 71,
+          "54": 3,
+          "55": 7,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052102067,
+          "66": 1060490659,
+          "67": 2485,
+          "68": 2485,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391014434767618",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -589.1383056640625,
+            -4149.45458984375,
+            76.3396987915039,
+            1.7889556884765625
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 872416002,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3124,
+          "4": 1065353216,
+          "23": 131328,
+          "24": 71,
+          "32": 71,
+          "54": 3,
+          "55": 7,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052102067,
+          "66": 1060490659,
+          "67": 2485,
+          "68": 2485,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391061880734452",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -599.9390258789062,
+            -4191.990234375,
+            41.18239974975586,
+            4.171339988708496
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 1073742580,
+          "1": 4046454807,
+          "2": 9,
+          "3": 5952,
+          "4": 1065353216,
+          "23": 65792,
+          "24": 11828,
+          "32": 11828,
+          "54": 65,
+          "55": 85,
+          "56": 5289,
+          "58": 2507,
+          "59": 32768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1047636476,
+          "66": 1069547520,
+          "67": 9795,
+          "68": 9795,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 257,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391014954861293",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -588.7030029296875,
+            -4144.93994140625,
+            41.10329818725586,
+            3.6302900314331055
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 1392509677,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3155,
+          "4": 1065353216,
+          "23": 256,
+          "24": 156,
+          "32": 156,
+          "54": 8,
+          "55": 29,
+          "56": 2711,
+          "59": 768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052669641,
+          "66": 1069547520,
+          "67": 1886,
+          "68": 1886,
+          "79": 0,
+          "80": 1065353216,
+          "82": 35,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391061880734441",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -585.1564331054688,
+            -4233.79345703125,
+            38.29439163208008,
+            -0.5464646816253662
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 10
+        },
+        "fields": {
+          "0": 1073742569,
+          "1": 4046454807,
+          "2": 9,
+          "3": 5952,
+          "4": 1065353216,
+          "23": 256,
+          "24": 11828,
+          "32": 11828,
+          "54": 65,
+          "55": 85,
+          "56": 5289,
+          "58": 2507,
+          "59": 32768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052669641,
+          "66": 1069547520,
+          "67": 9797,
+          "68": 9797,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 256,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391061880734444",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -583.41357421875,
+            -4234.28076171875,
+            38.1676025390625,
+            -0.5937158465385437
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 8
+        },
+        "fields": {
+          "0": 1073742572,
+          "1": 4046454807,
+          "2": 9,
+          "3": 5952,
+          "4": 1065353216,
+          "23": 65792,
+          "24": 11828,
+          "32": 11828,
+          "54": 65,
+          "55": 85,
+          "56": 5289,
+          "58": 2507,
+          "59": 32768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1047636476,
+          "66": 1069547520,
+          "67": 9796,
+          "68": 9796,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 256,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391027151897336",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -560.125,
+            -4217.2001953125,
+            41.67369842529297,
+            3.3335800170898438
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 704643832,
+          "1": 4046454799,
+          "2": 9,
+          "3": 3882,
+          "4": 1065353216,
+          "23": 256,
+          "24": 176,
+          "32": 176,
+          "54": 9,
+          "55": 29,
+          "56": 2827,
+          "59": 768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052669641,
+          "66": 1069547520,
+          "67": 3753,
+          "68": 3753,
+          "79": 0,
+          "80": 1065353216,
+          "82": 642,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391015005192939",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -565.427978515625,
+            -4214.2001953125,
+            41.67369842529297,
+            5.183629989624023
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 1442841323,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3158,
+          "4": 1065353216,
+          "23": 65792,
+          "24": 198,
+          "32": 198,
+          "54": 10,
+          "55": 29,
+          "56": 2197,
+          "59": 768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1047636476,
+          "66": 1069547520,
+          "67": 1879,
+          "68": 1879,
+          "79": 0,
+          "80": 1065353216,
+          "82": 386,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391126372352725",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -561.6279907226562,
+            -4221.7998046875,
+            41.67369842529297,
+            3.036870002746582
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 1140851413,
+          "1": 4046454822,
+          "2": 9,
+          "3": 9796,
+          "4": 1065353216,
+          "23": 256,
+          "24": 156,
+          "32": 156,
+          "54": 8,
+          "55": 29,
+          "59": 768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052669641,
+          "66": 1069547520,
+          "67": 9151,
+          "68": 9151,
+          "79": 0,
+          "80": 1065353216,
+          "82": 2,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391061880734525",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -565.9849853515625,
+            -4269.39013671875,
+            38.487998962402344,
+            4.223700046539307
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 1073742653,
+          "1": 4046454807,
+          "2": 9,
+          "3": 5952,
+          "4": 1065353216,
+          "23": 256,
+          "24": 11828,
+          "32": 11828,
+          "54": 65,
+          "55": 85,
+          "56": 5289,
+          "58": 2507,
+          "59": 32768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052669641,
+          "66": 1069547520,
+          "67": 9794,
+          "68": 9794,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 257,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391014434767621",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -607.0759887695312,
+            -4108.3037109375,
+            75.63431549072266,
+            1.1674463748931885
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 872416005,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3124,
+          "4": 1065353216,
+          "23": 131328,
+          "24": 71,
+          "32": 71,
+          "54": 3,
+          "55": 7,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052102067,
+          "66": 1060490659,
+          "67": 2485,
+          "68": 2485,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391014971638496",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -606.8740234375,
+            -4111.8701171875,
+            43.02799987792969,
+            0.2443459928035736
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 1409286880,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3156,
+          "4": 1065353216,
+          "23": 256,
+          "24": 176,
+          "32": 176,
+          "54": 9,
+          "55": 29,
+          "56": 11343,
+          "59": 768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052669641,
+          "66": 1069547520,
+          "67": 1884,
+          "68": 1884,
+          "79": 0,
+          "80": 1065353216,
+          "82": 35,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391176368456415",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -604.0130004882812,
+            -4107.27001953125,
+            43.59450149536133,
+            5.60250997543335
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 3892314847,
+          "1": 4046454833,
+          "2": 9,
+          "3": 12776,
+          "4": 1065353216,
+          "23": 256,
+          "24": 176,
+          "32": 176,
+          "54": 9,
+          "55": 29,
+          "56": 2184,
+          "59": 768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052669641,
+          "66": 1069547520,
+          "67": 14371,
+          "68": 14371,
+          "79": 0,
+          "80": 1065353216,
+          "82": 2,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391061880734440",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -604.4761352539062,
+            -4171.59521484375,
+            40.95957946777344,
+            1.6339280605316162
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 5
+        },
+        "fields": {
+          "0": 1073742568,
+          "1": 4046454807,
+          "2": 9,
+          "3": 5952,
+          "4": 1065353216,
+          "23": 256,
+          "24": 11828,
+          "32": 11828,
+          "54": 65,
+          "55": 85,
+          "56": 5289,
+          "58": 2507,
+          "59": 32768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052669641,
+          "66": 1069547520,
+          "67": 9797,
+          "68": 9797,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 256,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391061880734447",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -606.7969970703125,
+            -4193.8701171875,
+            41.18239974975586,
+            4.694940090179443
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 1073742575,
+          "1": 4046454807,
+          "2": 9,
+          "3": 5952,
+          "4": 1065353216,
+          "23": 256,
+          "24": 11828,
+          "32": 11828,
+          "54": 65,
+          "55": 85,
+          "56": 5289,
+          "58": 2507,
+          "59": 32768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052669641,
+          "66": 1069547520,
+          "67": 9797,
+          "68": 9797,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 257,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391014753534681",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -600.1320190429688,
+            -4186.18994140625,
+            41.266300201416016,
+            4.1538801193237305
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 1191183065,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3143,
+          "4": 1065353216,
+          "23": 256,
+          "24": 102,
+          "32": 102,
+          "54": 5,
+          "55": 29,
+          "56": 1904,
+          "59": 768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052669641,
+          "66": 1069547520,
+          "67": 1653,
+          "68": 1653,
+          "79": 0,
+          "80": 1065353216,
+          "82": 3,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391014921306871",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -639.343994140625,
+            -4230.18994140625,
+            38.56050109863281,
+            5.724679946899414
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 1358955255,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3153,
+          "4": 1065353216,
+          "23": 256,
+          "24": 222,
+          "32": 222,
+          "54": 11,
+          "55": 29,
+          "56": 10612,
+          "59": 768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052669641,
+          "66": 1069547520,
+          "67": 1880,
+          "68": 1880,
+          "79": 0,
+          "80": 1065353216,
+          "82": 51,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391061880734454",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -645.4229736328125,
+            -4260.6298828125,
+            38.16299819946289,
+            5.148719787597656
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 1073742582,
+          "1": 4046454807,
+          "2": 9,
+          "3": 5952,
+          "4": 1065353216,
+          "23": 256,
+          "24": 11828,
+          "32": 11828,
+          "54": 65,
+          "55": 85,
+          "56": 5289,
+          "58": 2507,
+          "59": 32768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052669641,
+          "66": 1069547520,
+          "67": 9797,
+          "68": 9797,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 257,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391014938084085",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -635.4619750976562,
+            -4227.52001953125,
+            38.37099838256836,
+            5.096360206604004
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 1375732469,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3154,
+          "4": 1065353216,
+          "23": 65792,
+          "24": 156,
+          "32": 156,
+          "54": 8,
+          "55": 126,
+          "56": 5278,
+          "59": 768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1050455048,
+          "66": 1069547520,
+          "67": 1882,
+          "68": 1882,
+          "79": 0,
+          "80": 1065353216,
+          "82": 35,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391014988415722",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -623.9390258789062,
+            -4203.8798828125,
+            38.42850112915039,
+            5.480329990386963
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 1426064106,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3157,
+          "4": 1065353216,
+          "23": 65792,
+          "24": 198,
+          "32": 198,
+          "54": 10,
+          "55": 29,
+          "56": 2813,
+          "59": 768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1047636476,
+          "66": 1069547520,
+          "67": 1878,
+          "68": 1878,
+          "79": 0,
+          "80": 1065353216,
+          "82": 35,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391024215884513",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -617.39501953125,
+            -4202.39990234375,
+            38.296600341796875,
+            4.869470119476318
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 2063598305,
+          "1": 4046454798,
+          "2": 9,
+          "3": 3707,
+          "4": 1065353216,
+          "23": 256,
+          "24": 198,
+          "32": 198,
+          "54": 10,
+          "55": 126,
+          "56": 2558,
+          "59": 768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1050455048,
+          "66": 1069547520,
+          "67": 4068,
+          "68": 4068,
+          "79": 0,
+          "80": 1065353216,
+          "82": 35,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391060739883742",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -625.2960205078125,
+            -4210.169921875,
+            38.296600341796875,
+            0.8028510212898254
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 4227859166,
+          "1": 4046454806,
+          "2": 9,
+          "3": 5884,
+          "4": 1065353216,
+          "23": 65792,
+          "24": 198,
+          "32": 198,
+          "54": 10,
+          "55": 126,
+          "56": 5276,
+          "59": 768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1050455048,
+          "66": 1069547520,
+          "67": 4526,
+          "68": 4526,
+          "79": 0,
+          "80": 1065353216,
+          "82": 35,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391058743395035",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -624.0239868164062,
+            -4214.41015625,
+            38.21730041503906,
+            5.619959831237793
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 2231370459,
+          "1": 4046454806,
+          "2": 9,
+          "3": 5765,
+          "4": 1065353216,
+          "23": 256,
+          "24": 198,
+          "32": 198,
+          "54": 10,
+          "55": 29,
+          "56": 10619,
+          "59": 768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052669641,
+          "66": 1069547520,
+          "67": 4209,
+          "68": 4209,
+          "79": 0,
+          "80": 1065353216,
+          "82": 2,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391014787089114",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -629.052001953125,
+            -4228.06005859375,
+            38.2333984375,
+            5.009099960327148
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 1224737498,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3145,
+          "4": 1065353216,
+          "23": 65792,
+          "24": 247,
+          "32": 247,
+          "54": 12,
+          "55": 29,
+          "56": 1907,
+          "59": 768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1047636476,
+          "66": 1069547520,
+          "67": 1875,
+          "68": 1875,
+          "79": 0,
+          "80": 1065353216,
+          "82": 2,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391132747694808",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -610.072998046875,
+            -4253.52001953125,
+            39.03929901123047,
+            3.281219959259033
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 3221226200,
+          "1": 4046454823,
+          "2": 9,
+          "3": 10176,
+          "4": 1065353216,
+          "23": 256,
+          "24": 484,
+          "32": 484,
+          "54": 20,
+          "55": 29,
+          "59": 768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052669641,
+          "66": 1069547520,
+          "67": 9470,
+          "68": 9470,
+          "79": 0,
+          "80": 1065353216,
+          "82": 2,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391060790215383",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -630.02001953125,
+            -4204.5498046875,
+            38.21730041503906,
+            5.445429801940918
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 4278190807,
+          "1": 4046454806,
+          "2": 9,
+          "3": 5887,
+          "4": 1065353216,
+          "23": 256,
+          "24": 156,
+          "32": 156,
+          "54": 8,
+          "55": 126,
+          "59": 768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1050455048,
+          "66": 1069547520,
+          "67": 4532,
+          "68": 4532,
+          "74": 1,
+          "79": 0,
+          "80": 1065353216,
+          "82": 2,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391162393035478",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -638.1589965820312,
+            -4237.93994140625,
+            38.21730041503906,
+            0.01745299994945526
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 2801795798,
+          "1": 4046454830,
+          "2": 9,
+          "3": 11943,
+          "4": 1065353216,
+          "23": 65792,
+          "24": 102,
+          "32": 102,
+          "54": 5,
+          "55": 29,
+          "59": 768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1047636476,
+          "66": 1069547520,
+          "67": 11901,
+          "68": 11901,
+          "79": 0,
+          "80": 1065353216,
+          "82": 2,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 2,
+        "guid": "17379391014434767615",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -678.1356811523438,
+            -4149.4541015625,
+            37.94427490234375,
+            -1.2712949514389038
+          ],
+          "movement_flags": 0,
+          "movement_clock": 560735674,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 872415999,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3124,
+          "4": 1065353216,
+          "23": 131328,
+          "24": 71,
+          "32": 71,
+          "54": 3,
+          "55": 7,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052102067,
+          "66": 1060490659,
+          "67": 2485,
+          "68": 2485,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 8,
+        "kind": 2,
+        "guid": "17379391014434767591",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -610.6929931640625,
+            -4086.22705078125,
+            77.47765350341797,
+            -1.5707963705062866
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 560736023,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 5
+        },
+        "fields": {
+          "0": 872415975,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3124,
+          "4": 1065353216,
+          "23": 131328,
+          "24": 71,
+          "32": 71,
+          "54": 3,
+          "55": 7,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052102067,
+          "66": 1060490659,
+          "67": 2485,
+          "68": 2485,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 11,
+        "kind": 2,
+        "guid": "2287828610704211975",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            -1264.9373779296875,
+            -4139.87109375,
+            0.0,
+            4.144296169281006
+          ]
+        },
+        "fields": {
+          "0": 7,
+          "1": 532676608,
+          "2": 33,
+          "3": 20808,
+          "4": 1065353216,
+          "8": 3015,
+          "9": 40,
+          "13": 1065353216,
+          "14": 4136632320,
+          "16": 231110,
+          "17": 4278193921
+        }
+      },
+      {
+        "sequence": 12,
+        "kind": 4,
+        "guids": [
+          "2287828610704211980"
+        ]
+      },
+      {
+        "sequence": 21,
+        "kind": 4,
+        "guids": [
+          "17379391014434767591"
+        ]
+      },
+      {
+        "sequence": 28,
+        "kind": 2,
+        "guid": "17370386647408967940",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -556.4249877929688,
+            -4288.72021484375,
+            37.442298889160156,
+            0.8203049898147583
+          ]
+        },
+        "fields": {
+          "0": 2717909252,
+          "1": 4044358303,
+          "2": 33,
+          "3": 171938,
+          "4": 1065353216,
+          "8": 3451,
+          "9": 4,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 1677722369
+        }
+      },
+      {
+        "sequence": 29,
+        "kind": 4,
+        "guids": [
+          "17370386647408967905"
+        ]
+      },
+      {
+        "sequence": 32,
+        "kind": 4,
+        "guids": [
+          "17379391014434772260",
+          "17379391014434772194",
+          "17370386543457337563",
+          "17379391017068790536",
+          "17379391015055524590"
+        ]
+      },
+      {
+        "sequence": 33,
+        "kind": 4,
+        "guids": [
+          "17379391014434767612",
+          "17379391015021970141"
+        ]
+      },
+      {
+        "sequence": 33,
+        "kind": 2,
+        "guid": "17370383816975188212",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -591.9349975585938,
+            -4300.2998046875,
+            40.376399993896484,
+            -1.7191499471664429
+          ]
+        },
+        "fields": {
+          "0": 2667577588,
+          "1": 4044357644,
+          "2": 33,
+          "3": 3231,
+          "4": 1065353216,
+          "8": 309,
+          "13": 1065353216,
+          "14": 4294901760,
+          "15": 83,
+          "17": 1677722881
+        }
+      },
+      {
+        "sequence": 34,
+        "kind": 3,
+        "guid": "17366161638117343235",
+        "type_id": 7,
+        "movement": {
+          "update_flags": 336,
+          "position_xyzo": [
+            -664.8888549804688,
+            -4287.92724609375,
+            40.91183090209961,
+            0.9872596859931946
+          ]
+        },
+        "fields": {
+          "0": 3,
+          "1": 4043374592,
+          "2": 129,
+          "4": 1065353216,
+          "6": 9,
+          "10": 51,
+          "30": 16777728,
+          "31": 67371008,
+          "33": 5,
+          "34": 0
+        }
+      },
+      {
+        "sequence": 35,
+        "kind": 2,
+        "guid": "17379391013998559993",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -711.4616088867188,
+            -4220.53662109375,
+            40.2580451965332,
+            2.372767448425293
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 560742315,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 5
+        },
+        "fields": {
+          "0": 436208377,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3098,
+          "4": 1065353216,
+          "23": 131328,
+          "24": 42,
+          "32": 42,
+          "54": 1,
+          "55": 189,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1061082811,
+          "66": 1059211044,
+          "67": 503,
+          "68": 503,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 36,
+        "kind": 4,
+        "guids": [
+          "17370386543474114774",
+          "17379391015038747356"
+        ]
+      },
+      {
+        "sequence": 37,
+        "kind": 4,
+        "guids": [
+          "17379391014434767616",
+          "17379391176368456415"
+        ]
+      },
+      {
+        "sequence": 38,
+        "kind": 2,
+        "guid": "17379391014434767616",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -583.9454345703125,
+            -4113.04248046875,
+            74.29174041748047,
+            -0.7982916831970215
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 560742969,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 8
+        },
+        "fields": {
+          "0": 872416000,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3124,
+          "4": 1065353216,
+          "23": 131328,
+          "24": 71,
+          "32": 71,
+          "54": 3,
+          "55": 7,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052102067,
+          "66": 1060490659,
+          "67": 2485,
+          "68": 2485,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 39,
+        "kind": 4,
+        "guids": [
+          "17379391014434767616"
+        ]
+      },
+      {
+        "sequence": 39,
+        "kind": 2,
+        "guid": "17370386647408967939",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -551.5759887695312,
+            -4292.259765625,
+            37.09349822998047,
+            -1.9198600053787231
+          ]
+        },
+        "fields": {
+          "0": 2717909251,
+          "1": 4044358303,
+          "2": 33,
+          "3": 171938,
+          "4": 1065353216,
+          "8": 3451,
+          "9": 4,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 1677722369
+        }
+      }
+    ]
+  },
+  "final_quest_log": [
+    {
+      "slot": 0,
+      "quest": 789,
+      "state": 0,
+      "counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "slot": 1,
+      "quest": 2383,
+      "state": 1,
+      "counters": [
+        0,
+        0
+      ]
+    }
+  ],
+  "quest_progress_events": [],
+  "logout": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+      "status": "closed"
+    }
+  },
+  "returncode": 0
+}

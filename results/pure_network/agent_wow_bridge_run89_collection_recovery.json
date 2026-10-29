@@ -1,0 +1,5993 @@
+{
+  "status": "PASS",
+  "gateway": "172.22.112.1",
+  "scope": "Docker bridge world-state substream",
+  "operations": [
+    {
+      "cursor": 4,
+      "last_sequence": "6",
+      "page_count": 4
+    },
+    {
+      "cursor": 6,
+      "last_sequence": "6",
+      "page_count": 2
+    },
+    {
+      "cursor": 6,
+      "last_sequence": "6",
+      "page_count": 0
+    },
+    {
+      "cursor": 6,
+      "last_sequence": "6",
+      "page_count": 0
+    },
+    {
+      "cursor": 6,
+      "last_sequence": "6",
+      "page_count": 0
+    },
+    {
+      "cursor": 6,
+      "last_sequence": "6",
+      "page_count": 0
+    },
+    {
+      "cursor": 6,
+      "last_sequence": "6",
+      "page_count": 0
+    },
+    {
+      "cursor": 6,
+      "last_sequence": "6",
+      "page_count": 0
+    },
+    {
+      "cursor": 6,
+      "last_sequence": "6",
+      "page_count": 0
+    },
+    {
+      "cursor": 6,
+      "last_sequence": "6",
+      "page_count": 0
+    },
+    {
+      "cursor": 6,
+      "last_sequence": "6",
+      "page_count": 0
+    },
+    {
+      "cursor": 6,
+      "last_sequence": "6",
+      "page_count": 0
+    }
+  ],
+  "future_cursor_rejection": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "error": {
+      "code": -32000,
+      "message": "rpc error: code = InvalidArgument desc = cursor is ahead of stream",
+      "data": {
+        "grpc_details": null,
+        "grpc_message": "cursor is ahead of stream",
+        "grpc_status": "InvalidArgument",
+        "method": "poll",
+        "module": "bridge"
+      }
+    }
+  },
+  "oversize_page_rejection": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "error": {
+      "code": -32000,
+      "message": "rpc error: code = InvalidArgument desc = limit exceeds 128",
+      "data": {
+        "grpc_details": null,
+        "grpc_message": "limit exceeds 128",
+        "grpc_status": "InvalidArgument",
+        "method": "poll",
+        "module": "bridge"
+      }
+    }
+  },
+  "initial_self": {
+    "guid": "9",
+    "type_id": 4,
+    "created_seq": 3,
+    "movement": {
+      "update_flags": 97,
+      "position_xyzo": [
+        -482.2226867675781,
+        -4191.6669921875,
+        51.32472610473633,
+        1.1344013214111328
+      ],
+      "movement_flags": 0,
+      "movement_clock": 563006688,
+      "speeds": [
+        2.5,
+        10.5,
+        4.5,
+        7.0833330154418945,
+        2.5,
+        7.0,
+        4.5,
+        3.1415939331054688,
+        3.140000104904175
+      ]
+    },
+    "last_seq": 6,
+    "field_count": 139,
+    "entry": 0,
+    "health": 1,
+    "max_health": 89,
+    "level": 2,
+    "bytes0": 16777474,
+    "powers": [
+      0,
+      0,
+      0,
+      100,
+      0,
+      0,
+      0
+    ],
+    "max_powers": [
+      0,
+      1000,
+      0,
+      100,
+      0,
+      0,
+      1000
+    ],
+    "unit_flags": 8,
+    "unit_flags_transmitted": true,
+    "in_combat": false,
+    "player_flags": 16,
+    "ghost": true,
+    "quest_log": [
+      {
+        "slot": 0,
+        "quest": 789,
+        "state": 0,
+        "counters": [
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  "queries": [],
+  "invalid_query_rejection": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "error": {
+      "code": -32000,
+      "message": "rpc error: code = InvalidArgument desc = entry and GUID must be valid nonzero values",
+      "data": {
+        "grpc_details": null,
+        "grpc_message": "entry and GUID must be valid nonzero values",
+        "grpc_status": "InvalidArgument",
+        "method": "query_creature",
+        "module": "bridge"
+      }
+    }
+  },
+  "missing_template_request": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {}
+  },
+  "creature_templates": {
+    "2147483647": {
+      "entry": 2147483647,
+      "found": false
+    }
+  },
+  "login_position": {
+    "map": 1,
+    "position_xyzo": [
+      -482.2226867675781,
+      -4191.6669921875,
+      51.32472610473633,
+      1.1344013214111328
+    ]
+  },
+  "invalid_path_rejection": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "error": {
+      "code": -32000,
+      "message": "rpc error: code = InvalidArgument desc = segment exceeds 15 yards or 3-yard height change",
+      "data": {
+        "grpc_details": null,
+        "grpc_message": "segment exceeds 15 yards or 3-yard height change",
+        "grpc_status": "InvalidArgument",
+        "method": "follow_path",
+        "module": "bridge"
+      }
+    }
+  },
+  "path_request": {
+    "points": [
+      {
+        "x": -482.22269,
+        "y": -4191.66699,
+        "z": 50.82599
+      },
+      {
+        "x": -480.94748000000004,
+        "y": -4188.93286,
+        "z": 51.083304999999996
+      },
+      {
+        "x": -479.67227,
+        "y": -4186.19873,
+        "z": 51.34062
+      },
+      {
+        "x": -478.53758000000005,
+        "y": -4183.76587,
+        "z": 51.32558
+      },
+      {
+        "x": -477.40289,
+        "y": -4181.33301,
+        "z": 51.31054
+      },
+      {
+        "x": -476.03477499999997,
+        "y": -4178.39966,
+        "z": 50.914680000000004
+      },
+      {
+        "x": -474.66666,
+        "y": -4175.46631,
+        "z": 50.51882
+      },
+      {
+        "x": -474.66666,
+        "y": -4172.933105,
+        "z": 50.65215
+      },
+      {
+        "x": -474.66666,
+        "y": -4170.3999,
+        "z": 50.78548
+      },
+      {
+        "x": -475.24134666666663,
+        "y": -4166.933266666667,
+        "z": 51.16708666666667
+      },
+      {
+        "x": -475.81603333333334,
+        "y": -4163.466633333333,
+        "z": 51.54869333333333
+      }
+    ]
+  },
+  "path_response": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+      "submittedPosition": [
+        -475.81604,
+        -4163.467,
+        51.548695,
+        1.7350997
+      ],
+      "elapsedMs": 12021
+    }
+  },
+  "post_action_state": {
+    "status": "PASS",
+    "session_id": "aw-2885483385",
+    "field_semantics": "Raw fields retain transmitted indices only; absent summary fields use creation zero-default, not proof of public visibility.",
+    "scope": "object lifecycle, last update position and server-directed motion paths; no position interpolation",
+    "packets": 42,
+    "events": 66,
+    "login": {
+      "map": 1,
+      "position_xyzo": [
+        -482.2226867675781,
+        -4191.6669921875,
+        51.32472610473633,
+        1.1344013214111328
+      ]
+    },
+    "self": {
+      "guid": "9",
+      "type_id": 4,
+      "created_seq": 3,
+      "movement": {
+        "update_flags": 97,
+        "position_xyzo": [
+          -482.2226867675781,
+          -4191.6669921875,
+          51.32472610473633,
+          1.1344013214111328
+        ],
+        "movement_flags": 0,
+        "movement_clock": 563006688,
+        "speeds": [
+          2.5,
+          10.5,
+          4.5,
+          7.0833330154418945,
+          2.5,
+          7.0,
+          4.5,
+          3.1415939331054688,
+          3.140000104904175
+        ]
+      },
+      "last_seq": 6,
+      "field_count": 139,
+      "entry": 0,
+      "health": 1,
+      "max_health": 89,
+      "level": 2,
+      "bytes0": 16777474,
+      "powers": [
+        0,
+        0,
+        0,
+        100,
+        0,
+        0,
+        0
+      ],
+      "max_powers": [
+        0,
+        1000,
+        0,
+        100,
+        0,
+        0,
+        1000
+      ],
+      "unit_flags": 8,
+      "unit_flags_transmitted": true,
+      "in_combat": false,
+      "player_flags": 16,
+      "ghost": true,
+      "quest_log": [
+        {
+          "slot": 0,
+          "quest": 789,
+          "state": 0,
+          "counters": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    "visible_objects": [
+      {
+        "guid": "17374887362395373569",
+        "type_id": 5,
+        "created_seq": 2,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            -1028.0400390625,
+            -28.356800079345703,
+            69.02259826660156,
+            2.9147000312805176
+          ]
+        },
+        "last_seq": 2,
+        "field_count": 11,
+        "entry": 47296
+      },
+      {
+        "guid": "2287828610704211971",
+        "type_id": 5,
+        "created_seq": 2,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            8534.298828125,
+            1017.9680786132812,
+            0.0,
+            1.4494467973709106
+          ]
+        },
+        "last_seq": 2,
+        "field_count": 11,
+        "entry": 176244
+      },
+      {
+        "guid": "2287828610704211988",
+        "type_id": 5,
+        "created_seq": 2,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            -671.1304321289062,
+            -916.1177368164062,
+            243.79351806640625,
+            4.8453288078308105
+          ]
+        },
+        "last_seq": 2,
+        "field_count": 11,
+        "entry": 190549
+      },
+      {
+        "guid": "2287828610704211976",
+        "type_id": 5,
+        "created_seq": 2,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            -4200.4140625,
+            3270.287353515625,
+            0.0,
+            1.5557034015655518
+          ]
+        },
+        "last_seq": 2,
+        "field_count": 11,
+        "entry": 177233
+      },
+      {
+        "guid": "17374887362395373570",
+        "type_id": 5,
+        "created_seq": 2,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            -1037.27001953125,
+            -49.23550033569336,
+            140.4949951171875,
+            3.07177996635437
+          ]
+        },
+        "last_seq": 2,
+        "field_count": 11,
+        "entry": 47297
+      },
+      {
+        "guid": "17374887362395373571",
+        "type_id": 5,
+        "created_seq": 2,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            -1286.239990234375,
+            189.72000122070312,
+            130.0800018310547,
+            -1.0733799934387207
+          ]
+        },
+        "last_seq": 2,
+        "field_count": 11,
+        "entry": 4170
+      },
+      {
+        "guid": "17374887362395373572",
+        "type_id": 5,
+        "created_seq": 2,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            -1308.3800048828125,
+            185.2899932861328,
+            68.58580017089844,
+            -0.2705250084400177
+          ]
+        },
+        "last_seq": 2,
+        "field_count": 11,
+        "entry": 4171
+      },
+      {
+        "guid": "4611686018427388600",
+        "type_id": 1,
+        "created_seq": 3,
+        "movement": {
+          "update_flags": 16
+        },
+        "last_seq": 3,
+        "field_count": 8,
+        "entry": 6125,
+        "owner_guid": "9",
+        "stack_count": 1,
+        "stack_transmitted": true
+      },
+      {
+        "guid": "4611686018427388602",
+        "type_id": 1,
+        "created_seq": 3,
+        "movement": {
+          "update_flags": 16
+        },
+        "last_seq": 3,
+        "field_count": 10,
+        "entry": 139,
+        "owner_guid": "9",
+        "stack_count": 1,
+        "stack_transmitted": true
+      },
+      {
+        "guid": "4611686018427388604",
+        "type_id": 1,
+        "created_seq": 3,
+        "movement": {
+          "update_flags": 16
+        },
+        "last_seq": 3,
+        "field_count": 8,
+        "entry": 140,
+        "owner_guid": "9",
+        "stack_count": 1,
+        "stack_transmitted": true
+      },
+      {
+        "guid": "4611686018427388608",
+        "type_id": 1,
+        "created_seq": 3,
+        "movement": {
+          "update_flags": 16
+        },
+        "last_seq": 3,
+        "field_count": 10,
+        "entry": 12282,
+        "owner_guid": "9",
+        "stack_count": 1,
+        "stack_transmitted": true
+      },
+      {
+        "guid": "4611686018427388606",
+        "type_id": 1,
+        "created_seq": 3,
+        "movement": {
+          "update_flags": 16
+        },
+        "last_seq": 3,
+        "field_count": 9,
+        "entry": 6948,
+        "owner_guid": "9",
+        "stack_count": 1,
+        "stack_transmitted": true
+      },
+      {
+        "guid": "4611686018427388609",
+        "type_id": 1,
+        "created_seq": 3,
+        "movement": {
+          "update_flags": 16
+        },
+        "last_seq": 3,
+        "field_count": 8,
+        "entry": 7098,
+        "owner_guid": "9",
+        "stack_count": 1,
+        "stack_transmitted": true
+      },
+      {
+        "guid": "4611686018427388610",
+        "type_id": 1,
+        "created_seq": 3,
+        "movement": {
+          "update_flags": 16
+        },
+        "last_seq": 3,
+        "field_count": 11,
+        "entry": 4915,
+        "owner_guid": "9",
+        "stack_count": 1,
+        "stack_transmitted": true
+      },
+      {
+        "guid": "4611686018427388612",
+        "type_id": 1,
+        "created_seq": 3,
+        "movement": {
+          "update_flags": 16
+        },
+        "last_seq": 3,
+        "field_count": 8,
+        "entry": 4867,
+        "owner_guid": "9",
+        "stack_count": 1,
+        "stack_transmitted": true
+      },
+      {
+        "guid": "4611686018427388613",
+        "type_id": 1,
+        "created_seq": 3,
+        "movement": {
+          "update_flags": 16
+        },
+        "last_seq": 3,
+        "field_count": 8,
+        "entry": 7099,
+        "owner_guid": "9",
+        "stack_count": 1,
+        "stack_transmitted": true
+      },
+      {
+        "guid": "4611686018427388614",
+        "type_id": 1,
+        "created_seq": 3,
+        "movement": {
+          "update_flags": 16
+        },
+        "last_seq": 3,
+        "field_count": 9,
+        "entry": 4862,
+        "owner_guid": "9",
+        "stack_count": 2,
+        "stack_transmitted": true
+      },
+      {
+        "guid": "4611686018427388615",
+        "type_id": 1,
+        "created_seq": 3,
+        "movement": {
+          "update_flags": 16
+        },
+        "last_seq": 3,
+        "field_count": 8,
+        "entry": 7101,
+        "owner_guid": "9",
+        "stack_count": 1,
+        "stack_transmitted": true
+      },
+      {
+        "guid": "9",
+        "type_id": 4,
+        "created_seq": 3,
+        "movement": {
+          "update_flags": 97,
+          "position_xyzo": [
+            -482.2226867675781,
+            -4191.6669921875,
+            51.32472610473633,
+            1.1344013214111328
+          ],
+          "movement_flags": 0,
+          "movement_clock": 563006688,
+          "speeds": [
+            2.5,
+            10.5,
+            4.5,
+            7.0833330154418945,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 6,
+        "field_count": 139,
+        "entry": 0,
+        "health": 1,
+        "max_health": 89,
+        "level": 2,
+        "bytes0": 16777474,
+        "powers": [
+          0,
+          0,
+          0,
+          100,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          1000,
+          0,
+          100,
+          0,
+          0,
+          1000
+        ],
+        "unit_flags": 8,
+        "unit_flags_transmitted": true,
+        "in_combat": false,
+        "player_flags": 16,
+        "ghost": true,
+        "quest_log": [
+          {
+            "slot": 0,
+            "quest": 789,
+            "state": 0,
+            "counters": [
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "guid": "17370386647408969371",
+        "type_id": 5,
+        "created_seq": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -444.97900390625,
+            -4122.43017578125,
+            51.090999603271484,
+            0.4188790023326874
+          ]
+        },
+        "last_seq": 5,
+        "field_count": 10,
+        "entry": 171938
+      },
+      {
+        "guid": "17370386647408969370",
+        "type_id": 5,
+        "created_seq": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -423.5679931640625,
+            -4175.419921875,
+            50.841800689697266,
+            1.151919960975647
+          ]
+        },
+        "last_seq": 5,
+        "field_count": 10,
+        "entry": 171938
+      },
+      {
+        "guid": "17370386647408969368",
+        "type_id": 5,
+        "created_seq": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -422.6910095214844,
+            -4187.5498046875,
+            51.64739990234375,
+            -0.7504910230636597
+          ]
+        },
+        "last_seq": 5,
+        "field_count": 10,
+        "entry": 171938
+      },
+      {
+        "guid": "17370386647408969365",
+        "type_id": 5,
+        "created_seq": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -427.71099853515625,
+            -4185.25,
+            50.445098876953125,
+            -2.164210081100464
+          ]
+        },
+        "last_seq": 5,
+        "field_count": 10,
+        "entry": 171938
+      },
+      {
+        "guid": "17370386647408969362",
+        "type_id": 5,
+        "created_seq": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -489.6839904785156,
+            -4089.52001953125,
+            64.56069946289062,
+            0.907571017742157
+          ]
+        },
+        "last_seq": 5,
+        "field_count": 10,
+        "entry": 171938
+      },
+      {
+        "guid": "17370386647408969369",
+        "type_id": 5,
+        "created_seq": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -516.8889770507812,
+            -4187.0400390625,
+            77.13960266113281,
+            -1.2217299938201904
+          ]
+        },
+        "last_seq": 5,
+        "field_count": 10,
+        "entry": 171938
+      },
+      {
+        "guid": "17370386647408969351",
+        "type_id": 5,
+        "created_seq": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -523.0759887695312,
+            -4182.39013671875,
+            76.93609619140625,
+            0.5061450004577637
+          ]
+        },
+        "last_seq": 5,
+        "field_count": 10,
+        "entry": 171938
+      },
+      {
+        "guid": "17370386647408969401",
+        "type_id": 5,
+        "created_seq": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -487.60699462890625,
+            -4277.06005859375,
+            43.01279830932617,
+            1.0821000337600708
+          ]
+        },
+        "last_seq": 5,
+        "field_count": 10,
+        "entry": 171938
+      },
+      {
+        "guid": "17370386647408969399",
+        "type_id": 5,
+        "created_seq": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -486.9159851074219,
+            -4291.009765625,
+            43.21609878540039,
+            -0.7330380082130432
+          ]
+        },
+        "last_seq": 5,
+        "field_count": 10,
+        "entry": 171938
+      },
+      {
+        "guid": "17370384066150400209",
+        "type_id": 5,
+        "created_seq": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -557.6790161132812,
+            -4219.2099609375,
+            41.59040069580078,
+            3.115339994430542
+          ]
+        },
+        "last_seq": 5,
+        "field_count": 9,
+        "entry": 18083
+      },
+      {
+        "guid": "17370383975251443920",
+        "type_id": 5,
+        "created_seq": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -563.0159912109375,
+            -4217.509765625,
+            41.5900993347168,
+            2.7870399951934814
+          ]
+        },
+        "last_seq": 5,
+        "field_count": 9,
+        "entry": 12665
+      },
+      {
+        "guid": "17379391014434772255",
+        "type_id": 3,
+        "created_seq": 8,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -508.44390869140625,
+            -4118.41162109375,
+            60.645511627197266,
+            2.870591163635254
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 5
+        },
+        "last_seq": 8,
+        "server_motion": {
+          "guid": "17379391014434772255",
+          "start_xyz": [
+            -512.1206665039062,
+            -4117.39013671875,
+            59.86054229736328
+          ],
+          "spline_id": 221652127,
+          "move_type": 0,
+          "toggle": 0,
+          "spline_flags": 0,
+          "duration_ms": 2440,
+          "path_kind": "linear",
+          "path_xyz": [
+            [
+              -512.1206665039062,
+              -4117.39013671875,
+              59.86054229736328
+            ],
+            [
+              -508.3114776611328,
+              -4116.240966796875,
+              58.74327850341797
+            ],
+            [
+              -506.5022888183594,
+              -4115.591796875,
+              58.626014709472656
+            ]
+          ],
+          "position_semantics": "server-directed path, not observed arrival",
+          "source_sequence": 28,
+          "received_monotonic_ms": 11616
+        },
+        "field_count": 23,
+        "entry": 3124,
+        "health": 71,
+        "max_health": 71,
+        "level": 3,
+        "bytes0": 131328,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 0,
+        "unit_flags_transmitted": false,
+        "in_combat": null
+      },
+      {
+        "guid": "17379391014434772239",
+        "type_id": 3,
+        "created_seq": 8,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -521.6617431640625,
+            -4074.929443359375,
+            71.46040344238281,
+            0.06211232766509056
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 5
+        },
+        "last_seq": 8,
+        "server_motion": {
+          "guid": "17379391014434772239",
+          "start_xyz": [
+            -520.2984619140625,
+            -4074.608154296875,
+            71.11003112792969
+          ],
+          "spline_id": 221653597,
+          "move_type": 0,
+          "toggle": 0,
+          "spline_flags": 0,
+          "duration_ms": 2301,
+          "path_kind": "linear",
+          "path_xyz": [
+            [
+              -520.2984619140625,
+              -4074.608154296875,
+              71.11003112792969
+            ],
+            [
+              -516.5232543945312,
+              -4074.5537109375,
+              70.16277694702148
+            ],
+            [
+              -514.748046875,
+              -4074.499267578125,
+              70.21552276611328
+            ]
+          ],
+          "position_semantics": "server-directed path, not observed arrival",
+          "source_sequence": 42,
+          "received_monotonic_ms": 15196
+        },
+        "field_count": 23,
+        "entry": 3124,
+        "health": 71,
+        "max_health": 71,
+        "level": 3,
+        "bytes0": 131328,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 0,
+        "unit_flags_transmitted": false,
+        "in_combat": null
+      },
+      {
+        "guid": "17379391014434772260",
+        "type_id": 3,
+        "created_seq": 8,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -509.7748718261719,
+            -4171.3662109375,
+            77.1594009399414,
+            0.45063671469688416
+          ],
+          "movement_flags": 0,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 8,
+        "server_motion": {
+          "guid": "17379391014434772260",
+          "start_xyz": [
+            -514.7590942382812,
+            -4172.2138671875,
+            77.19635772705078
+          ],
+          "spline_id": 221653338,
+          "move_type": 0,
+          "toggle": 0,
+          "spline_flags": 0,
+          "duration_ms": 2819,
+          "path_kind": "linear",
+          "path_xyz": [
+            [
+              -514.7590942382812,
+              -4172.2138671875,
+              77.19635772705078
+            ],
+            [
+              -511.97349548339844,
+              -4174.909423828125,
+              77.12948989868164
+            ],
+            [
+              -509.6878967285156,
+              -4177.10498046875,
+              77.0626220703125
+            ]
+          ],
+          "position_semantics": "server-directed path, not observed arrival",
+          "source_sequence": 38,
+          "received_monotonic_ms": 14556
+        },
+        "field_count": 23,
+        "entry": 3124,
+        "health": 71,
+        "max_health": 71,
+        "level": 3,
+        "bytes0": 131328,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 0,
+        "unit_flags_transmitted": false,
+        "in_combat": null
+      },
+      {
+        "guid": "17379391013998564620",
+        "type_id": 3,
+        "created_seq": 8,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -485.6072692871094,
+            -4146.98779296875,
+            55.10844039916992,
+            2.3222222328186035
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 5
+        },
+        "last_seq": 8,
+        "server_motion": {
+          "guid": "17379391013998564620",
+          "start_xyz": [
+            -487.5728759765625,
+            -4146.97119140625,
+            56.19725036621094
+          ],
+          "spline_id": 221650941,
+          "move_type": 0,
+          "toggle": 0,
+          "spline_flags": 0,
+          "duration_ms": 1913,
+          "path_kind": "linear",
+          "path_xyz": [
+            [
+              -487.5728759765625,
+              -4146.97119140625,
+              56.19725036621094
+            ],
+            [
+              -489.12269592285156,
+              -4143.370849609375,
+              56.56216049194336
+            ],
+            [
+              -489.6725158691406,
+              -4142.7705078125,
+              56.92707061767578
+            ]
+          ],
+          "position_semantics": "server-directed path, not observed arrival",
+          "source_sequence": 20,
+          "received_monotonic_ms": 8748
+        },
+        "field_count": 23,
+        "entry": 3098,
+        "health": 55,
+        "max_health": 55,
+        "level": 2,
+        "bytes0": 131328,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 0,
+        "unit_flags_transmitted": false,
+        "in_combat": null
+      },
+      {
+        "guid": "17379391014434772194",
+        "type_id": 3,
+        "created_seq": 8,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -510.7759704589844,
+            -4155.3818359375,
+            77.38893127441406,
+            -2.030465841293335
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 5
+        },
+        "last_seq": 8,
+        "server_motion": {
+          "guid": "17379391014434772194",
+          "start_xyz": [
+            -513.156005859375,
+            -4160.189453125,
+            77.37557983398438
+          ],
+          "spline_id": 221653339,
+          "move_type": 0,
+          "toggle": 0,
+          "spline_flags": 0,
+          "duration_ms": 2694,
+          "path_kind": "linear",
+          "path_xyz": [
+            [
+              -513.156005859375,
+              -4160.189453125,
+              77.37557983398438
+            ],
+            [
+              -515.1544799804688,
+              -4156.900146484375,
+              77.09348678588867
+            ],
+            [
+              -516.6529541015625,
+              -4154.61083984375,
+              76.31139373779297
+            ]
+          ],
+          "position_semantics": "server-directed path, not observed arrival",
+          "source_sequence": 39,
+          "received_monotonic_ms": 14557
+        },
+        "field_count": 23,
+        "entry": 3124,
+        "health": 71,
+        "max_health": 71,
+        "level": 3,
+        "bytes0": 131328,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 0,
+        "unit_flags_transmitted": false,
+        "in_combat": null
+      },
+      {
+        "guid": "17379391017068790536",
+        "type_id": 3,
+        "created_seq": 8,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -541.3533325195312,
+            -4107.77294921875,
+            66.5825424194336,
+            -1.259661078453064
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 12
+        },
+        "last_seq": 8,
+        "server_motion": {
+          "guid": "17379391017068790536",
+          "start_xyz": [
+            -536.6796875,
+            -4122.3056640625,
+            64.65026092529297
+          ],
+          "spline_id": 221651796,
+          "move_type": 0,
+          "toggle": 0,
+          "spline_flags": 0,
+          "duration_ms": 15000,
+          "path_kind": "linear",
+          "path_xyz": [
+            [
+              -536.6796875,
+              -4122.3056640625,
+              64.65026092529297
+            ],
+            [
+              -536.801025390625,
+              -4118.0601806640625,
+              64.59353637695312
+            ],
+            [
+              -536.801025390625,
+              -4114.0601806640625,
+              64.59353637695312
+            ],
+            [
+              -536.801025390625,
+              -4110.0601806640625,
+              65.09353637695312
+            ],
+            [
+              -536.801025390625,
+              -4106.0601806640625,
+              65.84353637695312
+            ],
+            [
+              -536.801025390625,
+              -4102.3101806640625,
+              67.09353637695312
+            ],
+            [
+              -536.801025390625,
+              -4098.3101806640625,
+              68.59353637695312
+            ],
+            [
+              -536.801025390625,
+              -4094.3101806640625,
+              69.84353637695312
+            ],
+            [
+              -536.801025390625,
+              -4090.3101806640625,
+              70.84353637695312
+            ],
+            [
+              -536.801025390625,
+              -4086.3101806640625,
+              71.34353637695312
+            ],
+            [
+              -536.92236328125,
+              -4085.814697265625,
+              71.53681182861328
+            ]
+          ],
+          "position_semantics": "server-directed path, not observed arrival",
+          "source_sequence": 23,
+          "received_monotonic_ms": 10826
+        },
+        "field_count": 23,
+        "entry": 3281,
+        "health": 86,
+        "max_health": 86,
+        "level": 4,
+        "bytes0": 131328,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 0,
+        "unit_flags_transmitted": false,
+        "in_combat": null
+      },
+      {
+        "guid": "17379391061863957255",
+        "type_id": 3,
+        "created_seq": 8,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -557.6590576171875,
+            -4084.390380859375,
+            69.44359588623047,
+            1.5572772026062012
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 7
+        },
+        "last_seq": 8,
+        "field_count": 23,
+        "entry": 5951,
+        "health": 9,
+        "max_health": 9,
+        "level": 1,
+        "bytes0": 131328,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 0,
+        "unit_flags_transmitted": false,
+        "in_combat": null
+      },
+      {
+        "guid": "17379391014434767620",
+        "type_id": 3,
+        "created_seq": 8,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -544.4658203125,
+            -4080.81005859375,
+            71.63172149658203,
+            -0.7354907393455505
+          ],
+          "movement_flags": 0,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 8,
+        "server_motion": {
+          "guid": "17379391014434767620",
+          "start_xyz": [
+            -545.7528076171875,
+            -4079.09814453125,
+            71.45169830322266
+          ],
+          "spline_id": 221651962,
+          "move_type": 0,
+          "toggle": 0,
+          "spline_flags": 0,
+          "duration_ms": 2444,
+          "path_kind": "linear",
+          "path_xyz": [
+            [
+              -545.7528076171875,
+              -4079.09814453125,
+              71.45169830322266
+            ],
+            [
+              -548.4303283691406,
+              -4081.65771484375,
+              70.85945892333984
+            ],
+            [
+              -550.1078491210938,
+              -4083.21728515625,
+              70.26721954345703
+            ]
+          ],
+          "position_semantics": "server-directed path, not observed arrival",
+          "source_sequence": 26,
+          "received_monotonic_ms": 11206
+        },
+        "field_count": 23,
+        "entry": 3124,
+        "health": 71,
+        "max_health": 71,
+        "level": 3,
+        "bytes0": 131328,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 0,
+        "unit_flags_transmitted": false,
+        "in_combat": null
+      },
+      {
+        "guid": "17379391014434767616",
+        "type_id": 3,
+        "created_seq": 8,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -575.9053344726562,
+            -4108.00341796875,
+            72.68303680419922,
+            1.300140380859375
+          ],
+          "movement_flags": 0,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 8,
+        "server_motion": {
+          "guid": "17379391014434767616",
+          "start_xyz": [
+            -575.9053344726562,
+            -4108.00341796875,
+            72.68303680419922
+          ],
+          "spline_id": 221651879,
+          "move_type": 0,
+          "toggle": 0,
+          "spline_flags": 0,
+          "duration_ms": 6086,
+          "path_kind": "linear",
+          "path_xyz": [
+            [
+              -575.9053344726562,
+              -4108.00341796875,
+              72.68303680419922
+            ],
+            [
+              -577.91845703125,
+              -4111.521484375,
+              73.5427017211914
+            ],
+            [
+              -579.66845703125,
+              -4114.771484375,
+              74.0427017211914
+            ],
+            [
+              -581.66845703125,
+              -4118.271484375,
+              74.2927017211914
+            ],
+            [
+              -583.4315795898438,
+              -4121.03955078125,
+              74.4023666381836
+            ]
+          ],
+          "position_semantics": "server-directed path, not observed arrival",
+          "source_sequence": 24,
+          "received_monotonic_ms": 10990
+        },
+        "field_count": 23,
+        "entry": 3124,
+        "health": 71,
+        "max_health": 71,
+        "level": 3,
+        "bytes0": 131328,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 0,
+        "unit_flags_transmitted": false,
+        "in_combat": null
+      },
+      {
+        "guid": "17379391014434767612",
+        "type_id": 3,
+        "created_seq": 8,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -540.8456420898438,
+            -4123.30029296875,
+            65.16521453857422,
+            -1.7712476253509521
+          ],
+          "movement_flags": 0,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 8,
+        "server_motion": {
+          "guid": "17379391014434767612",
+          "start_xyz": [
+            -540.8456420898438,
+            -4123.30029296875,
+            65.16521453857422
+          ],
+          "spline_id": 221650039,
+          "move_type": 0,
+          "toggle": 0,
+          "spline_flags": 0,
+          "duration_ms": 4055,
+          "path_kind": "linear",
+          "path_xyz": [
+            [
+              -540.8456420898438,
+              -4123.30029296875,
+              65.16521453857422
+            ],
+            [
+              -539.8374633789062,
+              -4119.338134765625,
+              65.0562515258789
+            ],
+            [
+              -539.3374633789062,
+              -4115.588134765625,
+              65.0562515258789
+            ],
+            [
+              -538.8292846679688,
+              -4113.3759765625,
+              64.9472885131836
+            ]
+          ],
+          "position_semantics": "server-directed path, not observed arrival",
+          "source_sequence": 15,
+          "received_monotonic_ms": 6535
+        },
+        "field_count": 23,
+        "entry": 3124,
+        "health": 71,
+        "max_health": 71,
+        "level": 3,
+        "bytes0": 131328,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 0,
+        "unit_flags_transmitted": false,
+        "in_combat": null
+      },
+      {
+        "guid": "17379391015055524590",
+        "type_id": 3,
+        "created_seq": 8,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -582.4340209960938,
+            -4102.68017578125,
+            42.704898834228516,
+            4.0142598152160645
+          ],
+          "movement_flags": 0,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 8,
+        "field_count": 25,
+        "entry": 3161,
+        "health": 198,
+        "max_health": 198,
+        "level": 10,
+        "bytes0": 256,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 768,
+        "unit_flags_transmitted": true,
+        "in_combat": false
+      },
+      {
+        "guid": "17379391014434767590",
+        "type_id": 3,
+        "created_seq": 8,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -577.9888305664062,
+            -4074.1611328125,
+            71.9887466430664,
+            0.5389363765716553
+          ],
+          "movement_flags": 0,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 8,
+        "server_motion": {
+          "guid": "17379391014434767590",
+          "start_xyz": [
+            -582.9359741210938,
+            -4092.04931640625,
+            72.61763763427734
+          ],
+          "spline_id": 221653596,
+          "move_type": 0,
+          "toggle": 0,
+          "spline_flags": 0,
+          "duration_ms": 7434,
+          "path_kind": "linear",
+          "path_xyz": [
+            [
+              -582.9359741210938,
+              -4092.04931640625,
+              72.61763763427734
+            ],
+            [
+              -581.71240234375,
+              -4088.105224609375,
+              72.30319213867188
+            ],
+            [
+              -580.71240234375,
+              -4084.105224609375,
+              72.30319213867188
+            ],
+            [
+              -579.96240234375,
+              -4080.605224609375,
+              72.05319213867188
+            ],
+            [
+              -578.71240234375,
+              -4076.855224609375,
+              72.05319213867188
+            ],
+            [
+              -577.9888305664062,
+              -4074.1611328125,
+              71.9887466430664
+            ]
+          ],
+          "position_semantics": "server-directed path, not observed arrival",
+          "source_sequence": 41,
+          "received_monotonic_ms": 15195
+        },
+        "field_count": 23,
+        "entry": 3124,
+        "health": 71,
+        "max_health": 71,
+        "level": 3,
+        "bytes0": 131328,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 0,
+        "unit_flags_transmitted": false,
+        "in_combat": null
+      },
+      {
+        "guid": "17379391015021970141",
+        "type_id": 3,
+        "created_seq": 8,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -588.8289794921875,
+            -4102.27001953125,
+            43.54650115966797,
+            4.677480220794678
+          ],
+          "movement_flags": 0,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 8,
+        "field_count": 25,
+        "entry": 3159,
+        "health": 1280,
+        "max_health": 1280,
+        "level": 34,
+        "bytes0": 256,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 768,
+        "unit_flags_transmitted": true,
+        "in_combat": false
+      },
+      {
+        "guid": "17379391015038747356",
+        "type_id": 3,
+        "created_seq": 8,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -581.7340087890625,
+            -4109.509765625,
+            43.60770034790039,
+            3.75246000289917
+          ],
+          "movement_flags": 0,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 8,
+        "field_count": 24,
+        "entry": 3160,
+        "health": 222,
+        "max_health": 222,
+        "level": 11,
+        "bytes0": 256,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 768,
+        "unit_flags_transmitted": true,
+        "in_combat": false
+      },
+      {
+        "guid": "17379391014434767619",
+        "type_id": 3,
+        "created_seq": 8,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -546.120361328125,
+            -4147.24072265625,
+            73.20267486572266,
+            2.3674378395080566
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 5
+        },
+        "last_seq": 8,
+        "server_motion": {
+          "guid": "17379391014434767619",
+          "start_xyz": [
+            -547.9471435546875,
+            -4145.45458984375,
+            73.30695343017578
+          ],
+          "spline_id": 221652268,
+          "move_type": 0,
+          "toggle": 0,
+          "spline_flags": 0,
+          "duration_ms": 2475,
+          "path_kind": "linear",
+          "path_xyz": [
+            [
+              -547.9471435546875,
+              -4145.45458984375,
+              73.30695343017578
+            ],
+            [
+              -545.2369384765625,
+              -4148.11572265625,
+              73.26122283935547
+            ],
+            [
+              -543.5267333984375,
+              -4149.77685546875,
+              73.21549224853516
+            ]
+          ],
+          "position_semantics": "server-directed path, not observed arrival",
+          "source_sequence": 31,
+          "received_monotonic_ms": 11958
+        },
+        "field_count": 23,
+        "entry": 3124,
+        "health": 71,
+        "max_health": 71,
+        "level": 3,
+        "bytes0": 131328,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 0,
+        "unit_flags_transmitted": false,
+        "in_combat": null
+      },
+      {
+        "guid": "17379391014434767618",
+        "type_id": 3,
+        "created_seq": 8,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -587.40478515625,
+            -4151.60009765625,
+            76.53182220458984,
+            0.0
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 6
+        },
+        "last_seq": 8,
+        "server_motion": {
+          "guid": "17379391014434767618",
+          "start_xyz": [
+            -586.7202758789062,
+            -4149.3515625,
+            76.18610382080078
+          ],
+          "spline_id": 221653088,
+          "move_type": 0,
+          "toggle": 0,
+          "spline_flags": 0,
+          "duration_ms": 2560,
+          "path_kind": "linear",
+          "path_xyz": [
+            [
+              -586.7202758789062,
+              -4149.3515625,
+              76.18610382080078
+            ],
+            [
+              -587.241943359375,
+              -4153.253662109375,
+              76.27298736572266
+            ],
+            [
+              -587.7636108398438,
+              -4155.65576171875,
+              76.35987091064453
+            ]
+          ],
+          "position_semantics": "server-directed path, not observed arrival",
+          "source_sequence": 36,
+          "received_monotonic_ms": 13931
+        },
+        "field_count": 23,
+        "entry": 3124,
+        "health": 71,
+        "max_health": 71,
+        "level": 3,
+        "bytes0": 131328,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 0,
+        "unit_flags_transmitted": false,
+        "in_combat": null
+      },
+      {
+        "guid": "17379391061880734452",
+        "type_id": 3,
+        "created_seq": 8,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -599.9390258789062,
+            -4191.990234375,
+            41.18239974975586,
+            4.171339988708496
+          ],
+          "movement_flags": 0,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 8,
+        "field_count": 26,
+        "entry": 5952,
+        "health": 11828,
+        "max_health": 11828,
+        "level": 65,
+        "bytes0": 65792,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 32768,
+        "unit_flags_transmitted": true,
+        "in_combat": false
+      },
+      {
+        "guid": "17379391014954861293",
+        "type_id": 3,
+        "created_seq": 8,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -588.7030029296875,
+            -4144.93994140625,
+            41.10329818725586,
+            3.6302900314331055
+          ],
+          "movement_flags": 0,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "last_seq": 8,
+        "field_count": 25,
+        "entry": 3155,
+        "health": 156,
+        "max_health": 156,
+        "level": 8,
+        "bytes0": 256,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 768,
+        "unit_flags_transmitted": true,
+        "in_combat": false
+      },
+      {
+        "guid": "17379391061880734440",
+        "type_id": 3,
+        "created_seq": 9,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -603.614501953125,
+            -4198.650390625,
+            41.082183837890625,
+            1.5533097982406616
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 563011477,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 5
+        },
+        "last_seq": 9,
+        "server_motion": {
+          "guid": "17379391061880734440",
+          "start_xyz": [
+            -604.1320190429688,
+            -4177.0400390625,
+            41.415157318115234
+          ],
+          "spline_id": 221653040,
+          "move_type": 0,
+          "toggle": 0,
+          "spline_flags": 0,
+          "duration_ms": 2243,
+          "path_kind": "linear",
+          "path_xyz": [
+            [
+              -604.1320190429688,
+              -4177.0400390625,
+              41.415157318115234
+            ],
+            [
+              -604.3080139160156,
+              -4173.255126953125,
+              41.187578201293945
+            ],
+            [
+              -604.4840087890625,
+              -4171.47021484375,
+              40.959999084472656
+            ]
+          ],
+          "position_semantics": "server-directed path, not observed arrival",
+          "source_sequence": 35,
+          "received_monotonic_ms": 13767
+        },
+        "field_count": 26,
+        "entry": 5952,
+        "health": 11828,
+        "max_health": 11828,
+        "level": 65,
+        "bytes0": 256,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 32768,
+        "unit_flags_transmitted": true,
+        "in_combat": false
+      },
+      {
+        "guid": "17370386543440560341",
+        "type_id": 5,
+        "created_seq": 10,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -593.5130004882812,
+            -4116.580078125,
+            44.445701599121094,
+            4.419449806213379
+          ]
+        },
+        "last_seq": 10,
+        "field_count": 9,
+        "entry": 165741
+      },
+      {
+        "guid": "17366161638117343236",
+        "type_id": 7,
+        "created_seq": 13,
+        "movement": {
+          "update_flags": 336,
+          "position_xyzo": [
+            -549.3333129882812,
+            -4113.52734375,
+            68.05752563476562,
+            3.0943868160247803
+          ]
+        },
+        "last_seq": 13,
+        "field_count": 14,
+        "entry": 0
+      },
+      {
+        "guid": "17370386647408969360",
+        "type_id": 5,
+        "created_seq": 17,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -482.6369934082031,
+            -4083.919921875,
+            65.42040252685547,
+            -0.08726699650287628
+          ]
+        },
+        "last_seq": 17,
+        "field_count": 10,
+        "entry": 171938
+      },
+      {
+        "guid": "17379391014434772291",
+        "type_id": 3,
+        "created_seq": 25,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -457.1317443847656,
+            -4154.20068359375,
+            48.56232452392578,
+            3.0646119117736816
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 563017698,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 5
+        },
+        "last_seq": 25,
+        "field_count": 23,
+        "entry": 3124,
+        "health": 71,
+        "max_health": 71,
+        "level": 3,
+        "bytes0": 131328,
+        "powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "max_powers": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "unit_flags": 0,
+        "unit_flags_transmitted": false,
+        "in_combat": null
+      },
+      {
+        "guid": "17370386647408969367",
+        "type_id": 5,
+        "created_seq": 37,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -407.9679870605469,
+            -4061.419921875,
+            51.86470031738281,
+            -0.22689299285411835
+          ]
+        },
+        "last_seq": 37,
+        "field_count": 10,
+        "entry": 171938
+      },
+      {
+        "guid": "17370386543507669213",
+        "type_id": 5,
+        "created_seq": 37,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -583.1069946289062,
+            -4123.9501953125,
+            44.09700012207031,
+            2.4725699424743652
+          ]
+        },
+        "last_seq": 37,
+        "field_count": 9,
+        "entry": 165745
+      }
+    ],
+    "creature_templates": {
+      "2147483647": {
+        "entry": 2147483647,
+        "found": false
+      }
+    },
+    "motions": [
+      {
+        "guid": "17379391014434767620",
+        "start_xyz": [
+          -544.4658203125,
+          -4080.81005859375,
+          71.63172149658203
+        ],
+        "spline_id": 221649926,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 2513,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -544.4658203125,
+            -4080.81005859375,
+            71.63172149658203
+          ],
+          [
+            -548.0368347167969,
+            -4082.263671875,
+            70.94947052001953
+          ],
+          [
+            -550.1078491210938,
+            -4083.21728515625,
+            70.26721954345703
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 12,
+        "received_monotonic_ms": 6208
+      },
+      {
+        "guid": "17379391061880734440",
+        "start_xyz": [
+          -603.5469970703125,
+          -4194.7900390625,
+          41.09902572631836
+        ],
+        "spline_id": 221650029,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 5315,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -603.5469970703125,
+            -4194.7900390625,
+            41.09902572631836
+          ],
+          [
+            -603.7170104980469,
+            -4190.64501953125,
+            41.09067153930664
+          ],
+          [
+            -603.7170104980469,
+            -4186.89501953125,
+            41.09067153930664
+          ],
+          [
+            -603.7170104980469,
+            -4182.89501953125,
+            41.09067153930664
+          ],
+          [
+            -603.8870239257812,
+            -4181.5,
+            41.08231735229492
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 14,
+        "received_monotonic_ms": 6526
+      },
+      {
+        "guid": "17379391014434767612",
+        "start_xyz": [
+          -540.8456420898438,
+          -4123.30029296875,
+          65.16521453857422
+        ],
+        "spline_id": 221650039,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 4055,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -540.8456420898438,
+            -4123.30029296875,
+            65.16521453857422
+          ],
+          [
+            -539.8374633789062,
+            -4119.338134765625,
+            65.0562515258789
+          ],
+          [
+            -539.3374633789062,
+            -4115.588134765625,
+            65.0562515258789
+          ],
+          [
+            -538.8292846679688,
+            -4113.3759765625,
+            64.9472885131836
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 15,
+        "received_monotonic_ms": 6535
+      },
+      {
+        "guid": "17379391013998564620",
+        "start_xyz": [
+          -489.4142761230469,
+          -4142.9130859375,
+          56.73100280761719
+        ],
+        "spline_id": 221650194,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 1797,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -489.4142761230469,
+            -4142.9130859375,
+            56.73100280761719
+          ],
+          [
+            -487.9935760498047,
+            -4146.192138671875,
+            56.46412658691406
+          ],
+          [
+            -487.5728759765625,
+            -4146.97119140625,
+            56.19725036621094
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 16,
+        "received_monotonic_ms": 6905
+      },
+      {
+        "guid": "17379391014434767590",
+        "start_xyz": [
+          -577.9888305664062,
+          -4074.1611328125,
+          71.9887466430664
+        ],
+        "spline_id": 221650480,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 7434,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -577.9888305664062,
+            -4074.1611328125,
+            71.9887466430664
+          ],
+          [
+            -579.21240234375,
+            -4078.105224609375,
+            72.05319213867188
+          ],
+          [
+            -580.21240234375,
+            -4082.105224609375,
+            72.05319213867188
+          ],
+          [
+            -580.96240234375,
+            -4085.605224609375,
+            72.30319213867188
+          ],
+          [
+            -582.21240234375,
+            -4089.355224609375,
+            72.30319213867188
+          ],
+          [
+            -582.9359741210938,
+            -4092.04931640625,
+            72.61763763427734
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 18,
+        "received_monotonic_ms": 7618
+      },
+      {
+        "guid": "17379391014434767620",
+        "start_xyz": [
+          -550.1078491210938,
+          -4083.21728515625,
+          70.26721954345703
+        ],
+        "spline_id": 221650939,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 2444,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -550.1078491210938,
+            -4083.21728515625,
+            70.26721954345703
+          ],
+          [
+            -547.4303283691406,
+            -4080.65771484375,
+            70.85945892333984
+          ],
+          [
+            -545.7528076171875,
+            -4079.09814453125,
+            71.45169830322266
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 19,
+        "received_monotonic_ms": 8746
+      },
+      {
+        "guid": "17379391013998564620",
+        "start_xyz": [
+          -487.5728759765625,
+          -4146.97119140625,
+          56.19725036621094
+        ],
+        "spline_id": 221650941,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 1913,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -487.5728759765625,
+            -4146.97119140625,
+            56.19725036621094
+          ],
+          [
+            -489.12269592285156,
+            -4143.370849609375,
+            56.56216049194336
+          ],
+          [
+            -489.6725158691406,
+            -4142.7705078125,
+            56.92707061767578
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 20,
+        "received_monotonic_ms": 8748
+      },
+      {
+        "guid": "17379391014434772260",
+        "start_xyz": [
+          -509.7748718261719,
+          -4171.3662109375,
+          77.1594009399414
+        ],
+        "spline_id": 221651431,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 1767,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -509.7748718261719,
+            -4171.3662109375,
+            77.1594009399414
+          ],
+          [
+            -509.0252685546875,
+            -4175.017333984375,
+            77.11416625976562
+          ],
+          [
+            -508.7756652832031,
+            -4175.66845703125,
+            77.06893157958984
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 22,
+        "received_monotonic_ms": 9894
+      },
+      {
+        "guid": "17379391017068790536",
+        "start_xyz": [
+          -536.6796875,
+          -4122.3056640625,
+          64.65026092529297
+        ],
+        "spline_id": 221651796,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 15000,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -536.6796875,
+            -4122.3056640625,
+            64.65026092529297
+          ],
+          [
+            -536.801025390625,
+            -4118.0601806640625,
+            64.59353637695312
+          ],
+          [
+            -536.801025390625,
+            -4114.0601806640625,
+            64.59353637695312
+          ],
+          [
+            -536.801025390625,
+            -4110.0601806640625,
+            65.09353637695312
+          ],
+          [
+            -536.801025390625,
+            -4106.0601806640625,
+            65.84353637695312
+          ],
+          [
+            -536.801025390625,
+            -4102.3101806640625,
+            67.09353637695312
+          ],
+          [
+            -536.801025390625,
+            -4098.3101806640625,
+            68.59353637695312
+          ],
+          [
+            -536.801025390625,
+            -4094.3101806640625,
+            69.84353637695312
+          ],
+          [
+            -536.801025390625,
+            -4090.3101806640625,
+            70.84353637695312
+          ],
+          [
+            -536.801025390625,
+            -4086.3101806640625,
+            71.34353637695312
+          ],
+          [
+            -536.92236328125,
+            -4085.814697265625,
+            71.53681182861328
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 23,
+        "received_monotonic_ms": 10826
+      },
+      {
+        "guid": "17379391014434767616",
+        "start_xyz": [
+          -575.9053344726562,
+          -4108.00341796875,
+          72.68303680419922
+        ],
+        "spline_id": 221651879,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 6086,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -575.9053344726562,
+            -4108.00341796875,
+            72.68303680419922
+          ],
+          [
+            -577.91845703125,
+            -4111.521484375,
+            73.5427017211914
+          ],
+          [
+            -579.66845703125,
+            -4114.771484375,
+            74.0427017211914
+          ],
+          [
+            -581.66845703125,
+            -4118.271484375,
+            74.2927017211914
+          ],
+          [
+            -583.4315795898438,
+            -4121.03955078125,
+            74.4023666381836
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 24,
+        "received_monotonic_ms": 10990
+      },
+      {
+        "guid": "17379391014434767620",
+        "start_xyz": [
+          -545.7528076171875,
+          -4079.09814453125,
+          71.45169830322266
+        ],
+        "spline_id": 221651962,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 2444,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -545.7528076171875,
+            -4079.09814453125,
+            71.45169830322266
+          ],
+          [
+            -548.4303283691406,
+            -4081.65771484375,
+            70.85945892333984
+          ],
+          [
+            -550.1078491210938,
+            -4083.21728515625,
+            70.26721954345703
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 26,
+        "received_monotonic_ms": 11206
+      },
+      {
+        "guid": "17379391014434767618",
+        "start_xyz": [
+          -580.6708984375,
+          -4151.60009765625,
+          76.73462677001953
+        ],
+        "spline_id": 221652002,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 2603,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -580.6708984375,
+            -4151.60009765625,
+            76.73462677001953
+          ],
+          [
+            -584.1955871582031,
+            -4150.225830078125,
+            76.46036529541016
+          ],
+          [
+            -586.7202758789062,
+            -4149.3515625,
+            76.18610382080078
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 27,
+        "received_monotonic_ms": 11291
+      },
+      {
+        "guid": "17379391014434772255",
+        "start_xyz": [
+          -512.1206665039062,
+          -4117.39013671875,
+          59.86054229736328
+        ],
+        "spline_id": 221652127,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 2440,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -512.1206665039062,
+            -4117.39013671875,
+            59.86054229736328
+          ],
+          [
+            -508.3114776611328,
+            -4116.240966796875,
+            58.74327850341797
+          ],
+          [
+            -506.5022888183594,
+            -4115.591796875,
+            58.626014709472656
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 28,
+        "received_monotonic_ms": 11616
+      },
+      {
+        "guid": "17379391014434772260",
+        "start_xyz": [
+          -508.7756652832031,
+          -4175.66845703125,
+          77.06893157958984
+        ],
+        "spline_id": 221652169,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 2764,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -508.7756652832031,
+            -4175.66845703125,
+            77.06893157958984
+          ],
+          [
+            -512.0173797607422,
+            -4173.691162109375,
+            77.13264465332031
+          ],
+          [
+            -514.7590942382812,
+            -4172.2138671875,
+            77.19635772705078
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 29,
+        "received_monotonic_ms": 11768
+      },
+      {
+        "guid": "17379391061880734440",
+        "start_xyz": [
+          -603.8870239257812,
+          -4181.5,
+          41.08231735229492
+        ],
+        "spline_id": 221652259,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 1792,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -603.8870239257812,
+            -4181.5,
+            41.08231735229492
+          ],
+          [
+            -604.009521484375,
+            -4177.52001953125,
+            41.24873733520508
+          ],
+          [
+            -604.1320190429688,
+            -4177.0400390625,
+            41.415157318115234
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 30,
+        "received_monotonic_ms": 11914
+      },
+      {
+        "guid": "17379391014434767619",
+        "start_xyz": [
+          -547.9471435546875,
+          -4145.45458984375,
+          73.30695343017578
+        ],
+        "spline_id": 221652268,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 2475,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -547.9471435546875,
+            -4145.45458984375,
+            73.30695343017578
+          ],
+          [
+            -545.2369384765625,
+            -4148.11572265625,
+            73.26122283935547
+          ],
+          [
+            -543.5267333984375,
+            -4149.77685546875,
+            73.21549224853516
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 31,
+        "received_monotonic_ms": 11958
+      },
+      {
+        "guid": "17379391014434772239",
+        "start_xyz": [
+          -514.748046875,
+          -4074.499267578125,
+          70.21552276611328
+        ],
+        "spline_id": 221652652,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 2267,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -514.748046875,
+            -4074.499267578125,
+            70.21552276611328
+          ],
+          [
+            -518.5232543945312,
+            -4074.5537109375,
+            70.66277694702148
+          ],
+          [
+            -520.2984619140625,
+            -4074.608154296875,
+            71.11003112792969
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 33,
+        "received_monotonic_ms": 12851
+      },
+      {
+        "guid": "17379391013998564631",
+        "start_xyz": [
+          -481.3406677246094,
+          -4184.46728515625,
+          51.262550354003906
+        ],
+        "spline_id": 221652926,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 3015,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -481.3406677246094,
+            -4184.46728515625,
+            51.262550354003906
+          ],
+          [
+            -477.3770294189453,
+            -4184.673828125,
+            50.5273323059082
+          ],
+          [
+            -473.91339111328125,
+            -4184.88037109375,
+            50.2921142578125
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 34,
+        "received_monotonic_ms": 13482
+      },
+      {
+        "guid": "17379391061880734440",
+        "start_xyz": [
+          -604.1320190429688,
+          -4177.0400390625,
+          41.415157318115234
+        ],
+        "spline_id": 221653040,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 2243,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -604.1320190429688,
+            -4177.0400390625,
+            41.415157318115234
+          ],
+          [
+            -604.3080139160156,
+            -4173.255126953125,
+            41.187578201293945
+          ],
+          [
+            -604.4840087890625,
+            -4171.47021484375,
+            40.959999084472656
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 35,
+        "received_monotonic_ms": 13767
+      },
+      {
+        "guid": "17379391014434767618",
+        "start_xyz": [
+          -586.7202758789062,
+          -4149.3515625,
+          76.18610382080078
+        ],
+        "spline_id": 221653088,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 2560,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -586.7202758789062,
+            -4149.3515625,
+            76.18610382080078
+          ],
+          [
+            -587.241943359375,
+            -4153.253662109375,
+            76.27298736572266
+          ],
+          [
+            -587.7636108398438,
+            -4155.65576171875,
+            76.35987091064453
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 36,
+        "received_monotonic_ms": 13931
+      },
+      {
+        "guid": "17379391014434772260",
+        "start_xyz": [
+          -514.7590942382812,
+          -4172.2138671875,
+          77.19635772705078
+        ],
+        "spline_id": 221653338,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 2819,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -514.7590942382812,
+            -4172.2138671875,
+            77.19635772705078
+          ],
+          [
+            -511.97349548339844,
+            -4174.909423828125,
+            77.12948989868164
+          ],
+          [
+            -509.6878967285156,
+            -4177.10498046875,
+            77.0626220703125
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 38,
+        "received_monotonic_ms": 14556
+      },
+      {
+        "guid": "17379391014434772194",
+        "start_xyz": [
+          -513.156005859375,
+          -4160.189453125,
+          77.37557983398438
+        ],
+        "spline_id": 221653339,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 2694,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -513.156005859375,
+            -4160.189453125,
+            77.37557983398438
+          ],
+          [
+            -515.1544799804688,
+            -4156.900146484375,
+            77.09348678588867
+          ],
+          [
+            -516.6529541015625,
+            -4154.61083984375,
+            76.31139373779297
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 39,
+        "received_monotonic_ms": 14557
+      },
+      {
+        "guid": "17379391014434767590",
+        "start_xyz": [
+          -582.9359741210938,
+          -4092.04931640625,
+          72.61763763427734
+        ],
+        "spline_id": 221653596,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 7434,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -582.9359741210938,
+            -4092.04931640625,
+            72.61763763427734
+          ],
+          [
+            -581.71240234375,
+            -4088.105224609375,
+            72.30319213867188
+          ],
+          [
+            -580.71240234375,
+            -4084.105224609375,
+            72.30319213867188
+          ],
+          [
+            -579.96240234375,
+            -4080.605224609375,
+            72.05319213867188
+          ],
+          [
+            -578.71240234375,
+            -4076.855224609375,
+            72.05319213867188
+          ],
+          [
+            -577.9888305664062,
+            -4074.1611328125,
+            71.9887466430664
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 41,
+        "received_monotonic_ms": 15195
+      },
+      {
+        "guid": "17379391014434772239",
+        "start_xyz": [
+          -520.2984619140625,
+          -4074.608154296875,
+          71.11003112792969
+        ],
+        "spline_id": 221653597,
+        "move_type": 0,
+        "toggle": 0,
+        "spline_flags": 0,
+        "duration_ms": 2301,
+        "path_kind": "linear",
+        "path_xyz": [
+          [
+            -520.2984619140625,
+            -4074.608154296875,
+            71.11003112792969
+          ],
+          [
+            -516.5232543945312,
+            -4074.5537109375,
+            70.16277694702148
+          ],
+          [
+            -514.748046875,
+            -4074.499267578125,
+            70.21552276611328
+          ]
+        ],
+        "position_semantics": "server-directed path, not observed arrival",
+        "source_sequence": 42,
+        "received_monotonic_ms": 15196
+      }
+    ],
+    "errors": [],
+    "event_log": [
+      {
+        "sequence": 2,
+        "kind": 2,
+        "guid": "17374887362395373569",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            -1028.0400390625,
+            -28.356800079345703,
+            69.02259826660156,
+            2.9147000312805176
+          ]
+        },
+        "fields": {
+          "0": 1,
+          "1": 4045406208,
+          "2": 33,
+          "3": 47296,
+          "4": 1065353216,
+          "8": 360,
+          "9": 40,
+          "12": 1065245372,
+          "13": 1038604025,
+          "14": 4294901760,
+          "17": 1677724417
+        }
+      },
+      {
+        "sequence": 2,
+        "kind": 2,
+        "guid": "2287828610704211971",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            8534.298828125,
+            1017.9680786132812,
+            0.0,
+            1.4494467973709106
+          ]
+        },
+        "fields": {
+          "0": 3,
+          "1": 532676608,
+          "2": 33,
+          "3": 176244,
+          "4": 1065353216,
+          "8": 7087,
+          "9": 40,
+          "13": 1065353216,
+          "14": 1081081856,
+          "16": 312177,
+          "17": 4278193921
+        }
+      },
+      {
+        "sequence": 2,
+        "kind": 2,
+        "guid": "2287828610704211988",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            -671.1304321289062,
+            -916.1177368164062,
+            243.79351806640625,
+            4.8453288078308105
+          ]
+        },
+        "fields": {
+          "0": 20,
+          "1": 532676608,
+          "2": 33,
+          "3": 190549,
+          "4": 1065353216,
+          "8": 3031,
+          "9": 40,
+          "13": 1065353216,
+          "14": 4036231168,
+          "16": 566366,
+          "17": 4278193921
+        }
+      },
+      {
+        "sequence": 2,
+        "kind": 2,
+        "guid": "2287828610704211976",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            -4200.4140625,
+            3270.287353515625,
+            0.0,
+            1.5557034015655518
+          ]
+        },
+        "fields": {
+          "0": 8,
+          "1": 532676608,
+          "2": 33,
+          "3": 177233,
+          "4": 1065353216,
+          "8": 7087,
+          "9": 40,
+          "13": 1065353216,
+          "14": 3584032768,
+          "16": 260879,
+          "17": 4278193921
+        }
+      },
+      {
+        "sequence": 2,
+        "kind": 2,
+        "guid": "17374887362395373570",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            -1037.27001953125,
+            -49.23550033569336,
+            140.4949951171875,
+            3.07177996635437
+          ]
+        },
+        "fields": {
+          "0": 2,
+          "1": 4045406208,
+          "2": 33,
+          "3": 47297,
+          "4": 1065353216,
+          "8": 360,
+          "9": 40,
+          "12": 1065342999,
+          "13": 1024389778,
+          "14": 4294901760,
+          "17": 1677724417
+        }
+      },
+      {
+        "sequence": 2,
+        "kind": 2,
+        "guid": "17374887362395373571",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            -1286.239990234375,
+            189.72000122070312,
+            130.0800018310547,
+            -1.0733799934387207
+          ]
+        },
+        "fields": {
+          "0": 3,
+          "1": 4045406208,
+          "2": 33,
+          "3": 4170,
+          "4": 1065353216,
+          "8": 360,
+          "9": 40,
+          "12": 3204637738,
+          "13": 1062994440,
+          "14": 4294901760,
+          "17": 1677724417
+        }
+      },
+      {
+        "sequence": 2,
+        "kind": 2,
+        "guid": "17374887362395373572",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            -1308.3800048828125,
+            185.2899932861328,
+            68.58580017089844,
+            -0.2705250084400177
+          ]
+        },
+        "fields": {
+          "0": 4,
+          "1": 4045406208,
+          "2": 33,
+          "3": 4171,
+          "4": 1065353216,
+          "8": 360,
+          "9": 40,
+          "12": 3188332062,
+          "13": 1065199973,
+          "14": 4294901760,
+          "17": 1677724417
+        }
+      },
+      {
+        "sequence": 2,
+        "kind": 2,
+        "guid": "2287828610704211972",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 594,
+          "position_xyzo": [
+            -3932.01171875,
+            -4847.24560546875,
+            0.0,
+            2.0637404918670654
+          ]
+        },
+        "fields": {
+          "0": 4,
+          "1": 532676608,
+          "2": 33,
+          "3": 176231,
+          "4": 1065353216,
+          "8": 3015,
+          "9": 40,
+          "13": 1065353216,
+          "14": 3962568704,
+          "16": 230246,
+          "17": 4278193921
+        }
+      },
+      {
+        "sequence": 3,
+        "kind": 2,
+        "guid": "4611686018427388600",
+        "type_id": 1,
+        "movement": {
+          "update_flags": 16
+        },
+        "fields": {
+          "0": 696,
+          "1": 1073741824,
+          "2": 3,
+          "3": 6125,
+          "4": 1065353216,
+          "6": 9,
+          "8": 9,
+          "14": 1
+        }
+      },
+      {
+        "sequence": 3,
+        "kind": 2,
+        "guid": "4611686018427388602",
+        "type_id": 1,
+        "movement": {
+          "update_flags": 16
+        },
+        "fields": {
+          "0": 698,
+          "1": 1073741824,
+          "2": 3,
+          "3": 139,
+          "4": 1065353216,
+          "6": 9,
+          "8": 9,
+          "14": 1,
+          "60": 17,
+          "61": 25
+        }
+      },
+      {
+        "sequence": 3,
+        "kind": 2,
+        "guid": "4611686018427388604",
+        "type_id": 1,
+        "movement": {
+          "update_flags": 16
+        },
+        "fields": {
+          "0": 700,
+          "1": 1073741824,
+          "2": 3,
+          "3": 140,
+          "4": 1065353216,
+          "6": 9,
+          "8": 9,
+          "14": 1
+        }
+      },
+      {
+        "sequence": 3,
+        "kind": 2,
+        "guid": "4611686018427388608",
+        "type_id": 1,
+        "movement": {
+          "update_flags": 16
+        },
+        "fields": {
+          "0": 704,
+          "1": 1073741824,
+          "2": 3,
+          "3": 12282,
+          "4": 1065353216,
+          "6": 9,
+          "8": 9,
+          "14": 1,
+          "60": 17,
+          "61": 25
+        }
+      },
+      {
+        "sequence": 3,
+        "kind": 2,
+        "guid": "4611686018427388606",
+        "type_id": 1,
+        "movement": {
+          "update_flags": 16
+        },
+        "fields": {
+          "0": 702,
+          "1": 1073741824,
+          "2": 3,
+          "3": 6948,
+          "4": 1065353216,
+          "6": 9,
+          "8": 9,
+          "14": 1,
+          "21": 1
+        }
+      },
+      {
+        "sequence": 3,
+        "kind": 2,
+        "guid": "4611686018427388609",
+        "type_id": 1,
+        "movement": {
+          "update_flags": 16
+        },
+        "fields": {
+          "0": 705,
+          "1": 1073741824,
+          "2": 3,
+          "3": 7098,
+          "4": 1065353216,
+          "6": 9,
+          "8": 9,
+          "14": 1
+        }
+      },
+      {
+        "sequence": 3,
+        "kind": 2,
+        "guid": "4611686018427388610",
+        "type_id": 1,
+        "movement": {
+          "update_flags": 16
+        },
+        "fields": {
+          "0": 706,
+          "1": 1073741824,
+          "2": 3,
+          "3": 4915,
+          "4": 1065353216,
+          "6": 9,
+          "8": 9,
+          "14": 1,
+          "21": 1,
+          "60": 20,
+          "61": 20
+        }
+      },
+      {
+        "sequence": 3,
+        "kind": 2,
+        "guid": "4611686018427388612",
+        "type_id": 1,
+        "movement": {
+          "update_flags": 16
+        },
+        "fields": {
+          "0": 708,
+          "1": 1073741824,
+          "2": 3,
+          "3": 4867,
+          "4": 1065353216,
+          "6": 9,
+          "8": 9,
+          "14": 1
+        }
+      },
+      {
+        "sequence": 3,
+        "kind": 2,
+        "guid": "4611686018427388613",
+        "type_id": 1,
+        "movement": {
+          "update_flags": 16
+        },
+        "fields": {
+          "0": 709,
+          "1": 1073741824,
+          "2": 3,
+          "3": 7099,
+          "4": 1065353216,
+          "6": 9,
+          "8": 9,
+          "14": 1
+        }
+      },
+      {
+        "sequence": 3,
+        "kind": 2,
+        "guid": "4611686018427388614",
+        "type_id": 1,
+        "movement": {
+          "update_flags": 16
+        },
+        "fields": {
+          "0": 710,
+          "1": 1073741824,
+          "2": 3,
+          "3": 4862,
+          "4": 1065353216,
+          "6": 9,
+          "8": 9,
+          "14": 2,
+          "21": 1
+        }
+      },
+      {
+        "sequence": 3,
+        "kind": 2,
+        "guid": "4611686018427388615",
+        "type_id": 1,
+        "movement": {
+          "update_flags": 16
+        },
+        "fields": {
+          "0": 711,
+          "1": 1073741824,
+          "2": 3,
+          "3": 7101,
+          "4": 1065353216,
+          "6": 9,
+          "8": 9,
+          "14": 1
+        }
+      },
+      {
+        "sequence": 3,
+        "kind": 3,
+        "guid": "9",
+        "type_id": 4,
+        "movement": {
+          "update_flags": 97,
+          "position_xyzo": [
+            -482.2226867675781,
+            -4191.6669921875,
+            51.32472610473633,
+            1.1344013214111328
+          ],
+          "movement_flags": 0,
+          "movement_clock": 563006688,
+          "speeds": [
+            2.5,
+            10.5,
+            4.5,
+            7.0833330154418945,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 9,
+          "2": 25,
+          "4": 1065353216,
+          "23": 16777474,
+          "24": 1,
+          "28": 100,
+          "32": 89,
+          "34": 1000,
+          "36": 100,
+          "39": 1000,
+          "54": 2,
+          "55": 2,
+          "59": 8,
+          "60": 2048,
+          "61": 4098,
+          "62": 2900,
+          "63": 2000,
+          "64": 2000,
+          "65": 1053240066,
+          "66": 1069547520,
+          "67": 51,
+          "68": 51,
+          "70": 1093964362,
+          "71": 1096061514,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "84": 27,
+          "85": 18,
+          "86": 24,
+          "87": 17,
+          "88": 22,
+          "99": 38,
+          "121": 29,
+          "122": 285212672,
+          "123": 40,
+          "126": 10,
+          "129": 1075539383,
+          "130": 1079733687,
+          "146": 1065353216,
+          "150": 16,
+          "153": 67108865,
+          "154": 33554436,
+          "158": 789,
+          "289": 6125,
+          "295": 139,
+          "297": 140,
+          "313": 12282,
+          "330": 696,
+          "331": 1073741824,
+          "336": 698,
+          "337": 1073741824,
+          "338": 700,
+          "339": 1073741824,
+          "354": 704,
+          "355": 1073741824,
+          "370": 702,
+          "371": 1073741824,
+          "372": 705,
+          "373": 1073741824,
+          "374": 706,
+          "375": 1073741824,
+          "376": 708,
+          "377": 1073741824,
+          "378": 709,
+          "379": 1073741824,
+          "380": 710,
+          "381": 1073741824,
+          "382": 711,
+          "383": 1073741824,
+          "634": 555,
+          "635": 900,
+          "636": 26,
+          "637": 655370,
+          "639": 43,
+          "640": 655361,
+          "642": 44,
+          "643": 655361,
+          "645": 54,
+          "646": 655361,
+          "648": 55,
+          "649": 655361,
+          "651": 95,
+          "652": 655370,
+          "654": 109,
+          "655": 19661100,
+          "657": 125,
+          "658": 655370,
+          "660": 162,
+          "661": 655361,
+          "663": 172,
+          "664": 655369,
+          "666": 173,
+          "667": 655361,
+          "669": 176,
+          "670": 655361,
+          "672": 183,
+          "673": 655370,
+          "675": 256,
+          "676": 655370,
+          "678": 257,
+          "679": 655370,
+          "681": 413,
+          "682": 65537,
+          "684": 414,
+          "685": 65537,
+          "687": 415,
+          "688": 65537,
+          "690": 433,
+          "691": 65537,
+          "693": 777,
+          "694": 655361,
+          "696": 778,
+          "697": 655361,
+          "1021": 2,
+          "1024": 1084227584,
+          "1025": 1087742630,
+          "1027": 5,
+          "1029": 1088892279,
+          "1030": 1088137304,
+          "1031": 1088137304,
+          "1039": 3,
+          "1043": 100663296,
+          "1185": 1065353216,
+          "1186": 1065353216,
+          "1187": 1065353216,
+          "1188": 1065353216,
+          "1189": 1065353216,
+          "1190": 1065353216,
+          "1191": 1065353216,
+          "1230": 4294967295,
+          "1279": 80,
+          "1312": 21,
+          "1313": 22,
+          "1314": 23,
+          "1315": 24,
+          "1316": 25,
+          "1317": 26
+        }
+      },
+      {
+        "sequence": 5,
+        "kind": 2,
+        "guid": "17370386647408969371",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -444.97900390625,
+            -4122.43017578125,
+            51.090999603271484,
+            0.4188790023326874
+          ]
+        },
+        "fields": {
+          "0": 2717910683,
+          "1": 4044358303,
+          "2": 33,
+          "3": 171938,
+          "4": 1065353216,
+          "8": 3451,
+          "9": 4,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 1677722369
+        }
+      },
+      {
+        "sequence": 5,
+        "kind": 2,
+        "guid": "17370386647408969370",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -423.5679931640625,
+            -4175.419921875,
+            50.841800689697266,
+            1.151919960975647
+          ]
+        },
+        "fields": {
+          "0": 2717910682,
+          "1": 4044358303,
+          "2": 33,
+          "3": 171938,
+          "4": 1065353216,
+          "8": 3451,
+          "9": 4,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 1677722369
+        }
+      },
+      {
+        "sequence": 5,
+        "kind": 2,
+        "guid": "17370386647408969368",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -422.6910095214844,
+            -4187.5498046875,
+            51.64739990234375,
+            -0.7504910230636597
+          ]
+        },
+        "fields": {
+          "0": 2717910680,
+          "1": 4044358303,
+          "2": 33,
+          "3": 171938,
+          "4": 1065353216,
+          "8": 3451,
+          "9": 4,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 1677722369
+        }
+      },
+      {
+        "sequence": 5,
+        "kind": 2,
+        "guid": "17370386647408969365",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -427.71099853515625,
+            -4185.25,
+            50.445098876953125,
+            -2.164210081100464
+          ]
+        },
+        "fields": {
+          "0": 2717910677,
+          "1": 4044358303,
+          "2": 33,
+          "3": 171938,
+          "4": 1065353216,
+          "8": 3451,
+          "9": 4,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 1677722369
+        }
+      },
+      {
+        "sequence": 5,
+        "kind": 2,
+        "guid": "17370386647408969372",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -404.260986328125,
+            -4263.580078125,
+            49.381099700927734,
+            -1.71042001247406
+          ]
+        },
+        "fields": {
+          "0": 2717910684,
+          "1": 4044358303,
+          "2": 33,
+          "3": 171938,
+          "4": 1065353216,
+          "8": 3451,
+          "9": 4,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 1677722369
+        }
+      },
+      {
+        "sequence": 5,
+        "kind": 2,
+        "guid": "17370386647408969362",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -489.6839904785156,
+            -4089.52001953125,
+            64.56069946289062,
+            0.907571017742157
+          ]
+        },
+        "fields": {
+          "0": 2717910674,
+          "1": 4044358303,
+          "2": 33,
+          "3": 171938,
+          "4": 1065353216,
+          "8": 3451,
+          "9": 4,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 1677722369
+        }
+      },
+      {
+        "sequence": 5,
+        "kind": 2,
+        "guid": "17370386647408969369",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -516.8889770507812,
+            -4187.0400390625,
+            77.13960266113281,
+            -1.2217299938201904
+          ]
+        },
+        "fields": {
+          "0": 2717910681,
+          "1": 4044358303,
+          "2": 33,
+          "3": 171938,
+          "4": 1065353216,
+          "8": 3451,
+          "9": 4,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 1677722369
+        }
+      },
+      {
+        "sequence": 5,
+        "kind": 2,
+        "guid": "17370386647408969351",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -523.0759887695312,
+            -4182.39013671875,
+            76.93609619140625,
+            0.5061450004577637
+          ]
+        },
+        "fields": {
+          "0": 2717910663,
+          "1": 4044358303,
+          "2": 33,
+          "3": 171938,
+          "4": 1065353216,
+          "8": 3451,
+          "9": 4,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 1677722369
+        }
+      },
+      {
+        "sequence": 5,
+        "kind": 2,
+        "guid": "17370386647408969401",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -487.60699462890625,
+            -4277.06005859375,
+            43.01279830932617,
+            1.0821000337600708
+          ]
+        },
+        "fields": {
+          "0": 2717910713,
+          "1": 4044358303,
+          "2": 33,
+          "3": 171938,
+          "4": 1065353216,
+          "8": 3451,
+          "9": 4,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 1677722369
+        }
+      },
+      {
+        "sequence": 5,
+        "kind": 2,
+        "guid": "17370386647408969399",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -486.9159851074219,
+            -4291.009765625,
+            43.21609878540039,
+            -0.7330380082130432
+          ]
+        },
+        "fields": {
+          "0": 2717910711,
+          "1": 4044358303,
+          "2": 33,
+          "3": 171938,
+          "4": 1065353216,
+          "8": 3451,
+          "9": 4,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 1677722369
+        }
+      },
+      {
+        "sequence": 5,
+        "kind": 2,
+        "guid": "17370384066150400209",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -557.6790161132812,
+            -4219.2099609375,
+            41.59040069580078,
+            3.115339994430542
+          ]
+        },
+        "fields": {
+          "0": 2734686417,
+          "1": 4044357702,
+          "2": 33,
+          "3": 18083,
+          "4": 1065353216,
+          "8": 216,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 4278192129
+        }
+      },
+      {
+        "sequence": 5,
+        "kind": 2,
+        "guid": "17370383975251443920",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -563.0159912109375,
+            -4217.509765625,
+            41.5900993347168,
+            2.7870399951934814
+          ]
+        },
+        "fields": {
+          "0": 2030043344,
+          "1": 4044357681,
+          "2": 33,
+          "3": 12665,
+          "4": 1065353216,
+          "8": 331,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 1677723649
+        }
+      },
+      {
+        "sequence": 5,
+        "kind": 2,
+        "guid": "17370386647408967939",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -551.5759887695312,
+            -4292.259765625,
+            37.09349822998047,
+            -1.9198600053787231
+          ]
+        },
+        "fields": {
+          "0": 2717909251,
+          "1": 4044358303,
+          "2": 33,
+          "3": 171938,
+          "4": 1065353216,
+          "8": 3451,
+          "9": 4,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 1677722369
+        }
+      },
+      {
+        "sequence": 6,
+        "kind": 0,
+        "guid": "9",
+        "fields": {
+          "61": 0,
+          "79": 0,
+          "82": 0,
+          "1197": 8
+        }
+      },
+      {
+        "sequence": 8,
+        "kind": 4,
+        "guids": [
+          "17370386647408967939"
+        ]
+      },
+      {
+        "sequence": 8,
+        "kind": 2,
+        "guid": "17379391014434772292",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -450.6818542480469,
+            -4119.68212890625,
+            50.99258041381836,
+            -0.8428602814674377
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 7
+        },
+        "fields": {
+          "0": 872420676,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3124,
+          "4": 1065353216,
+          "23": 131328,
+          "24": 71,
+          "32": 71,
+          "54": 3,
+          "55": 7,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052102067,
+          "66": 1060490659,
+          "67": 2485,
+          "68": 2485,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 8,
+        "kind": 2,
+        "guid": "17379391014434772255",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -508.44390869140625,
+            -4118.41162109375,
+            60.645511627197266,
+            2.870591163635254
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 5
+        },
+        "fields": {
+          "0": 872420639,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3124,
+          "4": 1065353216,
+          "23": 131328,
+          "24": 71,
+          "32": 71,
+          "54": 3,
+          "55": 7,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052102067,
+          "66": 1060490659,
+          "67": 2485,
+          "68": 2485,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 8,
+        "kind": 2,
+        "guid": "17379391014434772239",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -521.6617431640625,
+            -4074.929443359375,
+            71.46040344238281,
+            0.06211232766509056
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 5
+        },
+        "fields": {
+          "0": 872420623,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3124,
+          "4": 1065353216,
+          "23": 131328,
+          "24": 71,
+          "32": 71,
+          "54": 3,
+          "55": 7,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052102067,
+          "66": 1060490659,
+          "67": 2485,
+          "68": 2485,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 8,
+        "kind": 2,
+        "guid": "17379391014434772260",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -509.7748718261719,
+            -4171.3662109375,
+            77.1594009399414,
+            0.45063671469688416
+          ],
+          "movement_flags": 0,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 872420644,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3124,
+          "4": 1065353216,
+          "23": 131328,
+          "24": 71,
+          "32": 71,
+          "54": 3,
+          "55": 7,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052102067,
+          "66": 1060490659,
+          "67": 2485,
+          "68": 2485,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 8,
+        "kind": 2,
+        "guid": "17379391013998564620",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -485.6072692871094,
+            -4146.98779296875,
+            55.10844039916992,
+            2.3222222328186035
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 5
+        },
+        "fields": {
+          "0": 436213004,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3098,
+          "4": 1065353216,
+          "23": 131328,
+          "24": 55,
+          "32": 55,
+          "54": 2,
+          "55": 189,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1061082811,
+          "66": 1059211044,
+          "67": 503,
+          "68": 503,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 8,
+        "kind": 2,
+        "guid": "17379391014434772194",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -510.7759704589844,
+            -4155.3818359375,
+            77.38893127441406,
+            -2.030465841293335
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 5
+        },
+        "fields": {
+          "0": 872420578,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3124,
+          "4": 1065353216,
+          "23": 131328,
+          "24": 71,
+          "32": 71,
+          "54": 3,
+          "55": 7,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052102067,
+          "66": 1060490659,
+          "67": 2485,
+          "68": 2485,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 8,
+        "kind": 2,
+        "guid": "17379391017068790536",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -541.3533325195312,
+            -4107.77294921875,
+            66.5825424194336,
+            -1.259661078453064
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 12
+        },
+        "fields": {
+          "0": 3506438920,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3281,
+          "4": 1065353216,
+          "23": 131328,
+          "24": 86,
+          "32": 86,
+          "54": 4,
+          "55": 14,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1061158912,
+          "66": 1069547520,
+          "67": 6068,
+          "68": 6068,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 8,
+        "kind": 2,
+        "guid": "17379391061863957255",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -557.6590576171875,
+            -4084.390380859375,
+            69.44359588623047,
+            1.5572772026062012
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 7
+        },
+        "fields": {
+          "0": 1056965383,
+          "1": 4046454807,
+          "2": 9,
+          "3": 5951,
+          "4": 1065353216,
+          "23": 131328,
+          "24": 9,
+          "32": 9,
+          "54": 1,
+          "55": 31,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1043626721,
+          "66": 1061158912,
+          "67": 1560,
+          "68": 1560,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 8,
+        "kind": 2,
+        "guid": "17379391014434767620",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -544.4658203125,
+            -4080.81005859375,
+            71.63172149658203,
+            -0.7354907393455505
+          ],
+          "movement_flags": 0,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 872416004,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3124,
+          "4": 1065353216,
+          "23": 131328,
+          "24": 71,
+          "32": 71,
+          "54": 3,
+          "55": 7,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052102067,
+          "66": 1060490659,
+          "67": 2485,
+          "68": 2485,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 8,
+        "kind": 2,
+        "guid": "17379391014434767616",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -575.9053344726562,
+            -4108.00341796875,
+            72.68303680419922,
+            1.300140380859375
+          ],
+          "movement_flags": 0,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 872416000,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3124,
+          "4": 1065353216,
+          "23": 131328,
+          "24": 71,
+          "32": 71,
+          "54": 3,
+          "55": 7,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052102067,
+          "66": 1060490659,
+          "67": 2485,
+          "68": 2485,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 8,
+        "kind": 2,
+        "guid": "17379391014434767612",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -540.8456420898438,
+            -4123.30029296875,
+            65.16521453857422,
+            -1.7712476253509521
+          ],
+          "movement_flags": 0,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 872415996,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3124,
+          "4": 1065353216,
+          "23": 131328,
+          "24": 71,
+          "32": 71,
+          "54": 3,
+          "55": 7,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052102067,
+          "66": 1060490659,
+          "67": 2485,
+          "68": 2485,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 8,
+        "kind": 2,
+        "guid": "17379391015055524590",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -582.4340209960938,
+            -4102.68017578125,
+            42.704898834228516,
+            4.0142598152160645
+          ],
+          "movement_flags": 0,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 1493172974,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3161,
+          "4": 1065353216,
+          "23": 256,
+          "24": 198,
+          "32": 198,
+          "54": 10,
+          "55": 29,
+          "57": 1961,
+          "59": 768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052669641,
+          "66": 1069547520,
+          "67": 1885,
+          "68": 1885,
+          "79": 0,
+          "80": 1065353216,
+          "82": 4224,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 8,
+        "kind": 2,
+        "guid": "17379391014434767590",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -577.9888305664062,
+            -4074.1611328125,
+            71.9887466430664,
+            0.5389363765716553
+          ],
+          "movement_flags": 0,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 872415974,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3124,
+          "4": 1065353216,
+          "23": 131328,
+          "24": 71,
+          "32": 71,
+          "54": 3,
+          "55": 7,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052102067,
+          "66": 1060490659,
+          "67": 2485,
+          "68": 2485,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 8,
+        "kind": 2,
+        "guid": "17379391015021970141",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -588.8289794921875,
+            -4102.27001953125,
+            43.54650115966797,
+            4.677480220794678
+          ],
+          "movement_flags": 0,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 1459618525,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3159,
+          "4": 1065353216,
+          "23": 256,
+          "24": 1280,
+          "32": 1280,
+          "54": 34,
+          "55": 29,
+          "56": 1896,
+          "59": 768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052669641,
+          "66": 1069547520,
+          "67": 1883,
+          "68": 1883,
+          "79": 0,
+          "80": 1065353216,
+          "82": 4224,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 8,
+        "kind": 2,
+        "guid": "17379391015038747356",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -581.7340087890625,
+            -4109.509765625,
+            43.60770034790039,
+            3.75246000289917
+          ],
+          "movement_flags": 0,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 1476395740,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3160,
+          "4": 1065353216,
+          "23": 256,
+          "24": 222,
+          "32": 222,
+          "54": 11,
+          "55": 29,
+          "59": 768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052669641,
+          "66": 1069547520,
+          "67": 1881,
+          "68": 1881,
+          "79": 0,
+          "80": 1065353216,
+          "82": 4226,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 8,
+        "kind": 2,
+        "guid": "17379391014434767619",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -546.120361328125,
+            -4147.24072265625,
+            73.20267486572266,
+            2.3674378395080566
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 5
+        },
+        "fields": {
+          "0": 872416003,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3124,
+          "4": 1065353216,
+          "23": 131328,
+          "24": 71,
+          "32": 71,
+          "54": 3,
+          "55": 7,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052102067,
+          "66": 1060490659,
+          "67": 2485,
+          "68": 2485,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 8,
+        "kind": 2,
+        "guid": "17379391014434767618",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -587.40478515625,
+            -4151.60009765625,
+            76.53182220458984,
+            0.0
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 6
+        },
+        "fields": {
+          "0": 872416002,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3124,
+          "4": 1065353216,
+          "23": 131328,
+          "24": 71,
+          "32": 71,
+          "54": 3,
+          "55": 7,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052102067,
+          "66": 1060490659,
+          "67": 2485,
+          "68": 2485,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 8,
+        "kind": 2,
+        "guid": "17379391061880734452",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -599.9390258789062,
+            -4191.990234375,
+            41.18239974975586,
+            4.171339988708496
+          ],
+          "movement_flags": 0,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 1073742580,
+          "1": 4046454807,
+          "2": 9,
+          "3": 5952,
+          "4": 1065353216,
+          "23": 65792,
+          "24": 11828,
+          "32": 11828,
+          "54": 65,
+          "55": 85,
+          "56": 5289,
+          "58": 2507,
+          "59": 32768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1047636476,
+          "66": 1069547520,
+          "67": 9795,
+          "68": 9795,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 257,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 8,
+        "kind": 2,
+        "guid": "17379391014954861293",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -588.7030029296875,
+            -4144.93994140625,
+            41.10329818725586,
+            3.6302900314331055
+          ],
+          "movement_flags": 0,
+          "movement_clock": 563011192,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ]
+        },
+        "fields": {
+          "0": 1392509677,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3155,
+          "4": 1065353216,
+          "23": 256,
+          "24": 156,
+          "32": 156,
+          "54": 8,
+          "55": 29,
+          "56": 2711,
+          "59": 768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052669641,
+          "66": 1069547520,
+          "67": 1886,
+          "68": 1886,
+          "79": 0,
+          "80": 1065353216,
+          "82": 35,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 9,
+        "kind": 2,
+        "guid": "17379391061880734440",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -603.614501953125,
+            -4198.650390625,
+            41.082183837890625,
+            1.5533097982406616
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 563011477,
+          "speeds": [
+            2.5,
+            8.000020027160645,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 5
+        },
+        "fields": {
+          "0": 1073742568,
+          "1": 4046454807,
+          "2": 9,
+          "3": 5952,
+          "4": 1065353216,
+          "23": 256,
+          "24": 11828,
+          "32": 11828,
+          "54": 65,
+          "55": 85,
+          "56": 5289,
+          "58": 2507,
+          "59": 32768,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052669641,
+          "66": 1069547520,
+          "67": 9797,
+          "68": 9797,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 256,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 10,
+        "kind": 2,
+        "guid": "17370386543440560341",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -593.5130004882812,
+            -4116.580078125,
+            44.445701599121094,
+            4.419449806213379
+          ]
+        },
+        "fields": {
+          "0": 1828716757,
+          "1": 4044358279,
+          "2": 33,
+          "3": 165741,
+          "4": 1065353216,
+          "8": 201,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 4278192129
+        }
+      },
+      {
+        "sequence": 11,
+        "kind": 4,
+        "guids": [
+          "17379391014434772292"
+        ]
+      },
+      {
+        "sequence": 11,
+        "kind": 2,
+        "guid": "17379391013998564631",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -478.1163330078125,
+            -4184.646484375,
+            50.50895690917969,
+            3.0860443115234375
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 563012516,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 5
+        },
+        "fields": {
+          "0": 436213015,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3098,
+          "4": 1065353216,
+          "23": 131328,
+          "24": 55,
+          "32": 55,
+          "54": 2,
+          "55": 189,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1061082811,
+          "66": 1059211044,
+          "67": 503,
+          "68": 503,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 13,
+        "kind": 3,
+        "guid": "17366161638117343236",
+        "type_id": 7,
+        "movement": {
+          "update_flags": 336,
+          "position_xyzo": [
+            -549.3333129882812,
+            -4113.52734375,
+            68.05752563476562,
+            3.0943868160247803
+          ]
+        },
+        "fields": {
+          "0": 4,
+          "1": 4043374592,
+          "2": 129,
+          "4": 1065353216,
+          "6": 9,
+          "10": 51,
+          "14": 67118859,
+          "17": 117450500,
+          "18": 134227720,
+          "26": 285234963,
+          "30": 16777728,
+          "31": 67371008,
+          "33": 4,
+          "34": 0
+        }
+      },
+      {
+        "sequence": 17,
+        "kind": 2,
+        "guid": "17370386647408969360",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -482.6369934082031,
+            -4083.919921875,
+            65.42040252685547,
+            -0.08726699650287628
+          ]
+        },
+        "fields": {
+          "0": 2717910672,
+          "1": 4044358303,
+          "2": 33,
+          "3": 171938,
+          "4": 1065353216,
+          "8": 3451,
+          "9": 4,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 1677722369
+        }
+      },
+      {
+        "sequence": 21,
+        "kind": 4,
+        "guids": [
+          "2287828610704211972"
+        ]
+      },
+      {
+        "sequence": 25,
+        "kind": 2,
+        "guid": "17379391014434772291",
+        "type_id": 3,
+        "movement": {
+          "update_flags": 96,
+          "position_xyzo": [
+            -457.1317443847656,
+            -4154.20068359375,
+            48.56232452392578,
+            3.0646119117736816
+          ],
+          "movement_flags": 134217729,
+          "movement_clock": 563017698,
+          "speeds": [
+            2.5,
+            5.9999799728393555,
+            4.5,
+            4.722221851348877,
+            2.5,
+            7.0,
+            4.5,
+            3.1415939331054688,
+            3.140000104904175
+          ],
+          "spline_nodes": 5
+        },
+        "fields": {
+          "0": 872420675,
+          "1": 4046454796,
+          "2": 9,
+          "3": 3124,
+          "4": 1065353216,
+          "23": 131328,
+          "24": 71,
+          "32": 71,
+          "54": 3,
+          "55": 7,
+          "60": 2048,
+          "61": 4194304,
+          "62": 2000,
+          "63": 2000,
+          "65": 1052102067,
+          "66": 1060490659,
+          "67": 2485,
+          "68": 2485,
+          "79": 0,
+          "80": 1065353216,
+          "82": 0,
+          "122": 1,
+          "146": 1065353216
+        }
+      },
+      {
+        "sequence": 32,
+        "kind": 4,
+        "guids": [
+          "17370386647408969372"
+        ]
+      },
+      {
+        "sequence": 37,
+        "kind": 2,
+        "guid": "17370386647408969367",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -407.9679870605469,
+            -4061.419921875,
+            51.86470031738281,
+            -0.22689299285411835
+          ]
+        },
+        "fields": {
+          "0": 2717910679,
+          "1": 4044358303,
+          "2": 33,
+          "3": 171938,
+          "4": 1065353216,
+          "8": 3451,
+          "9": 4,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 1677722369
+        }
+      },
+      {
+        "sequence": 37,
+        "kind": 2,
+        "guid": "17370386543507669213",
+        "type_id": 5,
+        "movement": {
+          "update_flags": 848,
+          "position_xyzo": [
+            -583.1069946289062,
+            -4123.9501953125,
+            44.09700012207031,
+            2.4725699424743652
+          ]
+        },
+        "fields": {
+          "0": 1895825629,
+          "1": 4044358279,
+          "2": 33,
+          "3": 165745,
+          "4": 1065353216,
+          "8": 201,
+          "13": 1065353216,
+          "14": 4294901760,
+          "17": 4278192129
+        }
+      },
+      {
+        "sequence": 40,
+        "kind": 4,
+        "guids": [
+          "17379391013998564631"
+        ]
+      }
+    ]
+  },
+  "query_corpse": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {}
+  },
+  "recovery_events": [
+    {
+      "sequence": 44,
+      "kind": "corpse",
+      "corpse": {
+        "found": true,
+        "map": 1,
+        "position_xyz": [
+          -549.3333129882812,
+          -4113.52734375,
+          68.05752563476562
+        ],
+        "corpse_map": 1,
+        "unknown": 0
+      }
+    }
+  ],
+  "reclaim_corpse": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {}
+  },
+  "recovery_self": {
+    "guid": "9",
+    "type_id": 4,
+    "created_seq": 3,
+    "movement": {
+      "update_flags": 97,
+      "position_xyzo": [
+        -482.2226867675781,
+        -4191.6669921875,
+        51.32472610473633,
+        1.1344013214111328
+      ],
+      "movement_flags": 0,
+      "movement_clock": 563006688,
+      "speeds": [
+        2.5,
+        10.5,
+        4.5,
+        7.0833330154418945,
+        2.5,
+        7.0,
+        4.5,
+        3.1415939331054688,
+        3.140000104904175
+      ]
+    },
+    "last_seq": 6,
+    "field_count": 139,
+    "entry": 0,
+    "health": 1,
+    "max_health": 89,
+    "level": 2,
+    "bytes0": 16777474,
+    "powers": [
+      0,
+      0,
+      0,
+      100,
+      0,
+      0,
+      0
+    ],
+    "max_powers": [
+      0,
+      1000,
+      0,
+      100,
+      0,
+      0,
+      1000
+    ],
+    "unit_flags": 8,
+    "unit_flags_transmitted": true,
+    "in_combat": false,
+    "player_flags": 16,
+    "ghost": true,
+    "quest_log": [
+      {
+        "slot": 0,
+        "quest": 789,
+        "state": 0,
+        "counters": [
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  "final_quest_log": [
+    {
+      "slot": 0,
+      "quest": 789,
+      "state": 0,
+      "counters": [
+        0,
+        0
+      ]
+    }
+  ],
+  "owned_item_totals": {
+    "6125": 1,
+    "139": 1,
+    "140": 1,
+    "12282": 1,
+    "6948": 1,
+    "7098": 1,
+    "4915": 1,
+    "4867": 1,
+    "7099": 1,
+    "4862": 2,
+    "7101": 1
+  },
+  "quest_progress_events": [],
+  "logout": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+      "status": "closed"
+    }
+  },
+  "returncode": 0
+}

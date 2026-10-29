@@ -1,0 +1,49 @@
+syntax = "proto3";
+package research.bridge.v1;
+option go_package = "wow-research/bridge/api;api";
+import "api/module/v1/session.proto";
+import "google/protobuf/empty.proto";
+message PollRequest { uint64 after = 1; uint32 limit = 2; }
+message CreatureQueryRequest { uint32 entry = 1; uint64 guid = 2; }
+message StepRequest { float distance = 1; }
+message StepResponse { repeated float submitted_position = 1; uint32 elapsed_ms = 2; }
+message Waypoint { float x = 1; float y = 2; float z = 3; }
+message PathRequest { repeated Waypoint points = 1; bool run = 2; }
+message AttackRequest { uint64 guid = 1; }
+message FaceRequest { float angle = 1; }
+message LootRequest { uint64 guid = 1; }
+message LootSlotRequest { uint32 slot = 1; }
+message QuestRequest { uint64 guid = 1; uint32 quest = 2; }
+message Packet { uint64 sequence = 1; uint32 monotonic_ms = 2; uint32 opcode = 3; bytes payload = 4; }
+message PollResponse {
+ string session_id = 1;
+ string self_guid = 2;
+ uint64 first_sequence = 3;
+ uint64 last_sequence = 4;
+ bool gap = 5;
+ repeated Packet packets = 6;
+ uint64 dropped = 7;
+}
+service Bridge {
+ rpc SpiritHealer(LootRequest) returns (google.protobuf.Empty);
+ rpc StartAttack(AttackRequest) returns (google.protobuf.Empty);
+ rpc ReleaseSpirit(google.protobuf.Empty) returns (google.protobuf.Empty);
+ rpc QueryCorpse(google.protobuf.Empty) returns (google.protobuf.Empty);
+ rpc ReclaimCorpse(LootRequest) returns (google.protobuf.Empty);
+ rpc CompleteQuest(QuestRequest) returns (google.protobuf.Empty);
+ rpc RewardQuest(QuestRequest) returns (google.protobuf.Empty);
+ rpc QuestHello(LootRequest) returns (google.protobuf.Empty);
+ rpc QueryQuest(QuestRequest) returns (google.protobuf.Empty);
+ rpc AcceptQuest(QuestRequest) returns (google.protobuf.Empty);
+ rpc OpenLoot(LootRequest) returns (google.protobuf.Empty);
+ rpc TakeLoot(LootSlotRequest) returns (google.protobuf.Empty);
+ rpc ReleaseLoot(LootRequest) returns (google.protobuf.Empty);
+ rpc Face(FaceRequest) returns (google.protobuf.Empty);
+ rpc StopAttack(google.protobuf.Empty) returns (google.protobuf.Empty);
+ rpc FollowPath(PathRequest) returns (StepResponse);
+ rpc AttackOnce(AttackRequest) returns (google.protobuf.Empty);
+ rpc Step(StepRequest) returns (StepResponse);
+ rpc QueryCreature(CreatureQueryRequest) returns (google.protobuf.Empty);
+ rpc Poll(PollRequest) returns (PollResponse);
+ rpc OnPacket(agentwow.module.v1.WorldPacket) returns (google.protobuf.Empty);
+}

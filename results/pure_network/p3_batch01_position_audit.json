@@ -1,0 +1,68 @@
+{
+  "run_id": "p3_batch01_unit1",
+  "trace_sha256": "534cd266adef7329a7a2589f1874ad26671f88ea0f242ae59d66fab1bc10a7df",
+  "trace_capture_complete": false,
+  "decode_errors": [],
+  "self_movement_events": [
+    {
+      "sequence": 3,
+      "kind": 3,
+      "movement": {
+        "update_flags": 97,
+        "position_xyzo": [
+          -709.0516967773438,
+          -4348.9560546875,
+          49.07902145385742,
+          1.436344027519226
+        ],
+        "movement_flags": 0,
+        "movement_clock": 603858390,
+        "speeds": [
+          2.5,
+          7.0,
+          4.5,
+          4.722221851348877,
+          2.5,
+          7.0,
+          4.5,
+          3.1415939331054688,
+          3.140000104904175
+        ]
+      }
+    }
+  ],
+  "last_self_movement_sequence": 3,
+  "approach_status": "unknown",
+  "position_confirmation": {
+    "confirmed": false,
+    "movement_sequence": 3,
+    "before_sequence": 3,
+    "last_update_position": [
+      -709.0516967773438,
+      -4348.9560546875,
+      49.07902145385742
+    ],
+    "submitted_position": [
+      -705.1117,
+      -4347.943,
+      48.86929
+    ],
+    "scope": "movement update required; polling does not refresh position"
+  },
+  "new_movement_after_request": false,
+  "logout": {
+    "status": "closed",
+    "reply": {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "result": {
+        "status": "closed"
+      }
+    }
+  },
+  "scope": "selected polled substream, not every server packet; absence does not prove movement rejection",
+  "source_semantics": {
+    "MovementHandler.cpp:395": "SendMessageToSet(&data, _player) excludes originating player",
+    "Object.cpp:2124-2127": "skipped_rcvr passed to MessageDistDeliverer"
+  }
+}

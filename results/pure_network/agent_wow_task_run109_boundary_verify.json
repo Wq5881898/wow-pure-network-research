@@ -1,0 +1,42 @@
+{
+  "run_id": "run109_boundary_verify",
+  "plan": [
+    {
+      "id": "verify_alive",
+      "kind": "require_alive",
+      "params": {},
+      "timeout": 15.0,
+      "side_effecting": false
+    },
+    {
+      "id": "logout",
+      "kind": "logout",
+      "params": {},
+      "timeout": 45,
+      "side_effecting": true
+    }
+  ],
+  "position_verification": {
+    "confirmed": false,
+    "source_session": "aw-2303836864",
+    "verification_session": "aw-1903032530",
+    "character": "9",
+    "map": 1,
+    "expected_map": 1,
+    "expected_xyz": [
+      -709.0517,
+      -4348.956,
+      49.07902
+    ],
+    "login_xyz": [
+      -705.1116943359375,
+      -4347.94287109375,
+      48.86928939819336
+    ],
+    "distance": 4.073580947871075,
+    "tolerance": 1,
+    "scope": "later login boundary; not live movement acknowledgement"
+  },
+  "error": "ValueError: new login does not confirm submitted endpoint",
+  "elapsed_s": 32.117
+}

@@ -1,0 +1,105 @@
+{
+  "status": "PASS",
+  "gateway": "172.22.112.1",
+  "scope": "Docker bridge world-state substream",
+  "operations": [
+    {
+      "cursor": 4,
+      "last_sequence": "6",
+      "page_count": 4
+    },
+    {
+      "cursor": 6,
+      "last_sequence": "6",
+      "page_count": 2
+    },
+    {
+      "cursor": 6,
+      "last_sequence": "6",
+      "page_count": 0
+    },
+    {
+      "cursor": 6,
+      "last_sequence": "6",
+      "page_count": 0
+    },
+    {
+      "cursor": 6,
+      "last_sequence": "6",
+      "page_count": 0
+    },
+    {
+      "cursor": 7,
+      "last_sequence": "7",
+      "page_count": 1
+    },
+    {
+      "cursor": 7,
+      "last_sequence": "7",
+      "page_count": 0
+    },
+    {
+      "cursor": 7,
+      "last_sequence": "7",
+      "page_count": 0
+    },
+    {
+      "cursor": 7,
+      "last_sequence": "7",
+      "page_count": 0
+    },
+    {
+      "cursor": 7,
+      "last_sequence": "7",
+      "page_count": 0
+    },
+    {
+      "cursor": 7,
+      "last_sequence": "7",
+      "page_count": 0
+    },
+    {
+      "cursor": 7,
+      "last_sequence": "7",
+      "page_count": 0
+    }
+  ],
+  "future_cursor_rejection": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "error": {
+      "code": -32000,
+      "message": "rpc error: code = InvalidArgument desc = cursor is ahead of stream",
+      "data": {
+        "grpc_details": null,
+        "grpc_message": "cursor is ahead of stream",
+        "grpc_status": "InvalidArgument",
+        "method": "poll",
+        "module": "bridge"
+      }
+    }
+  },
+  "oversize_page_rejection": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "error": {
+      "code": -32000,
+      "message": "rpc error: code = InvalidArgument desc = limit exceeds 128",
+      "data": {
+        "grpc_details": null,
+        "grpc_message": "limit exceeds 128",
+        "grpc_status": "InvalidArgument",
+        "method": "poll",
+        "module": "bridge"
+      }
+    }
+  },
+  "logout": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+      "status": "closed"
+    }
+  },
+  "returncode": 0
+}

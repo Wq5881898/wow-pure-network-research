@@ -1,0 +1,25 @@
+{
+  "gateway": "172.22.112.1",
+  "relay_scope": "temporary WSL loopback only; Windows server unchanged",
+  "operations": [
+    {
+      "args": [
+        "auth",
+        "login"
+      ],
+      "returncode": 0,
+      "stdout": "Authentication success.\nUsername: AWLAB960D7C\nAccount flags: 0x00000000 (none)\nAuthserver: 127.0.0.1:3724\nSelected realm: AzerothCore (ID: 1)\nAddress: 127.0.0.1:8085\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "char",
+        "list",
+        "--json"
+      ],
+      "returncode": 0,
+      "stdout": "{\n  \"realm\": {\n    \"id\": 1,\n    \"name\": \"AzerothCore\"\n  },\n  \"characters\": [\n    {\n      \"guid\": \"9\",\n      \"name\": \"Netprobe\",\n      \"race\": \"Orc\",\n      \"class\": \"Warrior\",\n      \"gender\": \"Male\",\n      \"level\": 1,\n      \"zone_id\": 14,\n      \"zone_name\": \"Durotar\",\n      \"map_id\": 1,\n      \"map_name\": \"Kalimdor\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

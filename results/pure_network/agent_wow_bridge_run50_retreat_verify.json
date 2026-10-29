@@ -1,0 +1,467 @@
+{
+  "status": "PASS",
+  "gateway": "172.22.112.1",
+  "scope": "Docker bridge world-state substream",
+  "operations": [
+    {
+      "cursor": 4,
+      "last_sequence": "5",
+      "page_count": 4
+    },
+    {
+      "cursor": 6,
+      "last_sequence": "6",
+      "page_count": 2
+    },
+    {
+      "cursor": 6,
+      "last_sequence": "6",
+      "page_count": 0
+    },
+    {
+      "cursor": 7,
+      "last_sequence": "7",
+      "page_count": 1
+    },
+    {
+      "cursor": 9,
+      "last_sequence": "9",
+      "page_count": 2
+    },
+    {
+      "cursor": 10,
+      "last_sequence": "10",
+      "page_count": 1
+    },
+    {
+      "cursor": 11,
+      "last_sequence": "11",
+      "page_count": 1
+    },
+    {
+      "cursor": 14,
+      "last_sequence": "14",
+      "page_count": 3
+    },
+    {
+      "cursor": 16,
+      "last_sequence": "16",
+      "page_count": 2
+    },
+    {
+      "cursor": 16,
+      "last_sequence": "16",
+      "page_count": 0
+    },
+    {
+      "cursor": 16,
+      "last_sequence": "16",
+      "page_count": 0
+    },
+    {
+      "cursor": 16,
+      "last_sequence": "16",
+      "page_count": 0
+    }
+  ],
+  "future_cursor_rejection": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "error": {
+      "code": -32000,
+      "message": "rpc error: code = InvalidArgument desc = cursor is ahead of stream",
+      "data": {
+        "grpc_details": null,
+        "grpc_message": "cursor is ahead of stream",
+        "grpc_status": "InvalidArgument",
+        "method": "poll",
+        "module": "bridge"
+      }
+    }
+  },
+  "oversize_page_rejection": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "error": {
+      "code": -32000,
+      "message": "rpc error: code = InvalidArgument desc = limit exceeds 128",
+      "data": {
+        "grpc_details": null,
+        "grpc_message": "limit exceeds 128",
+        "grpc_status": "InvalidArgument",
+        "method": "poll",
+        "module": "bridge"
+      }
+    }
+  },
+  "initial_self": {
+    "guid": "9",
+    "type_id": 4,
+    "created_seq": 3,
+    "movement": {
+      "update_flags": 97,
+      "position_xyzo": [
+        -664.8888549804688,
+        -4287.92724609375,
+        40.91183090209961,
+        6.262753486633301
+      ],
+      "movement_flags": 0,
+      "movement_clock": 556956794,
+      "speeds": [
+        2.5,
+        7.0,
+        4.5,
+        4.722221851348877,
+        2.5,
+        7.0,
+        4.5,
+        3.1415939331054688,
+        3.140000104904175
+      ]
+    },
+    "last_seq": 3,
+    "field_count": 129,
+    "entry": 0,
+    "health": 70,
+    "max_health": 70,
+    "level": 1,
+    "bytes0": 16777474,
+    "powers": [
+      0,
+      0,
+      0,
+      100,
+      0,
+      0,
+      0
+    ],
+    "max_powers": [
+      0,
+      1000,
+      0,
+      100,
+      0,
+      0,
+      1000
+    ],
+    "unit_flags": 8,
+    "unit_flags_transmitted": true,
+    "in_combat": false,
+    "player_flags": 0,
+    "ghost": false,
+    "quest_log": [
+      {
+        "slot": 0,
+        "quest": 788,
+        "state": 0,
+        "counters": [
+          1,
+          0
+        ]
+      }
+    ]
+  },
+  "queries": [
+    {
+      "entry": 5952,
+      "guid": "17379391061880734444",
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "result": {}
+      }
+    },
+    {
+      "entry": 3153,
+      "guid": "17379391014921306871",
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "result": {}
+      }
+    },
+    {
+      "entry": 3154,
+      "guid": "17379391014938084085",
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "result": {}
+      }
+    },
+    {
+      "entry": 3157,
+      "guid": "17379391014988415722",
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "result": {}
+      }
+    },
+    {
+      "entry": 3707,
+      "guid": "17379391024215884513",
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "result": {}
+      }
+    }
+  ],
+  "invalid_query_rejection": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "error": {
+      "code": -32000,
+      "message": "rpc error: code = InvalidArgument desc = entry and GUID must be valid nonzero values",
+      "data": {
+        "grpc_details": null,
+        "grpc_message": "entry and GUID must be valid nonzero values",
+        "grpc_status": "InvalidArgument",
+        "method": "query_creature",
+        "module": "bridge"
+      }
+    }
+  },
+  "missing_template_request": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {}
+  },
+  "creature_templates": {
+    "5952": {
+      "entry": 5952,
+      "found": true,
+      "name": "Den Grunt",
+      "alternate_names": [
+        "",
+        "",
+        ""
+      ],
+      "title": "",
+      "icon": "",
+      "type_flags": 0,
+      "creature_type": 7,
+      "family": 0,
+      "rank": 0,
+      "kill_credit": [
+        0,
+        0
+      ],
+      "models": [
+        9794,
+        9795,
+        9797,
+        9796
+      ],
+      "modifiers": [
+        2.0,
+        1.0
+      ],
+      "racial_leader": 0,
+      "quest_items": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "movement_id": 0
+    },
+    "3153": {
+      "entry": 3153,
+      "found": true,
+      "name": "Frang",
+      "alternate_names": [
+        "",
+        "",
+        ""
+      ],
+      "title": "Warrior Trainer",
+      "icon": "",
+      "type_flags": 0,
+      "creature_type": 7,
+      "family": 0,
+      "rank": 0,
+      "kill_credit": [
+        0,
+        0
+      ],
+      "models": [
+        1880,
+        0,
+        0,
+        0
+      ],
+      "modifiers": [
+        1.0,
+        1.0
+      ],
+      "racial_leader": 0,
+      "quest_items": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "movement_id": 0
+    },
+    "3154": {
+      "entry": 3154,
+      "found": true,
+      "name": "Jen'shan",
+      "alternate_names": [
+        "",
+        "",
+        ""
+      ],
+      "title": "Hunter Trainer",
+      "icon": "",
+      "type_flags": 0,
+      "creature_type": 7,
+      "family": 0,
+      "rank": 0,
+      "kill_credit": [
+        0,
+        0
+      ],
+      "models": [
+        1882,
+        0,
+        0,
+        0
+      ],
+      "modifiers": [
+        1.0,
+        1.0
+      ],
+      "racial_leader": 0,
+      "quest_items": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "movement_id": 0
+    },
+    "3157": {
+      "entry": 3157,
+      "found": true,
+      "name": "Shikrik",
+      "alternate_names": [
+        "",
+        "",
+        ""
+      ],
+      "title": "Shaman Trainer",
+      "icon": "",
+      "type_flags": 0,
+      "creature_type": 7,
+      "family": 0,
+      "rank": 0,
+      "kill_credit": [
+        0,
+        0
+      ],
+      "models": [
+        1878,
+        0,
+        0,
+        0
+      ],
+      "modifiers": [
+        1.0,
+        1.0
+      ],
+      "racial_leader": 0,
+      "quest_items": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "movement_id": 0
+    },
+    "3707": {
+      "entry": 3707,
+      "found": true,
+      "name": "Ken'jai",
+      "alternate_names": [
+        "",
+        "",
+        ""
+      ],
+      "title": "Priest Trainer",
+      "icon": "",
+      "type_flags": 0,
+      "creature_type": 7,
+      "family": 0,
+      "rank": 0,
+      "kill_credit": [
+        0,
+        0
+      ],
+      "models": [
+        4068,
+        0,
+        0,
+        0
+      ],
+      "modifiers": [
+        1.0,
+        1.0
+      ],
+      "racial_leader": 0,
+      "quest_items": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "movement_id": 0
+    },
+    "2147483647": {
+      "entry": 2147483647,
+      "found": false
+    }
+  },
+  "login_position": {
+    "map": 1,
+    "position_xyzo": [
+      -664.8888549804688,
+      -4287.92724609375,
+      40.91183090209961,
+      6.262753486633301
+    ]
+  },
+  "final_quest_log": [
+    {
+      "slot": 0,
+      "quest": 788,
+      "state": 0,
+      "counters": [
+        1,
+        0
+      ]
+    }
+  ],
+  "quest_progress_events": [],
+  "logout": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+      "status": "closed"
+    }
+  },
+  "returncode": 0
+}

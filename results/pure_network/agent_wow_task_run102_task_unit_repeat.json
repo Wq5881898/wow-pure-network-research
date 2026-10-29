@@ -1,0 +1,672 @@
+{
+  "run_id": "run102_task_unit_repeat",
+  "plan": [
+    {
+      "id": "verify_alive",
+      "kind": "require_alive",
+      "params": {},
+      "timeout": 10,
+      "side_effecting": false
+    },
+    {
+      "id": "select_target",
+      "kind": "select_target",
+      "params": {
+        "entry": 3124,
+        "max_level": 3
+      },
+      "timeout": 15,
+      "side_effecting": false
+    },
+    {
+      "id": "approach",
+      "kind": "approach",
+      "params": {},
+      "timeout": 90,
+      "side_effecting": true
+    },
+    {
+      "id": "fight",
+      "kind": "fight",
+      "params": {
+        "budget": 35
+      },
+      "timeout": 65,
+      "side_effecting": true
+    },
+    {
+      "id": "loot",
+      "kind": "loot",
+      "params": {},
+      "timeout": 30,
+      "side_effecting": true
+    },
+    {
+      "id": "settle",
+      "kind": "settle",
+      "params": {},
+      "timeout": 90,
+      "side_effecting": true
+    },
+    {
+      "id": "logout",
+      "kind": "logout",
+      "params": {},
+      "timeout": 45,
+      "side_effecting": true
+    }
+  ],
+  "run": {
+    "run_id": "run102_task_unit_repeat",
+    "status": "failure",
+    "results": [
+      {
+        "action_id": "verify_alive",
+        "kind": "require_alive",
+        "status": "success",
+        "detail": "postcondition observed",
+        "elapsed_ms": 0,
+        "evidence": {}
+      },
+      {
+        "action_id": "select_target",
+        "kind": "select_target",
+        "status": "success",
+        "detail": "postcondition observed",
+        "elapsed_ms": 0,
+        "evidence": {
+          "target": {
+            "guid": "17379391014434767693",
+            "entry": 3124,
+            "health": 71,
+            "level": 3,
+            "position_source": "last object update"
+          }
+        }
+      },
+      {
+        "action_id": "approach",
+        "kind": "approach",
+        "status": "failure",
+        "detail": "approach path rejected",
+        "elapsed_ms": 111,
+        "evidence": {
+          "error": "approach path rejected",
+          "replies": [
+            {
+              "jsonrpc": "2.0",
+              "id": 1,
+              "error": {
+                "code": -32000,
+                "message": "rpc error: code = InvalidArgument desc = path length must be .05..50 yards",
+                "data": {
+                  "grpc_details": null,
+                  "grpc_message": "path length must be .05..50 yards",
+                  "grpc_status": "InvalidArgument",
+                  "method": "follow_path",
+                  "module": "bridge"
+                }
+              }
+            }
+          ],
+          "submitted_position": [
+            -705.5377807617188,
+            -4347.3076171875,
+            48.662841796875
+          ]
+        }
+      }
+    ],
+    "records": [
+      {
+        "action_id": "verify_alive",
+        "kind": "require_alive",
+        "status": "success",
+        "detail": "postcondition observed",
+        "elapsed_ms": 0,
+        "evidence": {},
+        "observation_before": {
+          "backend": "pure-network",
+          "character": "9",
+          "session_id": "aw-2830813035",
+          "sequence": 13,
+          "sampled_at": 1793174610.3481104,
+          "map_id": 1,
+          "position": [
+            -705.5377807617188,
+            -4347.3076171875,
+            48.662841796875
+          ],
+          "health": 89,
+          "max_health": 89,
+          "ghost": false,
+          "in_combat": false,
+          "level": 2,
+          "quest_log": [
+            {
+              "slot": 0,
+              "quest": 789,
+              "state": 0,
+              "counters": [
+                0,
+                0
+              ]
+            }
+          ],
+          "item_totals": {
+            "6125": 1,
+            "139": 1,
+            "140": 1,
+            "12282": 1,
+            "6948": 1,
+            "7098": 1,
+            "4915": 1,
+            "4867": 3,
+            "7099": 1,
+            "4862": 4,
+            "7101": 1,
+            "2652": 1
+          },
+          "available": [
+            "creature_templates",
+            "errors",
+            "event_log",
+            "events",
+            "field_semantics",
+            "login",
+            "motions",
+            "packets",
+            "scope",
+            "self",
+            "session_id",
+            "status",
+            "visible_objects"
+          ],
+          "context": {
+            "target": null,
+            "login_position": [
+              -705.5377807617188,
+              -4347.3076171875,
+              48.662841796875
+            ]
+          }
+        },
+        "observation_after": {
+          "backend": "pure-network",
+          "character": "9",
+          "session_id": "aw-2830813035",
+          "sequence": 13,
+          "sampled_at": 1793174610.3528779,
+          "map_id": 1,
+          "position": [
+            -705.5377807617188,
+            -4347.3076171875,
+            48.662841796875
+          ],
+          "health": 89,
+          "max_health": 89,
+          "ghost": false,
+          "in_combat": false,
+          "level": 2,
+          "quest_log": [
+            {
+              "slot": 0,
+              "quest": 789,
+              "state": 0,
+              "counters": [
+                0,
+                0
+              ]
+            }
+          ],
+          "item_totals": {
+            "6125": 1,
+            "139": 1,
+            "140": 1,
+            "12282": 1,
+            "6948": 1,
+            "7098": 1,
+            "4915": 1,
+            "4867": 3,
+            "7099": 1,
+            "4862": 4,
+            "7101": 1,
+            "2652": 1
+          },
+          "available": [
+            "creature_templates",
+            "errors",
+            "event_log",
+            "events",
+            "field_semantics",
+            "login",
+            "motions",
+            "packets",
+            "scope",
+            "self",
+            "session_id",
+            "status",
+            "visible_objects"
+          ],
+          "context": {
+            "target": null,
+            "login_position": [
+              -705.5377807617188,
+              -4347.3076171875,
+              48.662841796875
+            ]
+          }
+        }
+      },
+      {
+        "action_id": "select_target",
+        "kind": "select_target",
+        "status": "success",
+        "detail": "postcondition observed",
+        "elapsed_ms": 0,
+        "evidence": {
+          "target": {
+            "guid": "17379391014434767693",
+            "entry": 3124,
+            "health": 71,
+            "level": 3,
+            "position_source": "last object update"
+          }
+        },
+        "observation_before": {
+          "backend": "pure-network",
+          "character": "9",
+          "session_id": "aw-2830813035",
+          "sequence": 13,
+          "sampled_at": 1793174610.3634934,
+          "map_id": 1,
+          "position": [
+            -705.5377807617188,
+            -4347.3076171875,
+            48.662841796875
+          ],
+          "health": 89,
+          "max_health": 89,
+          "ghost": false,
+          "in_combat": false,
+          "level": 2,
+          "quest_log": [
+            {
+              "slot": 0,
+              "quest": 789,
+              "state": 0,
+              "counters": [
+                0,
+                0
+              ]
+            }
+          ],
+          "item_totals": {
+            "6125": 1,
+            "139": 1,
+            "140": 1,
+            "12282": 1,
+            "6948": 1,
+            "7098": 1,
+            "4915": 1,
+            "4867": 3,
+            "7099": 1,
+            "4862": 4,
+            "7101": 1,
+            "2652": 1
+          },
+          "available": [
+            "creature_templates",
+            "errors",
+            "event_log",
+            "events",
+            "field_semantics",
+            "login",
+            "motions",
+            "packets",
+            "scope",
+            "self",
+            "session_id",
+            "status",
+            "visible_objects"
+          ],
+          "context": {
+            "target": null,
+            "login_position": [
+              -705.5377807617188,
+              -4347.3076171875,
+              48.662841796875
+            ]
+          }
+        },
+        "observation_after": {
+          "backend": "pure-network",
+          "character": "9",
+          "session_id": "aw-2830813035",
+          "sequence": 13,
+          "sampled_at": 1793174610.3684888,
+          "map_id": 1,
+          "position": [
+            -705.5377807617188,
+            -4347.3076171875,
+            48.662841796875
+          ],
+          "health": 89,
+          "max_health": 89,
+          "ghost": false,
+          "in_combat": false,
+          "level": 2,
+          "quest_log": [
+            {
+              "slot": 0,
+              "quest": 789,
+              "state": 0,
+              "counters": [
+                0,
+                0
+              ]
+            }
+          ],
+          "item_totals": {
+            "6125": 1,
+            "139": 1,
+            "140": 1,
+            "12282": 1,
+            "6948": 1,
+            "7098": 1,
+            "4915": 1,
+            "4867": 3,
+            "7099": 1,
+            "4862": 4,
+            "7101": 1,
+            "2652": 1
+          },
+          "available": [
+            "creature_templates",
+            "errors",
+            "event_log",
+            "events",
+            "field_semantics",
+            "login",
+            "motions",
+            "packets",
+            "scope",
+            "self",
+            "session_id",
+            "status",
+            "visible_objects"
+          ],
+          "context": {
+            "target": {
+              "guid": "17379391014434767693",
+              "entry": 3124,
+              "health": 71
+            },
+            "login_position": [
+              -705.5377807617188,
+              -4347.3076171875,
+              48.662841796875
+            ]
+          }
+        }
+      },
+      {
+        "action_id": "approach",
+        "kind": "approach",
+        "status": "failure",
+        "detail": "approach path rejected",
+        "elapsed_ms": 111,
+        "evidence": {
+          "error": "approach path rejected",
+          "replies": [
+            {
+              "jsonrpc": "2.0",
+              "id": 1,
+              "error": {
+                "code": -32000,
+                "message": "rpc error: code = InvalidArgument desc = path length must be .05..50 yards",
+                "data": {
+                  "grpc_details": null,
+                  "grpc_message": "path length must be .05..50 yards",
+                  "grpc_status": "InvalidArgument",
+                  "method": "follow_path",
+                  "module": "bridge"
+                }
+              }
+            }
+          ],
+          "submitted_position": [
+            -705.5377807617188,
+            -4347.3076171875,
+            48.662841796875
+          ]
+        },
+        "observation_before": {
+          "backend": "pure-network",
+          "character": "9",
+          "session_id": "aw-2830813035",
+          "sequence": 13,
+          "sampled_at": 1793174610.3787012,
+          "map_id": 1,
+          "position": [
+            -705.5377807617188,
+            -4347.3076171875,
+            48.662841796875
+          ],
+          "health": 89,
+          "max_health": 89,
+          "ghost": false,
+          "in_combat": false,
+          "level": 2,
+          "quest_log": [
+            {
+              "slot": 0,
+              "quest": 789,
+              "state": 0,
+              "counters": [
+                0,
+                0
+              ]
+            }
+          ],
+          "item_totals": {
+            "6125": 1,
+            "139": 1,
+            "140": 1,
+            "12282": 1,
+            "6948": 1,
+            "7098": 1,
+            "4915": 1,
+            "4867": 3,
+            "7099": 1,
+            "4862": 4,
+            "7101": 1,
+            "2652": 1
+          },
+          "available": [
+            "creature_templates",
+            "errors",
+            "event_log",
+            "events",
+            "field_semantics",
+            "login",
+            "motions",
+            "packets",
+            "scope",
+            "self",
+            "session_id",
+            "status",
+            "visible_objects"
+          ],
+          "context": {
+            "target": {
+              "guid": "17379391014434767693",
+              "entry": 3124,
+              "health": 71
+            },
+            "login_position": [
+              -705.5377807617188,
+              -4347.3076171875,
+              48.662841796875
+            ]
+          }
+        },
+        "observation_after": {
+          "backend": "pure-network",
+          "character": "9",
+          "session_id": "aw-2830813035",
+          "sequence": 13,
+          "sampled_at": 1793174610.4952374,
+          "map_id": 1,
+          "position": [
+            -705.5377807617188,
+            -4347.3076171875,
+            48.662841796875
+          ],
+          "health": 89,
+          "max_health": 89,
+          "ghost": false,
+          "in_combat": false,
+          "level": 2,
+          "quest_log": [
+            {
+              "slot": 0,
+              "quest": 789,
+              "state": 0,
+              "counters": [
+                0,
+                0
+              ]
+            }
+          ],
+          "item_totals": {
+            "6125": 1,
+            "139": 1,
+            "140": 1,
+            "12282": 1,
+            "6948": 1,
+            "7098": 1,
+            "4915": 1,
+            "4867": 3,
+            "7099": 1,
+            "4862": 4,
+            "7101": 1,
+            "2652": 1
+          },
+          "available": [
+            "creature_templates",
+            "errors",
+            "event_log",
+            "events",
+            "field_semantics",
+            "login",
+            "motions",
+            "packets",
+            "scope",
+            "self",
+            "session_id",
+            "status",
+            "visible_objects"
+          ],
+          "context": {
+            "target": {
+              "guid": "17379391014434767693",
+              "entry": 3124,
+              "health": 71
+            },
+            "login_position": [
+              -705.5377807617188,
+              -4347.3076171875,
+              48.662841796875
+            ]
+          }
+        }
+      }
+    ],
+    "completed": [
+      "verify_alive",
+      "select_target"
+    ]
+  },
+  "final_observation": {
+    "backend": "pure-network",
+    "character": "9",
+    "session_id": "aw-2830813035",
+    "sequence": 13,
+    "sampled_at": 1793174610.5061867,
+    "map_id": 1,
+    "position": [
+      -705.5377807617188,
+      -4347.3076171875,
+      48.662841796875
+    ],
+    "health": 89,
+    "max_health": 89,
+    "ghost": false,
+    "in_combat": false,
+    "level": 2,
+    "quest_log": [
+      {
+        "slot": 0,
+        "quest": 789,
+        "state": 0,
+        "counters": [
+          0,
+          0
+        ]
+      }
+    ],
+    "item_totals": {
+      "6125": 1,
+      "139": 1,
+      "140": 1,
+      "12282": 1,
+      "6948": 1,
+      "7098": 1,
+      "4915": 1,
+      "4867": 3,
+      "7099": 1,
+      "4862": 4,
+      "7101": 1,
+      "2652": 1
+    },
+    "available": [
+      "creature_templates",
+      "errors",
+      "event_log",
+      "events",
+      "field_semantics",
+      "login",
+      "motions",
+      "packets",
+      "scope",
+      "self",
+      "session_id",
+      "status",
+      "visible_objects"
+    ],
+    "context": {
+      "target": {
+        "guid": "17379391014434767693",
+        "entry": 3124,
+        "health": 71
+      },
+      "login_position": [
+        -705.5377807617188,
+        -4347.3076171875,
+        48.662841796875
+      ]
+    }
+  },
+  "finalize": {
+    "status": "closed",
+    "reply": {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "result": {
+        "status": "closed"
+      }
+    }
+  },
+  "elapsed_s": 32.075
+}

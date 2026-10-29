@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Powered by Bear Blog -->
+
+<head>
+  
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5">
+  <script>
+    (function() {
+      'use strict';
+      document.cookie = `timezone=${Intl.DateTimeFormat().resolvedOptions().timeZone};path=/`;
+    })();
+  </script>
+  
+  <title>GPT-6 Astra plays World of Warcraft for the first time with agent-wow – agent-wow</title>
+  <link rel="canonical" href="https://agent-wow.sh/gpt-6-astra-plays-world-of-warcraft-for-the-first-time-with-agent-wow/">
+  
+    
+
+    <meta name="agent-wow" content="look-for-the-bear-necessities">
+    <meta name="token" content="FmWnkCQTfVTfxISTNWqY">
+
+    
+<!-- Primary Meta Tags -->
+<meta name="title" content="GPT-6 Astra plays World of Warcraft for the first time with agent-wow">
+<meta name="description" content="GPT-6 Astra autonomously clears World of Warcraft’s Orc starting zone in 40 minutes using agent-wow.">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:site_name" content="agent-wow">
+<meta property="og:title" content="GPT-6 Astra plays World of Warcraft for the first time with agent-wow">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://agent-wow.sh/gpt-6-astra-plays-world-of-warcraft-for-the-first-time-with-agent-wow/">
+<meta property="og:description" content="GPT-6 Astra autonomously clears World of Warcraft’s Orc starting zone in 40 minutes using agent-wow.">
+<meta property="og:image" content="https://i.imgur.com/8PSovK0.png">
+
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary">
+<meta property="twitter:url" content="https://agent-wow.sh/gpt-6-astra-plays-world-of-warcraft-for-the-first-time-with-agent-wow/">
+<meta property="twitter:title" content="GPT-6 Astra plays World of Warcraft for the first time with agent-wow">
+<meta property="twitter:description" content="GPT-6 Astra autonomously clears World of Warcraft’s Orc starting zone in 40 minutes using agent-wow.">
+<meta property="twitter:image" content="https://i.imgur.com/8PSovK0.png">
+
+
+
+<!-- Microdata -->
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "article",
+    "name": "GPT-6 Astra plays World of Warcraft for the first time with agent-wow",
+    "headline": "GPT-6 Astra plays World of Warcraft for the first time with agent-wow",
+    "url": "https://agent-wow.sh/gpt-6-astra-plays-world-of-warcraft-for-the-first-time-with-agent-wow/",
+    "description": "GPT-6 Astra autonomously clears World of Warcraft’s Orc starting zone in 40 minutes using agent-wow.",
+    "image": "https://i.imgur.com/8PSovK0.png"
+  }
+</script>
+    <link rel="alternate" type="application/atom+xml" href="/feed/" title="agent-wow">
+    <link rel="alternate" type="application/rss+xml" href="/feed/?type=rss" title="agent-wow">
+
+  
+    
+
+    
+    <style>pre { line-height: 125%; }
+td.linenos .normal { color: #747474; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: #747474; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: inherit; background-color: rgba(255, 200, 0, 0.2); padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: inherit; background-color: rgba(255, 200, 0, 0.2); padding-left: 5px; padding-right: 5px; }
+.highlight .hll { background-color: rgba(255, 200, 0, 0.2) }
+.highlight { background: rgba(128, 128, 128, 0.1); padding: 1px 15px; }
+.highlight .c { color: #747474; font-style: italic } /* Comment */
+.highlight .err { color: #CB4644; border: 1px solid #CB4644 } /* Error */
+.highlight .k { color: #A552B8; font-weight: bold } /* Keyword */
+.highlight .o { color: #747474 } /* Operator */
+.highlight .ch { color: #747474; font-style: italic } /* Comment.Hashbang */
+.highlight .cm { color: #747474; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #A552B8 } /* Comment.Preproc */
+.highlight .cpf { color: #747474; font-style: italic } /* Comment.PreprocFile */
+.highlight .c1 { color: #747474; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #747474; font-style: italic; font-weight: bold } /* Comment.Special */
+.highlight .gd { color: #CB4644 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.highlight .gr { color: #CB4644 } /* Generic.Error */
+.highlight .gh { color: #007AB6; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #258531 } /* Generic.Inserted */
+.highlight .go { color: #747474 } /* Generic.Output */
+.highlight .gp { color: #B85900; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #686AC7; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #3475C5 } /* Generic.Traceback */
+.highlight .kc { color: #C24F40; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #A552B8; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #A552B8; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #A552B8 } /* Keyword.Pseudo */
+.highlight .kr { color: #A552B8; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #008089 } /* Keyword.Type */
+.highlight .m { color: #B85900 } /* Literal.Number */
+.highlight .s { color: #258531 } /* Literal.String */
+.highlight .na { color: #B85900 } /* Name.Attribute */
+.highlight .nb { color: #008089 } /* Name.Builtin */
+.highlight .nc { color: #008089; font-weight: bold } /* Name.Class */
+.highlight .no { color: #C24F40 } /* Name.Constant */
+.highlight .nd { color: #686AC7; font-weight: bold } /* Name.Decorator */
+.highlight .ni { color: #C24F40; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #CB4644; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #3475C5 } /* Name.Function */
+.highlight .nl { color: #007AB6; font-weight: bold } /* Name.Label */
+.highlight .nn { color: #008089; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008551; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #686AC7 } /* Name.Variable */
+.highlight .ow { color: #A552B8; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #747474 } /* Text.Whitespace */
+.highlight .mb { color: #B85900 } /* Literal.Number.Bin */
+.highlight .mf { color: #B85900 } /* Literal.Number.Float */
+.highlight .mh { color: #B85900 } /* Literal.Number.Hex */
+.highlight .mi { color: #B85900 } /* Literal.Number.Integer */
+.highlight .mo { color: #B85900 } /* Literal.Number.Oct */
+.highlight .sa { color: #A552B8 } /* Literal.String.Affix */
+.highlight .sb { color: #258531 } /* Literal.String.Backtick */
+.highlight .sc { color: #258531 } /* Literal.String.Char */
+.highlight .dl { color: #258531 } /* Literal.String.Delimiter */
+.highlight .sd { color: #258531; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #258531 } /* Literal.String.Double */
+.highlight .se { color: #B85900; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #258531 } /* Literal.String.Heredoc */
+.highlight .si { color: #C24F40 } /* Literal.String.Interpol */
+.highlight .sx { color: #258531 } /* Literal.String.Other */
+.highlight .sr { color: #008089 } /* Literal.String.Regex */
+.highlight .s1 { color: #258531 } /* Literal.String.Single */
+.highlight .ss { color: #C24F40 } /* Literal.String.Symbol */
+.highlight .bp { color: #008089 } /* Name.Builtin.Pseudo */
+.highlight .fm { color: #3475C5 } /* Name.Function.Magic */
+.highlight .vc { color: #686AC7 } /* Name.Variable.Class */
+.highlight .vg { color: #686AC7 } /* Name.Variable.Global */
+.highlight .vi { color: #686AC7 } /* Name.Variable.Instance */
+.highlight .vm { color: #686AC7 } /* Name.Variable.Magic */
+.highlight .il { color: #B85900 } /* Literal.Number.Integer.Long */
+</style>
+  
+  
+  
+    
+        <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Ctext%20y='.9em'%20font-size='90'%3E⚔️%3C/text%3E%3C/svg%3E">
+    
+
+
+
+  <style data-name="default">
+      
+      
+    
+:root {
+    --width: 720px;
+    --font-main: Verdana, sans-serif;
+    --font-secondary: Verdana, sans-serif;
+    --font-scale: 1em;
+    --background-color: #fff;
+    --heading-color: #222;
+    --text-color: #444;
+    --link-color: #3273dc;
+    --visited-color:  #8b6fcb;
+    --code-background-color: #f2f2f2;
+    --code-color: #222;
+    --blockquote-color: #222;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background-color: #01242e;
+        --heading-color: #eee;
+        --text-color: #ddd;
+        --link-color: #8cc2dd;
+        --visited-color:  #8b6fcb;
+        --code-background-color: #000;
+        --code-color: #ddd;
+        --blockquote-color: #ccc;
+    }
+}
+
+body {
+    font-family: var(--font-secondary);
+    font-size: var(--font-scale);
+    margin: auto;
+    padding: 20px;
+    max-width: var(--width);
+    text-align: left;
+    background-color: var(--background-color);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+    color: var(--text-color);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-main);
+    color: var(--heading-color);
+}
+
+a {
+    color: var(--link-color);
+    cursor: pointer;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline; 
+}
+
+nav a {
+    margin-right: 8px;
+}
+
+strong, b {
+    color: var(--heading-color);
+}
+
+button {
+    margin: 0;
+    cursor: pointer;
+}
+
+time {
+ 	font-family: monospace;
+  	font-style: normal;
+  	font-size: 15px;
+}
+
+main {
+    line-height: 1.6;
+}
+
+table {
+    width: 100%;
+}
+
+hr {
+    border: 0;
+    border-top: 1px dashed;
+}
+
+img {
+    max-width: 100%;
+}
+
+code {
+    font-family: monospace;
+    padding: 2px;
+    background-color: var(--code-background-color);
+    color: var(--code-color);
+    border-radius: 3px;
+}
+
+blockquote {
+    border-left: 1px solid #999;
+    color: var(--blockquote-color);
+    padding-left: 20px;
+    font-style: italic;
+}
+
+footer {
+    padding: 25px 0;
+    text-align: center;
+}
+
+.title:hover {
+    text-decoration: none;
+}
+
+.title h1 {
+    font-size: 1.5em;
+}
+
+.inline {
+    width: auto !important;
+}
+
+.highlight, .code {
+    padding: 1px 15px;
+    background-color: var(--code-background-color);
+    color: var(--code-color);
+    border-radius: 3px;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    overflow-x: auto;
+}
+
+/* blog post list */
+ul.blog-posts {
+    list-style-type: none;
+    padding: unset;
+}
+
+ul.blog-posts li {
+    display: flex;
+}
+
+ul.blog-posts li span {
+    flex: 0 0 130px;
+}
+
+ul.blog-posts li a:visited {
+    color: var(--visited-color);
+}
+
+
+footer > span:last-child {
+  display: none;
+}
+    .upvote-button {
+        padding: 0;
+        margin: 0;
+        border: 0;
+        background-color: inherit;
+        color: inherit;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .upvote-button.upvoted {
+        color: salmon;
+    }
+    .upvote-count {
+        margin-top: -3px;
+    }
+
+      
+  </style>
+</head>
+
+<body class="post ">
+  
+  <header>
+    <a class="title" href="/">
+      <h1>
+        agent-wow
+      </h1>
+    </a>
+    <nav>
+      <p><a href='/'>Home</a> <a href='/blog'>Blog</a> <a href='https://github.com/agent-wow/agent-wow'>GitHub</a> <a href='https://youtube.com/@agent-wow-sessions?si=6sRIRm6S40Rv0FmP'>YouTube</a> <a href='mailto:hazim@agent-wow.sh'>Email</a></p>
+
+    </nav>
+  </header>
+  <main>
+    
+
+    
+
+    
+        <h1>GPT-6 Astra plays World of Warcraft for the first time with agent-wow</h1>
+
+        <p>
+            <i>
+                <time datetime="2026-10-02T06:34Z">
+    02 Oct, 2026
+</time>
+            </i>
+        </p>
+    
+
+    <p>Lately, I've been fascinated with the concept of LLM-powered agents playing video games. Not only are they surprisingly fun to watch, but they also provide valuable insights into how well these frontier models can perform when dropped into a simulated world they were not explicitly trained on.</p>
+<p>The concept of bots playing video games, especially World of Warcraft (WoW), is nothing new. What makes an LLM agent different (and more interesting) compared to a heuristics-based bot is that it was never explicitly trained on the game. Rather, it uses whatever reasoning capabilities it has to act on the environment and complete its task like a real player.</p>
+<p>There are already a few interesting open-source projects in this domain, such as <a href='https://github.com/mindcraft-bots/mindcraft'>Mindcraft</a> and <a href='https://github.com/JackHopkins/factorio-learning-environment'>Factorio Learning Environment</a>. I built <a href='https://github.com/agent-wow/agent-wow'>agent-wow</a> to expand this concept to see how capable frontier models are at playing World of Warcraft. The end goal is to fill an entire server with AI agents and see if they can clear Icecrown Citadel on heroic difficulty. Even if they fail, it will still be insightful (and fun) to see how far they can go.</p>
+<p>As a simple starting point, I gave Codex using GPT-6 Astra (xhigh) the following prompt:</p>
+<div class="highlight"><pre><span></span>create an orc character and complete all quests in the starting zone
+</pre></div>
+<p>I was initially skeptical that this would work. And if it did, it would require hours to complete with dead ends along the way. But it turns out it completed the task easily in 40 minutes with 0 deaths and minimal complications. A full gameplay recording of the session is also available <a href='https://youtu.be/8NmmFdREk5s?si=EbfiWOiPclcgdWd9'>here</a>.</p>
+<h2 id=why-world-of-warcraft>Why World of Warcraft?</h2><p>Aside from being one of my all-time favorite games (especially the Classic to WotLK era), it has some incredible mechanics that make it an ideal simulated world for evaluating AI. As you progress, the game has a nice balance between long-term strategy and short-term tactics.</p>
+<p>By the time you reach the level cap, there is a lot of complex planning and execution that goes into getting your character ready for endgame content.</p>
+<ul>
+<li>Completing all the prerequisite quests</li>
+<li>Getting sufficiently good gear for endgame boss fights</li>
+<li>Forming a guild with the right class composition</li>
+</ul>
+<p>Each of these requirements can be broken down into more complex tasks. For example, some optimal gear slots may require crafting, which in turn requires certain resources and skills. The character can either grind it out or buy it with gold. Both lead to the same outcome but with very different approaches.</p>
+<p>If you are able to do all that and make it to the raid boss, then the game also requires fast-paced coordination and execution. Can you cast spells in the optimal rotation to maximize your damage per second while dodging the fire and keeping in sync with 24 other players in real time?</p>
+<p>This effectively gives us a strong environment to pressure-test agent capabilities for long-term strategic planning and narrow tactical execution. It's even more interesting when multiplayer interactions become essential to progressing through certain parts of the game.</p>
+<h2 id=how-does-agent-wow-work>How does agent-wow work?</h2><p><img src="https://i.imgur.com/dNE8Nvk.png" alt="agent-wow architecture diagram" /></p>
+<p>agent-wow does not rely on computer vision with direct keyboard and mouse controls, nor does it use any game hacking techniques to take over the WoW client directly. Instead, it provides a platform for agents to interact directly with the game server using the WoW network protocol.</p>
+<p>What makes this even more interesting is that agent-wow doesn't define any gameplay mechanics such as movement, combat, or in-game interactions. Instead, it only exposes a standard module system for agents to build whatever capabilities they need to get the task done.</p>
+<p>The module system cuts down the complexity of agent-wow by at least an order of magnitude. I had initially planned to create an entirely headless WoW client with the optimal primitives for agent use. However, after writing 16K lines for a buggy <code>movement</code> primitive with a janky pathfinding implementation, I decided to scrap that for a different approach.</p>
+<p>In the <a href='https://sites.uci.edu/kolbynottingham/2024/10/30/mindcraft/'>Mindcraft implementation</a>, the agent is allowed to generate custom code using the <a href='https://mineflayer.com/'>Mineflayer API</a> when the set of available commands is not sufficient for it to complete more complex behaviors. I decided to follow this same approach with agent-wow, but in this case there were also no built-in game actions. This system also provides a nice feedback loop to figure out what primitives actually matter to agents based on the modules they choose to build over many independent runs. Commonly built modules can then be implemented in the core.</p>
+<p>It is also important to note that agent-wow does not connect to a live World of Warcraft server. Instead, all experiments run on private local servers powered by the open-source <a href='https://www.azerothcore.org/'>AzerothCore</a> project, which supports WoW 3.3.5a—the final build of <em>Wrath of the Lich King</em> (and peak WoW).</p>
+<h2 id=insights-from-the-run>Insights from the run</h2><p>It was interesting to see how the agent went about completing this simple first task. I would encourage you to skim through the gameplay recording (linked above) to see the character in action alongside the agent's reasoning traces.</p>
+<p>A quick note on how the gameplay footage was recorded: AzerothCore fortunately has some powerful <a href='https://www.azerothcore.org/wiki/gm-commands'>GM commands</a> available. It wasn't difficult to create two simple macros to bind my POV to the agent's character and unbind it.</p>
+<div class="highlight"><pre><span></span>/run SendChatMessage(&quot;.gm on&quot;,&quot;SAY&quot;)
+/run SendChatMessage(&quot;.gm visible off&quot;,&quot;SAY&quot;)
+/run SendChatMessage(&quot;.bindsight&quot;,&quot;SAY&quot;)
+</pre></div>
+<div class="highlight"><pre><span></span>/run SendChatMessage(&quot;.unbindsight&quot;,&quot;SAY&quot;)
+</pre></div>
+<p>This works fine for a single character over a short session but won't scale for multi-agent runs over longer time horizons. I will likely have to build an AzerothCore module and in-game add-on for better observability.</p>
+<h3 id=data-mining-the-azerothcore-source-code>Data mining the AzerothCore source code</h3><p>This is not surprising in hindsight and is probably the optimal strategy. The agent extracted quest requirements, quest givers, turn-in NPCs, and spawn coordinates from <a href='https://github.com/azerothcore/azerothcore-wotlk/tree/master/data/sql/base/db_world'>AzerothCore SQL files</a> to provide the concrete checklist and locations for planning.</p>
+<p>Using this data, it's also able to create an optimal strategy for quest order and preparation. It completes prerequisite chains, sells junk, equips upgrades, and trains abilities before entering the final cave segment of the start area quest line. It also optimizes to obtain both cave quests at the same time and complete them together.</p>
+<p>This strategy of data mining to support the translation of high-level prompts into a concrete sequence of steps is probably acceptable. It's arguably similar to how a human might spend hours on <a href='https://www.wowhead.com/'>Wowhead</a> to research quests. Where I would draw the line is if it were able to gain admin access to a running AzerothCore server and database to change its internals. Since this run was not done in a sandbox, it would have been possible for it to do that.</p>
+<h3 id=not-using-the-module-system-to-create-higher-level-abstractions>Not using the module system to create higher-level abstractions</h3><p>My initial bet was that the agent would create high-level abstractions so that it could expose RPC methods like <code>moveTo</code> or <code>castSpell</code> in order to avoid working at the low-level packet layer. In practice, it was more than capable of working at the protocol layer. The one module it made was to send and subscribe to specific packets that it cared about.</p>
+<p>The following is the gRPC interface and module configuration it generated.</p>
+<div class="highlight"><pre><span></span><span class="k">syntax</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;proto3&quot;</span><span class="p">;</span>
+<span class="kn">package</span><span class="w"> </span><span class="nn">example.module.v1</span><span class="p">;</span>
+<span class="k">option</span><span class="w"> </span><span class="na">go_package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;github.com/agent-wow/go-module-template/src/api;modulev1&quot;</span><span class="p">;</span>
+
+<span class="k">import</span><span class="w"> </span><span class="s">&quot;api/module/v1/session.proto&quot;</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="s">&quot;google/protobuf/empty.proto&quot;</span><span class="p">;</span>
+
+<span class="kd">message</span><span class="w"> </span><span class="nc">PollRequest</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">uint64</span><span class="w"> </span><span class="na">after</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="kd">message</span><span class="w"> </span><span class="nc">Packet</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">uint64</span><span class="w"> </span><span class="na">seq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="kt">uint32</span><span class="w"> </span><span class="na">opcode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"> </span><span class="kt">bytes</span><span class="w"> </span><span class="na">payload</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="kd">message</span><span class="w"> </span><span class="nc">PollResponse</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">uint32</span><span class="w"> </span><span class="na">clock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="na">guid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"> </span><span class="k">repeated</span><span class="w"> </span><span class="n">Packet</span><span class="w"> </span><span class="na">packets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="kd">service</span><span class="w"> </span><span class="n">Module</span><span class="w"> </span><span class="p">{</span>
+<span class="w"> </span><span class="k">rpc</span><span class="w"> </span><span class="n">Send</span><span class="p">(</span><span class="n">agentwow.module.v1.SendPacketRequest</span><span class="p">)</span><span class="w"> </span><span class="k">returns</span><span class="w"> </span><span class="p">(</span><span class="n">google.protobuf.Empty</span><span class="p">);</span>
+<span class="w"> </span><span class="k">rpc</span><span class="w"> </span><span class="n">Poll</span><span class="p">(</span><span class="n">PollRequest</span><span class="p">)</span><span class="w"> </span><span class="k">returns</span><span class="w"> </span><span class="p">(</span><span class="n">PollResponse</span><span class="p">);</span>
+<span class="w"> </span><span class="k">rpc</span><span class="w"> </span><span class="n">OnPacket</span><span class="p">(</span><span class="n">agentwow.module.v1.WorldPacket</span><span class="p">)</span><span class="w"> </span><span class="k">returns</span><span class="w"> </span><span class="p">(</span><span class="n">google.protobuf.Empty</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+<div class="highlight"><pre><span></span><span class="nt">api_version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Gameplay protocol bridge for the Valley of Trials</span>
+<span class="nt">compose</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">compose.yaml</span>
+<span class="w">  </span><span class="nt">service</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">module</span>
+<span class="nt">grpc</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">descriptor_set</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">module.pb</span>
+<span class="nt">rpc</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">send</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/example.module.v1.Module/Send</span>
+<span class="w">  </span><span class="nt">poll</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/example.module.v1.Module/Poll</span>
+<span class="nt">packets</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">SMSG_LOGIN_VERIFY_WORLD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/example.module.v1.Module/OnPacket</span>
+<span class="w">  </span><span class="nt">SMSG_UPDATE_OBJECT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/example.module.v1.Module/OnPacket</span>
+<span class="w">  </span><span class="nt">SMSG_COMPRESSED_UPDATE_OBJECT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/example.module.v1.Module/OnPacket</span>
+<span class="w">  </span><span class="nt">SMSG_DESTROY_OBJECT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/example.module.v1.Module/OnPacket</span>
+<span class="w">  </span><span class="nt">SMSG_MONSTER_MOVE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/example.module.v1.Module/OnPacket</span>
+<span class="w">  </span><span class="nt">SMSG_GOSSIP_MESSAGE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/example.module.v1.Module/OnPacket</span>
+<span class="w">  </span><span class="nt">SMSG_QUESTGIVER_QUEST_LIST</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/example.module.v1.Module/OnPacket</span>
+<span class="w">  </span><span class="nt">SMSG_QUESTGIVER_QUEST_DETAILS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/example.module.v1.Module/OnPacket</span>
+<span class="w">  </span><span class="nt">SMSG_QUESTGIVER_OFFER_REWARD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/example.module.v1.Module/OnPacket</span>
+<span class="w">  </span><span class="nt">SMSG_QUESTGIVER_QUEST_COMPLETE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/example.module.v1.Module/OnPacket</span>
+<span class="w">  </span><span class="nt">SMSG_QUESTUPDATE_ADD_KILL</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/example.module.v1.Module/OnPacket</span>
+<span class="w">  </span><span class="nt">SMSG_QUESTUPDATE_COMPLETE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/example.module.v1.Module/OnPacket</span>
+<span class="w">  </span><span class="nt">SMSG_LOOT_RESPONSE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/example.module.v1.Module/OnPacket</span>
+<span class="w">  </span><span class="nt">SMSG_CAST_FAILED</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/example.module.v1.Module/OnPacket</span>
+<span class="w">  </span><span class="nt">SMSG_INVENTORY_CHANGE_FAILURE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/example.module.v1.Module/OnPacket</span>
+<span class="w">  </span><span class="nt">SMSG_QUESTGIVER_QUEST_INVALID</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/example.module.v1.Module/OnPacket</span>
+<span class="w">  </span><span class="nt">SMSG_ATTACKSWING_NOTINRANGE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/example.module.v1.Module/OnPacket</span>
+<span class="w">  </span><span class="nt">SMSG_ATTACKSWING_BADFACING</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/example.module.v1.Module/OnPacket</span>
+<span class="w">  </span><span class="nt">SMSG_QUESTGIVER_QUEST_FAILED</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/example.module.v1.Module/OnPacket</span>
+<span class="w">  </span><span class="nt">SMSG_LEVELUP_INFO</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/example.module.v1.Module/OnPacket</span>
+<span class="w">  </span><span class="nt">SMSG_TRAINER_BUY_SUCCEEDED</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/example.module.v1.Module/OnPacket</span>
+<span class="w">  </span><span class="nt">SMSG_TRAINER_BUY_FAILED</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/example.module.v1.Module/OnPacket</span>
+<span class="w">  </span><span class="nt">SMSG_AURA_UPDATE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/example.module.v1.Module/OnPacket</span>
+<span class="w">  </span><span class="nt">SMSG_AURA_UPDATE_ALL</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/example.module.v1.Module/OnPacket</span>
+<span class="w">  </span><span class="nt">SMSG_TRAINER_LIST</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/example.module.v1.Module/OnPacket</span>
+<span class="w">  </span><span class="nt">SMSG_INITIAL_SPELLS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/example.module.v1.Module/OnPacket</span>
+<span class="w">  </span><span class="nt">SMSG_LEARNED_SPELL</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/example.module.v1.Module/OnPacket</span>
+<span class="w">  </span><span class="nt">SMSG_QUERY_QUESTS_COMPLETED_RESPONSE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/example.module.v1.Module/OnPacket</span>
+</pre></div>
+<p><code>onPacket</code> subscribes to a defined set of server messages (<code>SMSG_*</code>) and saves them in memory. The module then exposes <code>send</code> and <code>poll</code> via the agent-wow JSON-RPC gameplay server. The agent uses a Python script to call <code>poll</code> to fetch all the incoming packets from the last processed checkpoint and decodes them to update its world model (health, nearby creatures, quest progress, loot, etc.). It then uses <code>send</code> to issue client messages to AzerothCore to produce actions in the game world.</p>
+<p>It will be interesting to see if this approach is able to scale with increasingly complex tasks or if the agent will be forced to create higher-level abstractions. If the protocol layer is all it needs, then it may be enough to provide this function in the core and remove the module system altogether.</p>
+<h3 id=the-pathfinding-abilities-were-optimal>The pathfinding abilities were optimal</h3><p>From my research into heuristics-based bots, pathfinding is always one of the main challenges. This <a href='https://drewkestell.us/Article/6/Chapter/20'>article</a> provides some great insights into the problem. In this case, the agent was able to create a pathfinding helper program in C++ to calculate a traversable route between two positions in the game world.</p>
+<p>It does this by:</p>
+<ol>
+<li>Taking six numbers: starting <code>x, y, z</code> and destination <code>x, y, z</code>.</li>
+<li>Loading AzerothCore’s local navigation mesh files (<code>mmaps</code>).</li>
+<li>Using the Detour pathfinding library to find a route across connected traversable surfaces.</li>
+<li>Returning the route as a JSON array of coordinates or reporting an error if it cannot find a complete path.</li>
+</ol>
+<p>A Python script calls the compiled executable, reads the resulting waypoints, and sends movement packets to follow the route.</p>
+<p>This is the actual C++ helper program the agent generated (formatted for readability):</p>
+<div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;DetourNavMesh.h&quot;</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;DetourNavMeshQuery.h&quot;</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;DetourAlloc.h&quot;</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdio&gt;</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdlib&gt;</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;algorithm&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">**</span><span class="w"> </span><span class="n">argv</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">argc</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">7</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;/azerothcore/env/dist/bin/mmaps&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">fn</span><span class="p">[</span><span class="mi">512</span><span class="p">];</span>
+<span class="w">  </span><span class="n">sprintf</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;%s/001.mmap&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">dir</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">FILE</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fopen</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;rb&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">f</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">  </span><span class="n">dtNavMeshParams</span><span class="w"> </span><span class="n">params</span><span class="p">;</span>
+<span class="w">  </span><span class="n">fread</span><span class="p">(</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">params</span><span class="p">),</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">);</span>
+<span class="w">  </span><span class="n">fclose</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">mesh</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dtAllocNavMesh</span><span class="p">();</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dtStatusFailed</span><span class="p">(</span><span class="n">mesh</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">init</span><span class="p">(</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">)))</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">float</span><span class="p">(</span><span class="n">atof</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">])),</span>
+<span class="w">    </span><span class="kt">float</span><span class="p">(</span><span class="n">atof</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">])),</span>
+<span class="w">    </span><span class="kt">float</span><span class="p">(</span><span class="n">atof</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+<span class="w">  </span><span class="p">};</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">float</span><span class="p">(</span><span class="n">atof</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">5</span><span class="p">])),</span>
+<span class="w">    </span><span class="kt">float</span><span class="p">(</span><span class="n">atof</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">6</span><span class="p">])),</span>
+<span class="w">    </span><span class="kt">float</span><span class="p">(</span><span class="n">atof</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">4</span><span class="p">]))</span>
+<span class="w">  </span><span class="p">};</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">ax</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">int</span><span class="p">(</span><span class="mi">32</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">533.333333</span><span class="p">),</span><span class="w"> </span><span class="n">ay</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">int</span><span class="p">(</span><span class="mi">32</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">533.333333</span><span class="p">),</span><span class="w"> </span><span class="n">bx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">int</span><span class="p">(</span><span class="mi">32</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">533.333333</span><span class="p">),</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">int</span><span class="p">(</span><span class="mi">32</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">533.333333</span><span class="p">);</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">min</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span><span class="w"> </span><span class="n">bx</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span><span class="w"> </span><span class="n">bx</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="n">x</span><span class="o">++</span><span class="p">)</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">min</span><span class="p">(</span><span class="n">ay</span><span class="p">,</span><span class="w"> </span><span class="n">by</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span><span class="n">ay</span><span class="p">,</span><span class="w"> </span><span class="n">by</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="n">y</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">sprintf</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;%s/001%02d%02d.mmtile&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">dir</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">);</span>
+<span class="w">      </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fopen</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;rb&quot;</span><span class="p">);</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">f</span><span class="p">)</span><span class="w"> </span><span class="k">continue</span><span class="p">;</span>
+<span class="w">      </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">h</span><span class="p">[</span><span class="mi">14</span><span class="p">];</span>
+<span class="w">      </span><span class="n">fread</span><span class="p">(</span><span class="n">h</span><span class="p">,</span><span class="w"> </span><span class="mi">56</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">);</span>
+<span class="w">      </span><span class="k">auto</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="n">dtAlloc</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="w"> </span><span class="n">DT_ALLOC_PERM</span><span class="p">);</span>
+<span class="w">      </span><span class="n">fread</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">h</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">);</span>
+<span class="w">      </span><span class="n">fclose</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dtStatusFailed</span><span class="p">(</span><span class="n">mesh</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">addTile</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">h</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="w"> </span><span class="n">DT_TILE_FREE_DATA</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nb">nullptr</span><span class="p">)))</span><span class="w"> </span><span class="n">dtFree</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dtAllocNavMeshQuery</span><span class="p">();</span>
+<span class="w">  </span><span class="n">q</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">init</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span><span class="w"> </span><span class="mi">10000</span><span class="p">);</span>
+<span class="w">  </span><span class="n">dtQueryFilter</span><span class="w"> </span><span class="n">filter</span><span class="p">;</span>
+<span class="w">  </span><span class="n">filter</span><span class="p">.</span><span class="n">setIncludeFlags</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+<span class="w">  </span><span class="n">filter</span><span class="p">.</span><span class="n">setExcludeFlags</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">ext</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="mi">5</span><span class="p">,</span>
+<span class="w">    </span><span class="mi">12</span><span class="p">,</span>
+<span class="w">    </span><span class="mi">5</span>
+<span class="w">  </span><span class="p">};</span>
+<span class="w">  </span><span class="n">dtPolyRef</span><span class="w"> </span><span class="n">ra</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">rb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">pa</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="w"> </span><span class="n">pb</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+<span class="w">  </span><span class="n">q</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">findNearestPoly</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">ext</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">filter</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">ra</span><span class="p">,</span><span class="w"> </span><span class="n">pa</span><span class="p">);</span>
+<span class="w">  </span><span class="n">q</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">findNearestPoly</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">ext</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">filter</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">rb</span><span class="p">,</span><span class="w"> </span><span class="n">pb</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">ra</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">!</span><span class="n">rb</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;No nav polygon at endpoint %llu %llu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="kt">long</span><span class="p">)</span><span class="w"> </span><span class="n">ra</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="kt">long</span><span class="p">)</span><span class="w"> </span><span class="n">rb</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="n">dtPolyRef</span><span class="w"> </span><span class="n">polys</span><span class="p">[</span><span class="mi">4096</span><span class="p">];</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="n">q</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">findPath</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span><span class="w"> </span><span class="n">rb</span><span class="p">,</span><span class="w"> </span><span class="n">pa</span><span class="p">,</span><span class="w"> </span><span class="n">pb</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">filter</span><span class="p">,</span><span class="w"> </span><span class="n">polys</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="mi">4096</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">n</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">polys</span><span class="p">[</span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">rb</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Incomplete path %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">pts</span><span class="p">[</span><span class="mi">4096</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3</span><span class="p">];</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">flags</span><span class="p">[</span><span class="mi">4096</span><span class="p">];</span>
+<span class="w">  </span><span class="n">dtPolyRef</span><span class="w"> </span><span class="n">refs</span><span class="p">[</span><span class="mi">4096</span><span class="p">];</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="p">;</span>
+<span class="w">  </span><span class="n">q</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">findStraightPath</span><span class="p">(</span><span class="n">pa</span><span class="p">,</span><span class="w"> </span><span class="n">pb</span><span class="p">,</span><span class="w"> </span><span class="n">polys</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">pts</span><span class="p">,</span><span class="w"> </span><span class="n">flags</span><span class="p">,</span><span class="w"> </span><span class="n">refs</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">count</span><span class="p">,</span><span class="w"> </span><span class="mi">4096</span><span class="p">,</span><span class="w"> </span><span class="n">DT_STRAIGHTPATH_ALL_CROSSINGS</span><span class="p">);</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;[&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">count</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%s[%.5f,%.5f,%.5f]&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s">&quot;,&quot;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">pts</span><span class="p">[</span><span class="n">i</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="p">],</span><span class="w"> </span><span class="n">pts</span><span class="p">[</span><span class="n">i</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3</span><span class="p">],</span><span class="w"> </span><span class="n">pts</span><span class="p">[</span><span class="n">i</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">]);</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;]</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">dtFreeNavMeshQuery</span><span class="p">(</span><span class="n">q</span><span class="p">);</span>
+<span class="w">  </span><span class="n">dtFreeNavMesh</span><span class="p">(</span><span class="n">mesh</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+<p>One interesting outcome of this approach, which can be seen in the gameplay recording, is that the agent was also able to exploit map bugs by phasing through walls that possibly had missing collision properties.</p>
+<p><img src="https://i.imgur.com/HOamq7r.png" alt="Example of agent phasing through walls" /></p>
+<h2 id=conclusion>Conclusion</h2><p>Overall, this was a very satisfying first run at using agent-wow to test the capabilities of LLM agents to play World of Warcraft. It exceeded my expectations and left me wondering how much further we're able to push these models.</p>
+<p>For my next few runs, I'm especially interested in answering the following questions:</p>
+<ul>
+<li>Can a single agent level to 80 completely autonomously? If so, what does it have to build along the way to get there? And how long would it take?</li>
+<li>Can multiple agents play together? Can they use in-game social features to coordinate and complete quests and dungeons?</li>
+</ul>
+<p>As side quests, I'll also be:</p>
+<ul>
+<li>Building out some better observability tools to track agent characters over longer periods while I'm AFK.</li>
+<li>Adding a sandbox to put guardrails around what agents can access and modify.</li>
+</ul>
+
+
+    
+
+    
+        
+
+        
+            <form id="upvote-form" action="/upvote/" method="post" style="display: inline">
+    <small>
+        <input hidden name="uid" value="FmWnkCQTfVTfxISTNWqY" style="display:none">
+        <input hidden name="title" value="GPT-6 Astra plays World of Warcraft for the first time with agent-wow" style="display:none">
+        <input hidden name="token" value="FmWnkCQTfVTfxISTNWqY" style="display:none">
+
+        <button
+            class="upvote-button"
+            aria-label="Toast this post"
+            title="Toast this post"
+        >
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
+                <polyline points="17 11 12 6 7 11"></polyline>
+                <polyline points="17 18 12 13 7 18"></polyline>
+            </svg>
+            <small class="upvote-count" aria-hidden="true">&nbsp;</small>
+        </button>
+    </small>        
+</form>
+
+<script>
+    const $upvoteButton = document.querySelector('.upvote-button');
+    const $upvoteCount =  document.querySelector('.upvote-count')
+    let upvoteToken = '';
+    let upvoteTokenAt = Infinity;
+
+    fetch('/upvote-info/FmWnkCQTfVTfxISTNWqY/').then(response => response.json()).then(data => {
+        $upvoteCount.innerText = data.upvote_count;
+        upvoteToken = data.token;
+        upvoteTokenAt = Date.now();
+        if (data.upvoted) {
+            $upvoteButton.disabled = true
+            $upvoteButton.style.color = "salmon"
+            $upvoteButton.ariaLabel = "Toasted"
+            $upvoteButton.title = "Toasted"
+        }
+        $upvoteButton.ariaLabel += ` (${data.upvote_count})`
+
+        document.addEventListener('touchmove', interaction, {once: true});
+        document.addEventListener('mousemove', interaction, {once: true});
+    });
+
+    const interaction = () => {
+        document.querySelector('input[name="title"]').value = "";
+        document.querySelector('input[name="token"]').value = upvoteToken;
+    }
+
+    document.querySelector('#upvote-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (Date.now() - upvoteTokenAt < 3000) return;
+
+        fetch(e.target.action, {
+            method: 'post',
+            body: new FormData(e.target),
+        });
+        
+        $upvoteButton.disabled = true
+        $upvoteButton.style.color = "salmon"
+        $upvoteButton.ariaLabel = "Toasted"
+        $upvoteButton.title = "Toasted"
+        const newUpvoteCount = `${(parseInt($upvoteCount.innerHTML.split(" ")[0]) + 1)}`
+        $upvoteCount.innerHTML = newUpvoteCount
+        $upvoteButton.ariaLabel += ` (${newUpvoteCount})`
+    });
+</script>
+
+        
+
+        
+            <script>
+            window.addEventListener("load", () => {
+                if (navigator.webdriver !== true) {
+                    const sendHit = score => {
+                        const params = new URLSearchParams({
+                            blog: "agent-wow",
+                            token: "FmWnkCQTfVTfxISTNWqY",
+                            referrer: document.referrer.includes("agent-wow.sh") ? "" : document.referrer,
+                            title: "",
+                            score: score
+                        });
+                        new Image().src = `/hit/?${params.toString()}`;
+                    };
+
+                    document.addEventListener('touchmove', () => sendHit(100), { once: true });
+                    document.addEventListener('mousemove', () => sendHit(100), { once: true });
+                }
+            });
+            </script>
+        
+    
+
+
+  </main>
+  <footer>
+    
+    
+    <span>
+        Powered by <a href="https://bearblog.dev">Bear <span role="img" class="bear" aria-label="ASCII bear logo">ʕ•ᴥ•ʔ</span></a>
+    </span>
+
+  </footer>
+
+  
+  <script>
+        (() => {
+          "use strict";
+          const times = document.querySelectorAll('time');
+          const format_string = "d M, Y" || "d M, Y"
+
+          times.forEach(time => {
+              time.innerText = formatDate(time.dateTime, format_string)
+          });
+
+          function formatDate(dateStr, formatStr) {
+            const date = new Date(dateStr);
+            const day = date.getDate();
+            const month = date.getMonth();
+            const year = date.getFullYear();
+            const weekday = date.getDay();
+            const hours = date.getHours();
+            const minutes = date.getMinutes();
+            const monthsFull = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            const monthsShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const daysFull = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const daysShort = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            
+            function getOrdinal(n) {
+                const s = ['th', 'st', 'nd', 'rd'];
+                const v = n % 100;
+                return s[(v - 20) % 10] || s[v] || s[0];
+            }
+            
+            const map = {
+                'd': () => day.toString().padStart(2, '0'),
+                'm': () => (month + 1).toString().padStart(2, '0'),
+                'Y': () => year.toString(),
+                'y': () => year.toString().slice(-2),
+                'F': () => monthsFull[month],
+                'j': () => day.toString(),
+                'D': () => daysShort[weekday],
+                'l': () => daysFull[weekday],
+                'S': () => getOrdinal(day),
+                'M': () => monthsShort[month],
+                'H': () => hours.toString().padStart(2, '0'),
+                'h': () => {
+                    let h = hours % 12;
+                    h = h === 0 ? 12 : h;
+                    return h.toString().padStart(2, '0');
+                },
+                'g': () => {
+                    let h = hours % 12;
+                    return h === 0 ? '12' : h.toString();
+                },
+                'i': () => minutes.toString().padStart(2, '0'),
+                'a': () => hours < 12 ? 'am' : 'pm',
+                'A': () => hours < 12 ? 'AM' : 'PM',
+            };
+            
+            let result = '';
+            for (let char of formatStr) {
+                result += map[char] ? map[char]() : char;
+            }
+            return result;
+        }
+        })();
+    </script>
+    
+</body>
+<!-- ID: agent-wow -->
+<!-- 🐻 -->
+</html>

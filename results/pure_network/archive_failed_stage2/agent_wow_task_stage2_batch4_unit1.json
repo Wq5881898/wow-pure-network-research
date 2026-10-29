@@ -1,0 +1,879 @@
+{
+  "run_id": "stage2_batch4_unit1",
+  "plan": [
+    {
+      "id": "verify_alive",
+      "kind": "require_alive",
+      "params": {},
+      "timeout": 10,
+      "side_effecting": false
+    },
+    {
+      "id": "select_target",
+      "kind": "select_target",
+      "params": {
+        "entry": 3124,
+        "max_level": 3
+      },
+      "timeout": 15,
+      "side_effecting": false
+    },
+    {
+      "id": "approach",
+      "kind": "approach",
+      "params": {},
+      "timeout": 90,
+      "side_effecting": true
+    }
+  ],
+  "run": {
+    "run_id": "stage2_batch4_unit1",
+    "status": "unknown",
+    "results": [
+      {
+        "action_id": "verify_alive",
+        "kind": "require_alive",
+        "status": "success",
+        "detail": "postcondition observed",
+        "elapsed_ms": 0,
+        "evidence": {}
+      },
+      {
+        "action_id": "select_target",
+        "kind": "select_target",
+        "status": "success",
+        "detail": "postcondition observed",
+        "elapsed_ms": 0,
+        "evidence": {
+          "target": {
+            "guid": "17379391014434767618",
+            "entry": 3124,
+            "health": 71,
+            "level": 3,
+            "position_source": "linear receive-time estimate"
+          }
+        }
+      },
+      {
+        "action_id": "approach",
+        "kind": "approach",
+        "status": "unknown",
+        "detail": "request applied but postcondition not observed",
+        "elapsed_ms": 2552,
+        "evidence": {
+          "reached": false,
+          "position_confirmation": {
+            "confirmed": false,
+            "fresh": false,
+            "distance": 4.739407466103485,
+            "movement_sequence": 3,
+            "before_sequence": 3,
+            "last_update_position": [
+              -585.4219970703125,
+              -4155.63330078125,
+              76.65379333496094
+            ],
+            "submitted_position": [
+              -587.3631,
+              -4151.3125,
+              76.81122
+            ],
+            "scope": "movement update required; polling does not refresh position"
+          },
+          "replies": [
+            {
+              "jsonrpc": "2.0",
+              "id": 1,
+              "result": {
+                "submittedPosition": [
+                  -587.3631,
+                  -4151.3125,
+                  76.81122,
+                  1.99308
+                ],
+                "elapsedMs": 1915
+              }
+            }
+          ],
+          "attempts": [],
+          "side_effect_applied": true,
+          "reason": "no new self movement evidence; do not replan from cached login position"
+        }
+      }
+    ],
+    "records": [
+      {
+        "action_id": "verify_alive",
+        "kind": "require_alive",
+        "status": "success",
+        "detail": "postcondition observed",
+        "elapsed_ms": 0,
+        "evidence": {},
+        "observation_before": {
+          "backend": "pure-network",
+          "character": "9",
+          "session_id": "aw-209543815",
+          "sequence": 3,
+          "sampled_at": 1793227203.116747,
+          "map_id": 1,
+          "position": [
+            -585.4219970703125,
+            -4155.63330078125,
+            76.65379333496094
+          ],
+          "health": 108,
+          "max_health": 108,
+          "ghost": false,
+          "in_combat": false,
+          "level": 3,
+          "quest_log": [],
+          "item_totals": {
+            "6125": 1,
+            "139": 1,
+            "140": 1,
+            "12282": 1,
+            "6948": 1,
+            "7098": 1,
+            "4915": 1,
+            "4867": 7,
+            "7099": 1,
+            "4919": 1,
+            "7101": 2,
+            "2652": 1
+          },
+          "available": [
+            "creature_templates",
+            "errors",
+            "event_log",
+            "events",
+            "field_semantics",
+            "login",
+            "motions",
+            "packets",
+            "scope",
+            "self",
+            "session_id",
+            "status",
+            "visible_objects"
+          ],
+          "context": {
+            "target": null,
+            "position_evidence": {
+              "source": "last server object movement update",
+              "movement_sequence": 3,
+              "current_position_confirmed": false,
+              "submitted_position": [
+                -585.4219970703125,
+                -4155.63330078125,
+                76.65379333496094
+              ],
+              "submitted_position_semantics": "local movement submission, not server acknowledgement"
+            },
+            "position_model": {
+              "identity": [
+                "aw-209543815",
+                "9",
+                1
+              ],
+              "observed": {
+                "xyz": [
+                  -585.4219970703125,
+                  -4155.63330078125,
+                  76.65379333496094
+                ],
+                "at": 626.129854369,
+                "sequence": 3,
+                "source": "movement",
+                "action_id": ""
+              },
+              "predicted": null,
+              "usable_for_estimation": true,
+              "selected_age_seconds": 0.010568361999958142,
+              "reason": null,
+              "position_confirmed": true,
+              "teleport_evidence": null,
+              "timestamp_semantics": "host first processing of position event, not server time",
+              "correction_coverage": "incomplete; estimate is not authorized for action success"
+            },
+            "login_position": [
+              -585.4219970703125,
+              -4155.63330078125,
+              76.65379333496094
+            ]
+          }
+        },
+        "observation_after": {
+          "backend": "pure-network",
+          "character": "9",
+          "session_id": "aw-209543815",
+          "sequence": 3,
+          "sampled_at": 1793227203.1250167,
+          "map_id": 1,
+          "position": [
+            -585.4219970703125,
+            -4155.63330078125,
+            76.65379333496094
+          ],
+          "health": 108,
+          "max_health": 108,
+          "ghost": false,
+          "in_combat": false,
+          "level": 3,
+          "quest_log": [],
+          "item_totals": {
+            "6125": 1,
+            "139": 1,
+            "140": 1,
+            "12282": 1,
+            "6948": 1,
+            "7098": 1,
+            "4915": 1,
+            "4867": 7,
+            "7099": 1,
+            "4919": 1,
+            "7101": 2,
+            "2652": 1
+          },
+          "available": [
+            "creature_templates",
+            "errors",
+            "event_log",
+            "events",
+            "field_semantics",
+            "login",
+            "motions",
+            "packets",
+            "scope",
+            "self",
+            "session_id",
+            "status",
+            "visible_objects"
+          ],
+          "context": {
+            "target": null,
+            "position_evidence": {
+              "source": "last server object movement update",
+              "movement_sequence": 3,
+              "current_position_confirmed": false,
+              "submitted_position": [
+                -585.4219970703125,
+                -4155.63330078125,
+                76.65379333496094
+              ],
+              "submitted_position_semantics": "local movement submission, not server acknowledgement"
+            },
+            "position_model": {
+              "identity": [
+                "aw-209543815",
+                "9",
+                1
+              ],
+              "observed": {
+                "xyz": [
+                  -585.4219970703125,
+                  -4155.63330078125,
+                  76.65379333496094
+                ],
+                "at": 626.129854369,
+                "sequence": 3,
+                "source": "movement",
+                "action_id": ""
+              },
+              "predicted": null,
+              "usable_for_estimation": true,
+              "selected_age_seconds": 0.01883307599996442,
+              "reason": null,
+              "position_confirmed": true,
+              "teleport_evidence": null,
+              "timestamp_semantics": "host first processing of position event, not server time",
+              "correction_coverage": "incomplete; estimate is not authorized for action success"
+            },
+            "login_position": [
+              -585.4219970703125,
+              -4155.63330078125,
+              76.65379333496094
+            ]
+          }
+        }
+      },
+      {
+        "action_id": "select_target",
+        "kind": "select_target",
+        "status": "success",
+        "detail": "postcondition observed",
+        "elapsed_ms": 0,
+        "evidence": {
+          "target": {
+            "guid": "17379391014434767618",
+            "entry": 3124,
+            "health": 71,
+            "level": 3,
+            "position_source": "linear receive-time estimate"
+          }
+        },
+        "observation_before": {
+          "backend": "pure-network",
+          "character": "9",
+          "session_id": "aw-209543815",
+          "sequence": 3,
+          "sampled_at": 1793227203.1367874,
+          "map_id": 1,
+          "position": [
+            -585.4219970703125,
+            -4155.63330078125,
+            76.65379333496094
+          ],
+          "health": 108,
+          "max_health": 108,
+          "ghost": false,
+          "in_combat": false,
+          "level": 3,
+          "quest_log": [],
+          "item_totals": {
+            "6125": 1,
+            "139": 1,
+            "140": 1,
+            "12282": 1,
+            "6948": 1,
+            "7098": 1,
+            "4915": 1,
+            "4867": 7,
+            "7099": 1,
+            "4919": 1,
+            "7101": 2,
+            "2652": 1
+          },
+          "available": [
+            "creature_templates",
+            "errors",
+            "event_log",
+            "events",
+            "field_semantics",
+            "login",
+            "motions",
+            "packets",
+            "scope",
+            "self",
+            "session_id",
+            "status",
+            "visible_objects"
+          ],
+          "context": {
+            "target": null,
+            "position_evidence": {
+              "source": "last server object movement update",
+              "movement_sequence": 3,
+              "current_position_confirmed": false,
+              "submitted_position": [
+                -585.4219970703125,
+                -4155.63330078125,
+                76.65379333496094
+              ],
+              "submitted_position_semantics": "local movement submission, not server acknowledgement"
+            },
+            "position_model": {
+              "identity": [
+                "aw-209543815",
+                "9",
+                1
+              ],
+              "observed": {
+                "xyz": [
+                  -585.4219970703125,
+                  -4155.63330078125,
+                  76.65379333496094
+                ],
+                "at": 626.129854369,
+                "sequence": 3,
+                "source": "movement",
+                "action_id": ""
+              },
+              "predicted": null,
+              "usable_for_estimation": true,
+              "selected_age_seconds": 0.030605976000060764,
+              "reason": null,
+              "position_confirmed": true,
+              "teleport_evidence": null,
+              "timestamp_semantics": "host first processing of position event, not server time",
+              "correction_coverage": "incomplete; estimate is not authorized for action success"
+            },
+            "login_position": [
+              -585.4219970703125,
+              -4155.63330078125,
+              76.65379333496094
+            ]
+          }
+        },
+        "observation_after": {
+          "backend": "pure-network",
+          "character": "9",
+          "session_id": "aw-209543815",
+          "sequence": 3,
+          "sampled_at": 1793227203.1459424,
+          "map_id": 1,
+          "position": [
+            -585.4219970703125,
+            -4155.63330078125,
+            76.65379333496094
+          ],
+          "health": 108,
+          "max_health": 108,
+          "ghost": false,
+          "in_combat": false,
+          "level": 3,
+          "quest_log": [],
+          "item_totals": {
+            "6125": 1,
+            "139": 1,
+            "140": 1,
+            "12282": 1,
+            "6948": 1,
+            "7098": 1,
+            "4915": 1,
+            "4867": 7,
+            "7099": 1,
+            "4919": 1,
+            "7101": 2,
+            "2652": 1
+          },
+          "available": [
+            "creature_templates",
+            "errors",
+            "event_log",
+            "events",
+            "field_semantics",
+            "login",
+            "motions",
+            "packets",
+            "scope",
+            "self",
+            "session_id",
+            "status",
+            "visible_objects"
+          ],
+          "context": {
+            "target": {
+              "guid": "17379391014434767618",
+              "entry": 3124,
+              "health": 71
+            },
+            "position_evidence": {
+              "source": "last server object movement update",
+              "movement_sequence": 3,
+              "current_position_confirmed": false,
+              "submitted_position": [
+                -585.4219970703125,
+                -4155.63330078125,
+                76.65379333496094
+              ],
+              "submitted_position_semantics": "local movement submission, not server acknowledgement"
+            },
+            "position_model": {
+              "identity": [
+                "aw-209543815",
+                "9",
+                1
+              ],
+              "observed": {
+                "xyz": [
+                  -585.4219970703125,
+                  -4155.63330078125,
+                  76.65379333496094
+                ],
+                "at": 626.129854369,
+                "sequence": 3,
+                "source": "movement",
+                "action_id": ""
+              },
+              "predicted": null,
+              "usable_for_estimation": true,
+              "selected_age_seconds": 0.03975935100004335,
+              "reason": null,
+              "position_confirmed": true,
+              "teleport_evidence": null,
+              "timestamp_semantics": "host first processing of position event, not server time",
+              "correction_coverage": "incomplete; estimate is not authorized for action success"
+            },
+            "login_position": [
+              -585.4219970703125,
+              -4155.63330078125,
+              76.65379333496094
+            ]
+          }
+        }
+      },
+      {
+        "action_id": "approach",
+        "kind": "approach",
+        "status": "unknown",
+        "detail": "request applied but postcondition not observed",
+        "elapsed_ms": 2552,
+        "evidence": {
+          "reached": false,
+          "position_confirmation": {
+            "confirmed": false,
+            "fresh": false,
+            "distance": 4.739407466103485,
+            "movement_sequence": 3,
+            "before_sequence": 3,
+            "last_update_position": [
+              -585.4219970703125,
+              -4155.63330078125,
+              76.65379333496094
+            ],
+            "submitted_position": [
+              -587.3631,
+              -4151.3125,
+              76.81122
+            ],
+            "scope": "movement update required; polling does not refresh position"
+          },
+          "replies": [
+            {
+              "jsonrpc": "2.0",
+              "id": 1,
+              "result": {
+                "submittedPosition": [
+                  -587.3631,
+                  -4151.3125,
+                  76.81122,
+                  1.99308
+                ],
+                "elapsedMs": 1915
+              }
+            }
+          ],
+          "attempts": [],
+          "side_effect_applied": true,
+          "reason": "no new self movement evidence; do not replan from cached login position"
+        },
+        "observation_before": {
+          "backend": "pure-network",
+          "character": "9",
+          "session_id": "aw-209543815",
+          "sequence": 3,
+          "sampled_at": 1793227203.1568656,
+          "map_id": 1,
+          "position": [
+            -585.4219970703125,
+            -4155.63330078125,
+            76.65379333496094
+          ],
+          "health": 108,
+          "max_health": 108,
+          "ghost": false,
+          "in_combat": false,
+          "level": 3,
+          "quest_log": [],
+          "item_totals": {
+            "6125": 1,
+            "139": 1,
+            "140": 1,
+            "12282": 1,
+            "6948": 1,
+            "7098": 1,
+            "4915": 1,
+            "4867": 7,
+            "7099": 1,
+            "4919": 1,
+            "7101": 2,
+            "2652": 1
+          },
+          "available": [
+            "creature_templates",
+            "errors",
+            "event_log",
+            "events",
+            "field_semantics",
+            "login",
+            "motions",
+            "packets",
+            "scope",
+            "self",
+            "session_id",
+            "status",
+            "visible_objects"
+          ],
+          "context": {
+            "target": {
+              "guid": "17379391014434767618",
+              "entry": 3124,
+              "health": 71
+            },
+            "position_evidence": {
+              "source": "last server object movement update",
+              "movement_sequence": 3,
+              "current_position_confirmed": false,
+              "submitted_position": [
+                -585.4219970703125,
+                -4155.63330078125,
+                76.65379333496094
+              ],
+              "submitted_position_semantics": "local movement submission, not server acknowledgement"
+            },
+            "position_model": {
+              "identity": [
+                "aw-209543815",
+                "9",
+                1
+              ],
+              "observed": {
+                "xyz": [
+                  -585.4219970703125,
+                  -4155.63330078125,
+                  76.65379333496094
+                ],
+                "at": 626.129854369,
+                "sequence": 3,
+                "source": "movement",
+                "action_id": ""
+              },
+              "predicted": null,
+              "usable_for_estimation": true,
+              "selected_age_seconds": 0.050683672999980445,
+              "reason": null,
+              "position_confirmed": true,
+              "teleport_evidence": null,
+              "timestamp_semantics": "host first processing of position event, not server time",
+              "correction_coverage": "incomplete; estimate is not authorized for action success"
+            },
+            "login_position": [
+              -585.4219970703125,
+              -4155.63330078125,
+              76.65379333496094
+            ]
+          }
+        },
+        "observation_after": {
+          "backend": "pure-network",
+          "character": "9",
+          "session_id": "aw-209543815",
+          "sequence": 3,
+          "sampled_at": 1793227205.7202687,
+          "map_id": 1,
+          "position": [
+            -585.4219970703125,
+            -4155.63330078125,
+            76.65379333496094
+          ],
+          "health": 108,
+          "max_health": 108,
+          "ghost": false,
+          "in_combat": false,
+          "level": 3,
+          "quest_log": [],
+          "item_totals": {
+            "6125": 1,
+            "139": 1,
+            "140": 1,
+            "12282": 1,
+            "6948": 1,
+            "7098": 1,
+            "4915": 1,
+            "4867": 7,
+            "7099": 1,
+            "4919": 1,
+            "7101": 2,
+            "2652": 1
+          },
+          "available": [
+            "creature_templates",
+            "errors",
+            "event_log",
+            "events",
+            "field_semantics",
+            "login",
+            "motions",
+            "packets",
+            "scope",
+            "self",
+            "session_id",
+            "status",
+            "visible_objects"
+          ],
+          "context": {
+            "target": {
+              "guid": "17379391014434767618",
+              "entry": 3124,
+              "health": 71
+            },
+            "position_evidence": {
+              "source": "last server object movement update",
+              "movement_sequence": 3,
+              "current_position_confirmed": false,
+              "submitted_position": [
+                -585.4219970703125,
+                -4155.63330078125,
+                76.65379333496094
+              ],
+              "submitted_position_semantics": "local movement submission, not server acknowledgement"
+            },
+            "position_model": {
+              "identity": [
+                "aw-209543815",
+                "9",
+                1
+              ],
+              "observed": {
+                "xyz": [
+                  -585.4219970703125,
+                  -4155.63330078125,
+                  76.65379333496094
+                ],
+                "at": 626.129854369,
+                "sequence": 3,
+                "source": "movement",
+                "action_id": ""
+              },
+              "predicted": {
+                "xyz": [
+                  -587.3631,
+                  -4151.3125,
+                  76.81122
+                ],
+                "at": 628.212817519,
+                "sequence": 15,
+                "source": "submitted_prediction",
+                "action_id": "stage2_batch4_unit1:path:628212800224"
+              },
+              "usable_for_estimation": true,
+              "selected_age_seconds": 0.5311246779999692,
+              "reason": "awaiting independent position evidence",
+              "position_confirmed": false,
+              "teleport_evidence": null,
+              "timestamp_semantics": "host first processing of position event, not server time",
+              "correction_coverage": "incomplete; estimate is not authorized for action success"
+            },
+            "login_position": [
+              -585.4219970703125,
+              -4155.63330078125,
+              76.65379333496094
+            ]
+          }
+        }
+      }
+    ],
+    "completed": [
+      "verify_alive",
+      "select_target"
+    ]
+  },
+  "final_observation": {
+    "backend": "pure-network",
+    "character": "9",
+    "session_id": "aw-209543815",
+    "sequence": 3,
+    "sampled_at": 1793227205.7407224,
+    "map_id": 1,
+    "position": [
+      -585.4219970703125,
+      -4155.63330078125,
+      76.65379333496094
+    ],
+    "health": 108,
+    "max_health": 108,
+    "ghost": false,
+    "in_combat": false,
+    "level": 3,
+    "quest_log": [],
+    "item_totals": {
+      "6125": 1,
+      "139": 1,
+      "140": 1,
+      "12282": 1,
+      "6948": 1,
+      "7098": 1,
+      "4915": 1,
+      "4867": 7,
+      "7099": 1,
+      "4919": 1,
+      "7101": 2,
+      "2652": 1
+    },
+    "available": [
+      "creature_templates",
+      "errors",
+      "event_log",
+      "events",
+      "field_semantics",
+      "login",
+      "motions",
+      "packets",
+      "scope",
+      "self",
+      "session_id",
+      "status",
+      "visible_objects"
+    ],
+    "context": {
+      "target": {
+        "guid": "17379391014434767618",
+        "entry": 3124,
+        "health": 71
+      },
+      "position_evidence": {
+        "source": "last server object movement update",
+        "movement_sequence": 3,
+        "current_position_confirmed": false,
+        "submitted_position": [
+          -585.4219970703125,
+          -4155.63330078125,
+          76.65379333496094
+        ],
+        "submitted_position_semantics": "local movement submission, not server acknowledgement"
+      },
+      "position_model": {
+        "identity": [
+          "aw-209543815",
+          "9",
+          1
+        ],
+        "observed": {
+          "xyz": [
+            -585.4219970703125,
+            -4155.63330078125,
+            76.65379333496094
+          ],
+          "at": 626.129854369,
+          "sequence": 3,
+          "source": "movement",
+          "action_id": ""
+        },
+        "predicted": {
+          "xyz": [
+            -587.3631,
+            -4151.3125,
+            76.81122
+          ],
+          "at": 628.212817519,
+          "sequence": 15,
+          "source": "submitted_prediction",
+          "action_id": "stage2_batch4_unit1:path:628212800224"
+        },
+        "usable_for_estimation": true,
+        "selected_age_seconds": 0.5515798859998995,
+        "reason": "awaiting independent position evidence",
+        "position_confirmed": false,
+        "teleport_evidence": null,
+        "timestamp_semantics": "host first processing of position event, not server time",
+        "correction_coverage": "incomplete; estimate is not authorized for action success"
+      },
+      "login_position": [
+        -585.4219970703125,
+        -4155.63330078125,
+        76.65379333496094
+      ]
+    }
+  },
+  "finalize": {
+    "status": "closed",
+    "reply": {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "result": {
+        "status": "closed"
+      }
+    }
+  },
+  "elapsed_s": 34.754
+}

@@ -1,0 +1,129 @@
+{
+  "run_id": "run110_boundary_verify",
+  "plan": [
+    {
+      "id": "verify_alive",
+      "kind": "require_alive",
+      "params": {},
+      "timeout": 15.0,
+      "side_effecting": false
+    },
+    {
+      "id": "logout",
+      "kind": "logout",
+      "params": {},
+      "timeout": 45,
+      "side_effecting": true
+    }
+  ],
+  "position_verification": {
+    "confirmed": false,
+    "source_session": "aw-2303836864",
+    "verification_session": "aw-351175506",
+    "character": "9",
+    "map": 1,
+    "expected_map": 1,
+    "expected_xyz": [
+      -709.0517,
+      -4348.956,
+      49.07902
+    ],
+    "login_xyz": [
+      -705.1116943359375,
+      -4347.94287109375,
+      48.86928939819336
+    ],
+    "distance": 4.073580947871075,
+    "tolerance": 1,
+    "scope": "later login boundary; not live movement acknowledgement"
+  },
+  "error": "ValueError: new login does not confirm submitted endpoint",
+  "final_observation": {
+    "backend": "pure-network",
+    "character": "9",
+    "session_id": "aw-351175506",
+    "sequence": 3,
+    "sampled_at": 1793211591.549841,
+    "map_id": 1,
+    "position": [
+      -705.1116943359375,
+      -4347.94287109375,
+      48.86928939819336
+    ],
+    "health": 89,
+    "max_health": 89,
+    "ghost": false,
+    "in_combat": false,
+    "level": 2,
+    "quest_log": [
+      {
+        "slot": 0,
+        "quest": 789,
+        "state": 0,
+        "counters": [
+          0,
+          0
+        ]
+      }
+    ],
+    "item_totals": {
+      "6125": 1,
+      "139": 1,
+      "140": 1,
+      "12282": 1,
+      "6948": 1,
+      "7098": 1,
+      "4915": 1,
+      "4867": 6,
+      "7099": 1,
+      "4862": 6,
+      "7101": 1,
+      "2652": 1
+    },
+    "available": [
+      "creature_templates",
+      "errors",
+      "event_log",
+      "events",
+      "field_semantics",
+      "login",
+      "motions",
+      "packets",
+      "scope",
+      "self",
+      "session_id",
+      "status",
+      "visible_objects"
+    ],
+    "context": {
+      "target": null,
+      "position_evidence": {
+        "source": "last server object movement update",
+        "movement_sequence": 3,
+        "current_position_confirmed": false,
+        "submitted_position": [
+          -705.1116943359375,
+          -4347.94287109375,
+          48.86928939819336
+        ],
+        "submitted_position_semantics": "local movement submission, not server acknowledgement"
+      },
+      "login_position": [
+        -705.1116943359375,
+        -4347.94287109375,
+        48.86928939819336
+      ]
+    }
+  },
+  "finalize": {
+    "status": "closed",
+    "reply": {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "result": {
+        "status": "closed"
+      }
+    }
+  },
+  "elapsed_s": 32.299
+}

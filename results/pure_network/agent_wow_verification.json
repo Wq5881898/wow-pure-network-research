@@ -1,0 +1,215 @@
+{
+  "observed_at_utc": "2026-10-20T22:52:05.981056+00:00",
+  "commit": "f79739e3477d05060f91c2c15f67e76444ee3f02",
+  "platform": "windows/amd64",
+  "tests": {
+    "command": "go test -json ./...",
+    "returncode": 1,
+    "packages": [
+      {
+        "Package": "github.com/agent-wow/agent-wow",
+        "Action": "skip",
+        "Elapsed": 0.001
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/internal/modulefixture",
+        "Action": "skip",
+        "Elapsed": 0.001
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/internal/modulefixture/api",
+        "Action": "skip",
+        "Elapsed": 0
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/internal/modulefixture/cmd",
+        "Action": "skip",
+        "Elapsed": 0
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/pkg/account",
+        "Action": "skip",
+        "Elapsed": 0
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/pkg/modules/callback",
+        "Action": "skip",
+        "Elapsed": 0
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/pkg/modules/internal/testutil",
+        "Action": "skip",
+        "Elapsed": 0
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/pkg/modules/session",
+        "Action": "skip",
+        "Elapsed": 0.001
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/pkg/modules/v1",
+        "Action": "skip",
+        "Elapsed": 0
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/pkg/realm",
+        "Action": "skip",
+        "Elapsed": 0
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/tools/dumpdb",
+        "Action": "skip",
+        "Elapsed": 0
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/tools/opcodecatalog",
+        "Action": "skip",
+        "Elapsed": 0
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/pkg/opcode",
+        "Action": "pass",
+        "Elapsed": 3.477
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/tools/internal/clientdata",
+        "Action": "pass",
+        "Elapsed": 3.521
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/pkg/maps",
+        "Action": "pass",
+        "Elapsed": 3.5300000000000002
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/pkg/worldrpc",
+        "Action": "pass",
+        "Elapsed": 3.8609999999999998
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/tools/mapcatalog",
+        "Action": "pass",
+        "Elapsed": 4.263
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/pkg/char",
+        "Action": "pass",
+        "Elapsed": 4.292
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/pkg/world",
+        "Action": "pass",
+        "Elapsed": 4.941
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/pkg/worldconn",
+        "Action": "pass",
+        "Elapsed": 5.016
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/pkg/warden",
+        "Action": "pass",
+        "Elapsed": 5.033
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/pkg/auth",
+        "Action": "pass",
+        "Elapsed": 5.053
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/internal/output",
+        "Action": "pass",
+        "Elapsed": 5.073
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/pkg/modules/runner",
+        "Action": "pass",
+        "Elapsed": 5.119
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/tools/charcatalog",
+        "Action": "pass",
+        "Elapsed": 5.124
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/internal/credentials",
+        "Action": "fail",
+        "Elapsed": 5.195
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/internal/realm",
+        "Action": "fail",
+        "Elapsed": 5.227
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/tools/clientdata",
+        "Action": "pass",
+        "Elapsed": 5.353
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/internal/config",
+        "Action": "fail",
+        "Elapsed": 7.7620000000000005
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/pkg/database",
+        "Action": "fail",
+        "Elapsed": 5.416
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/pkg/modules/discovery",
+        "Action": "pass",
+        "Elapsed": 6.445
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/cmd",
+        "Action": "fail",
+        "Elapsed": 11.264
+      },
+      {
+        "Package": "github.com/agent-wow/agent-wow/pkg/modules/runtime",
+        "Action": "fail",
+        "Elapsed": 43.549
+      }
+    ],
+    "stderr": ""
+  },
+  "build": {
+    "returncode": 0,
+    "stderr": "",
+    "sha256": "f3671b12b59b70de2c9e43a61be9202dcc6aa31002aee748176cd83302f29f87"
+  },
+  "cli_help": "Manage realms using the saved authenticated session. The selected realm is saved in config_dir/realm.json.\n\nUsage:\n  agent-wow realm [command]\n\nAvailable Commands:\n  list        List realms and mark the current selection\n  set         Select an available realm by ID or exact name\n  status      Show the selected realm and its current availability\n\nFlags:\n  -h, --help               help for realm\n      --timeout duration   Timeout for fetching realms from the authserver (default 10s)\n\nGlobal Flags:\n      --config string   config file (default: config.* in the working directory)\n\nUse \"agent-wow realm [command] --help\" for more information about a command.\n",
+  "navigation": {
+    "path": "C:\\Azerothcore\\azerothcore-wotlk\\build\\bin\\Debug\\data\\mmaps",
+    "tile_count": 3682,
+    "map_count": 98,
+    "samples": [
+      {
+        "file": "000.mmap",
+        "bytes": 28,
+        "sha256": "5bfae4cd801172511a7cb76fe64fed4df7814afa4bf97c6e3d214e2da1152609"
+      },
+      {
+        "file": "001.mmap",
+        "bytes": 28,
+        "sha256": "2632c3c5dac4ffa8fd075f76324f3291f2fece515d3c0fdfdc99366d0bdd2b7b"
+      },
+      {
+        "file": "389.mmap",
+        "bytes": 28,
+        "sha256": "706186809c078a2fe0d100c4a553a3eee2e291ed5acd94a7324e36f86ece729e"
+      }
+    ],
+    "tile_header_sample": {
+      "file": "0010001.mmtile",
+      "magic": "0x4d4d4150",
+      "detour_version": 7,
+      "mmap_version": 19,
+      "payload_size": 121524,
+      "file_bytes": 121580,
+      "header_56_plus_payload_matches": true,
+      "sha256": "b1f3c4606a0960f628ed84a278464c423168cc29d6e5739486838c7c17c13969"
+    }
+  }
+}

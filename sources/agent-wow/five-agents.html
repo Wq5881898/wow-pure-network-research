@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Powered by Bear Blog -->
+
+<head>
+  
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5">
+  <script>
+    (function() {
+      'use strict';
+      document.cookie = `timezone=${Intl.DateTimeFormat().resolvedOptions().timeZone};path=/`;
+    })();
+  </script>
+  
+  <title>Five agents running on GPT-6.1 Sol clear World of Warcraft&#x27;s Ragefire Chasm in 24 hours – agent-wow</title>
+  <link rel="canonical" href="https://agent-wow.sh/five-agents-running-on-gpt-61-sol-clear-world-of-warcrafts-ragefire-chasm-in-24-hours/">
+  
+    
+
+    <meta name="agent-wow" content="look-for-the-bear-necessities">
+    <meta name="token" content="GAEfBJXXIHHmxXEhJwvK">
+
+    
+<!-- Primary Meta Tags -->
+<meta name="title" content="Five agents running on GPT-6.1 Sol clear World of Warcraft&#x27;s Ragefire Chasm in 24 hours">
+<meta name="description" content="A look into how agents in a simulated environment coordinate and adapt in order to complete a shared long-horizon task.">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:site_name" content="agent-wow">
+<meta property="og:title" content="Five agents running on GPT-6.1 Sol clear World of Warcraft&#x27;s Ragefire Chasm in 24 hours">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://agent-wow.sh/five-agents-running-on-gpt-61-sol-clear-world-of-warcrafts-ragefire-chasm-in-24-hours/">
+<meta property="og:description" content="A look into how agents in a simulated environment coordinate and adapt in order to complete a shared long-horizon task.">
+<meta property="og:image" content="https://i.imgur.com/8PSovK0.png">
+
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary">
+<meta property="twitter:url" content="https://agent-wow.sh/five-agents-running-on-gpt-61-sol-clear-world-of-warcrafts-ragefire-chasm-in-24-hours/">
+<meta property="twitter:title" content="Five agents running on GPT-6.1 Sol clear World of Warcraft&#x27;s Ragefire Chasm in 24 hours">
+<meta property="twitter:description" content="A look into how agents in a simulated environment coordinate and adapt in order to complete a shared long-horizon task.">
+<meta property="twitter:image" content="https://i.imgur.com/8PSovK0.png">
+
+
+
+<!-- Microdata -->
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "article",
+    "name": "Five agents running on GPT-6.1 Sol clear World of Warcraft&#x27;s Ragefire Chasm in 24 hours",
+    "headline": "Five agents running on GPT-6.1 Sol clear World of Warcraft&#x27;s Ragefire Chasm in 24 hours",
+    "url": "https://agent-wow.sh/five-agents-running-on-gpt-61-sol-clear-world-of-warcrafts-ragefire-chasm-in-24-hours/",
+    "description": "A look into how agents in a simulated environment coordinate and adapt in order to complete a shared long-horizon task.",
+    "image": "https://i.imgur.com/8PSovK0.png"
+  }
+</script>
+    <link rel="alternate" type="application/atom+xml" href="/feed/" title="agent-wow">
+    <link rel="alternate" type="application/rss+xml" href="/feed/?type=rss" title="agent-wow">
+
+  
+    
+
+    
+    <style>pre { line-height: 125%; }
+td.linenos .normal { color: #747474; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: #747474; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: inherit; background-color: rgba(255, 200, 0, 0.2); padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: inherit; background-color: rgba(255, 200, 0, 0.2); padding-left: 5px; padding-right: 5px; }
+.highlight .hll { background-color: rgba(255, 200, 0, 0.2) }
+.highlight { background: rgba(128, 128, 128, 0.1); padding: 1px 15px; }
+.highlight .c { color: #747474; font-style: italic } /* Comment */
+.highlight .err { color: #CB4644; border: 1px solid #CB4644 } /* Error */
+.highlight .k { color: #A552B8; font-weight: bold } /* Keyword */
+.highlight .o { color: #747474 } /* Operator */
+.highlight .ch { color: #747474; font-style: italic } /* Comment.Hashbang */
+.highlight .cm { color: #747474; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #A552B8 } /* Comment.Preproc */
+.highlight .cpf { color: #747474; font-style: italic } /* Comment.PreprocFile */
+.highlight .c1 { color: #747474; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #747474; font-style: italic; font-weight: bold } /* Comment.Special */
+.highlight .gd { color: #CB4644 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.highlight .gr { color: #CB4644 } /* Generic.Error */
+.highlight .gh { color: #007AB6; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #258531 } /* Generic.Inserted */
+.highlight .go { color: #747474 } /* Generic.Output */
+.highlight .gp { color: #B85900; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #686AC7; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #3475C5 } /* Generic.Traceback */
+.highlight .kc { color: #C24F40; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #A552B8; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #A552B8; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #A552B8 } /* Keyword.Pseudo */
+.highlight .kr { color: #A552B8; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #008089 } /* Keyword.Type */
+.highlight .m { color: #B85900 } /* Literal.Number */
+.highlight .s { color: #258531 } /* Literal.String */
+.highlight .na { color: #B85900 } /* Name.Attribute */
+.highlight .nb { color: #008089 } /* Name.Builtin */
+.highlight .nc { color: #008089; font-weight: bold } /* Name.Class */
+.highlight .no { color: #C24F40 } /* Name.Constant */
+.highlight .nd { color: #686AC7; font-weight: bold } /* Name.Decorator */
+.highlight .ni { color: #C24F40; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #CB4644; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #3475C5 } /* Name.Function */
+.highlight .nl { color: #007AB6; font-weight: bold } /* Name.Label */
+.highlight .nn { color: #008089; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008551; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #686AC7 } /* Name.Variable */
+.highlight .ow { color: #A552B8; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #747474 } /* Text.Whitespace */
+.highlight .mb { color: #B85900 } /* Literal.Number.Bin */
+.highlight .mf { color: #B85900 } /* Literal.Number.Float */
+.highlight .mh { color: #B85900 } /* Literal.Number.Hex */
+.highlight .mi { color: #B85900 } /* Literal.Number.Integer */
+.highlight .mo { color: #B85900 } /* Literal.Number.Oct */
+.highlight .sa { color: #A552B8 } /* Literal.String.Affix */
+.highlight .sb { color: #258531 } /* Literal.String.Backtick */
+.highlight .sc { color: #258531 } /* Literal.String.Char */
+.highlight .dl { color: #258531 } /* Literal.String.Delimiter */
+.highlight .sd { color: #258531; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #258531 } /* Literal.String.Double */
+.highlight .se { color: #B85900; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #258531 } /* Literal.String.Heredoc */
+.highlight .si { color: #C24F40 } /* Literal.String.Interpol */
+.highlight .sx { color: #258531 } /* Literal.String.Other */
+.highlight .sr { color: #008089 } /* Literal.String.Regex */
+.highlight .s1 { color: #258531 } /* Literal.String.Single */
+.highlight .ss { color: #C24F40 } /* Literal.String.Symbol */
+.highlight .bp { color: #008089 } /* Name.Builtin.Pseudo */
+.highlight .fm { color: #3475C5 } /* Name.Function.Magic */
+.highlight .vc { color: #686AC7 } /* Name.Variable.Class */
+.highlight .vg { color: #686AC7 } /* Name.Variable.Global */
+.highlight .vi { color: #686AC7 } /* Name.Variable.Instance */
+.highlight .vm { color: #686AC7 } /* Name.Variable.Magic */
+.highlight .il { color: #B85900 } /* Literal.Number.Integer.Long */
+</style>
+  
+  
+  
+    
+        <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Ctext%20y='.9em'%20font-size='90'%3E⚔️%3C/text%3E%3C/svg%3E">
+    
+
+
+
+  <style data-name="default">
+      
+      
+    
+:root {
+    --width: 720px;
+    --font-main: Verdana, sans-serif;
+    --font-secondary: Verdana, sans-serif;
+    --font-scale: 1em;
+    --background-color: #fff;
+    --heading-color: #222;
+    --text-color: #444;
+    --link-color: #3273dc;
+    --visited-color:  #8b6fcb;
+    --code-background-color: #f2f2f2;
+    --code-color: #222;
+    --blockquote-color: #222;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background-color: #01242e;
+        --heading-color: #eee;
+        --text-color: #ddd;
+        --link-color: #8cc2dd;
+        --visited-color:  #8b6fcb;
+        --code-background-color: #000;
+        --code-color: #ddd;
+        --blockquote-color: #ccc;
+    }
+}
+
+body {
+    font-family: var(--font-secondary);
+    font-size: var(--font-scale);
+    margin: auto;
+    padding: 20px;
+    max-width: var(--width);
+    text-align: left;
+    background-color: var(--background-color);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+    color: var(--text-color);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-main);
+    color: var(--heading-color);
+}
+
+a {
+    color: var(--link-color);
+    cursor: pointer;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline; 
+}
+
+nav a {
+    margin-right: 8px;
+}
+
+strong, b {
+    color: var(--heading-color);
+}
+
+button {
+    margin: 0;
+    cursor: pointer;
+}
+
+time {
+ 	font-family: monospace;
+  	font-style: normal;
+  	font-size: 15px;
+}
+
+main {
+    line-height: 1.6;
+}
+
+table {
+    width: 100%;
+}
+
+hr {
+    border: 0;
+    border-top: 1px dashed;
+}
+
+img {
+    max-width: 100%;
+}
+
+code {
+    font-family: monospace;
+    padding: 2px;
+    background-color: var(--code-background-color);
+    color: var(--code-color);
+    border-radius: 3px;
+}
+
+blockquote {
+    border-left: 1px solid #999;
+    color: var(--blockquote-color);
+    padding-left: 20px;
+    font-style: italic;
+}
+
+footer {
+    padding: 25px 0;
+    text-align: center;
+}
+
+.title:hover {
+    text-decoration: none;
+}
+
+.title h1 {
+    font-size: 1.5em;
+}
+
+.inline {
+    width: auto !important;
+}
+
+.highlight, .code {
+    padding: 1px 15px;
+    background-color: var(--code-background-color);
+    color: var(--code-color);
+    border-radius: 3px;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    overflow-x: auto;
+}
+
+/* blog post list */
+ul.blog-posts {
+    list-style-type: none;
+    padding: unset;
+}
+
+ul.blog-posts li {
+    display: flex;
+}
+
+ul.blog-posts li span {
+    flex: 0 0 130px;
+}
+
+ul.blog-posts li a:visited {
+    color: var(--visited-color);
+}
+
+
+footer > span:last-child {
+  display: none;
+}
+    .upvote-button {
+        padding: 0;
+        margin: 0;
+        border: 0;
+        background-color: inherit;
+        color: inherit;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .upvote-button.upvoted {
+        color: salmon;
+    }
+    .upvote-count {
+        margin-top: -3px;
+    }
+
+      
+  </style>
+</head>
+
+<body class="post ">
+  
+  <header>
+    <a class="title" href="/">
+      <h1>
+        agent-wow
+      </h1>
+    </a>
+    <nav>
+      <p><a href='/'>Home</a> <a href='/blog'>Blog</a> <a href='https://github.com/agent-wow/agent-wow'>GitHub</a> <a href='https://youtube.com/@agent-wow-sessions?si=6sRIRm6S40Rv0FmP'>YouTube</a> <a href='mailto:hazim@agent-wow.sh'>Email</a></p>
+
+    </nav>
+  </header>
+  <main>
+    
+
+    
+
+    
+        <h1>Five agents running on GPT-6.1 Sol clear World of Warcraft&#x27;s Ragefire Chasm in 24 hours</h1>
+
+        <p>
+            <i>
+                <time datetime="2026-10-14T00:42Z">
+    14 Oct, 2026
+</time>
+            </i>
+        </p>
+    
+
+    <p><img src="https://i.imgur.com/8PSovK0.png" alt="5 agents kill Taragaman in RFC" /></p>
+<p>In a <a href='https://agent-wow.sh/gpt-6-astra-plays-world-of-warcraft-for-the-first-time-with-agent-wow/'>previous article</a>, I wrote about GPT-6 Astra's ability to clear the Orc starting zone from levels 1 to 5 in WoW. For this run, I wanted to test multi-agent coordination within a dungeon challenge and see what interesting behaviours would come out of it.</p>
+<p>For those unfamiliar with the game, dungeons are private instances designed for a group of five players. They contain elite creatures and boss fights that are more difficult than most encounters in the open game world. Clearing a dungeon typically requires specialised roles for tanking, healing, and dealing damage.</p>
+<p>Ragefire Chasm (RFC) is one of the lowest-level dungeons, with a recommended range of levels 13 to 16. For comparison, I'll use 6 to 10 hours as a plausible estimate for a coordinated human group to go from level 1 to clearing RFC.</p>
+<p>I gave five isolated Codex agents running GPT-6.1 Sol the following prompt and let them run until the task was complete. The only difference between the five prompts was the class, chosen to give them an acceptable party composition for the dungeon.</p>
+<div class="highlight"><pre><span></span>Create a Horde [warrior/priest/mage/hunter/rogue] character and clear Ragefire Chasm. There are four other characters on this realm with the same objective.
+</pre></div>
+<h2 id=results>Results</h2><p>This run produced much more interesting insights into failure modes, adaptation, and recovery than the previous starting-zone experiment. The agents <strong>killed all four RFC bosses in 24 hours, 31 minutes, and 19 seconds</strong>. A highlight reel of the full run can be viewed <a href='https://youtu.be/doUoa-XKwck?si=Rf9k84ljwLDjgUDm'>here</a>.</p>
+<p>The following milestones are elapsed times from the initial prompt:</p>
+<ul>
+<li><strong>07:17:43</strong>: First RFC trash kill</li>
+<li><strong>18:33:15</strong>: Boss 1/4 (Oggleflint)</li>
+<li><strong>21:09:02</strong>: Boss 2/4 (Taragaman)</li>
+<li><strong>22:48:15</strong>: Boss 3/4 (Jergosh)</li>
+<li><strong>24:31:19</strong>: Boss 4/4 (Bazzalan)</li>
+</ul>
+<p>It took the agents over 7 hours to get their first non-boss (i.e. trash) kill in the dungeon. After their first RFC trash kill, the agents took another 11 hours and 16 minutes to kill the first boss, then almost 6 more hours to finish the remaining three.</p>
+<p>Although it was impressive that five general-purpose AI agents could clear this challenge, it took them about three times as long as an equivalent human attempt. A lot of the time was spent building their independent software controllers and fixing coordination bugs.</p>
+<p>The agents communicated directly with the game server using the WoW network protocol. Their gameplay comes from building a collection of scripts to produce and observe in-game actions such as movement and combat. A single agent can power through this verifiable loop quite efficiently. However, five agents working together add significant coordination overhead. It takes many iterations of trial and error for their actions to stay in sync and produce a shared strategic outcome. Fortunately, agents seem to have endless patience and won't rage quit on the first wipe.</p>
+<p>It's also worth mentioning that this was not an entirely autonomous run. I had to intervene with continuation prompts to resume execution after model-capacity and expired-authentication errors. These were execution recoveries rather than tactical coaching. I don't have a reliable estimate of how much faster the run would have finished without those interruptions.</p>
+<h2 id=agent-behaviours>Agent behaviours</h2><p>This run was interesting because it showed what behaviours emerge when agents need to coordinate to complete an objective. Even though it took much longer than my human comparison, the agents still demonstrated incredible persistence through many failures. They continuously changed strategies, tactics, and individual roles in pursuit of the shared goal of clearing RFC.</p>
+<p>It was also interesting to see the agents use in-game chat as a transport layer for syncing their individual software controllers. Getting this to work took many iterations and many deaths. Even late-game attempts at coordinating controllers, which included more explicit readiness checks and tighter control over pulls, still failed a lot.</p>
+<p>Coordination was also encouraged by the initial prompt telling all agents that "<em>there are four other characters on this realm with the same objective</em>". I wonder what they would have done with a more ambiguous prompt like "<em>clear RFC</em>". Maybe they would still have found the other players on their own? Or maybe each would have just outlevelled the dungeon until they could solo it. I think these kinds of questions make games an underrated testing ground for studying what behaviours occur when multiple agents are given similar long-horizon tasks with many valid approaches.</p>
+<h3 id=agent-to-agent-communication>Agent-to-agent communication</h3><p>In-game chat was the intended communication channel between agents. They had discovered each other about three minutes after the prompt and formed the full party within about nine minutes. The chat was more conversational at the start but gradually became a control interface for coordinating software controllers.</p>
+<p>Early on, they shared progress, discussed quests, and arranged where to meet. By the end, messages specified exact target IDs, health and mana readiness, assigned roles, and commands such as <code>FOCUS</code> and <code>CCRELEASE</code> that gameplay scripts could act on.</p>
+<p>Natural conversation still continued until the end of the run, but it was mostly crowded out by machine-readable messages. You can see the difference in these examples of early (top) and late (bottom) game chat.</p>
+<p><img src="https://i.imgur.com/VQ4FMjr.png" alt="Early in-game chat" /></p>
+<p><img src="https://i.imgur.com/tYjkV7t.png" alt="Late in-game chat" /></p>
+<p>It will be interesting to see how this scales with the number of agents on the server. In this case, a shared protocol emerged within a consistent group of five agents. But what happens when there are 1,000 agents on a server? Do protocols propagate across a population with decentralised clusters of agent groups?</p>
+<h3 id=recovering-from-failures>Recovering from failures</h3><p>The clearest demonstration of the model's capability on complex, long-horizon tasks was the group's persistence in adapting to repeated failures. The amazing thing is that they just kept trying. Even if it took more than 24 hours, many wipes, and a wide range of fixes, they kept going until they reached a successful outcome.</p>
+<h4 id=building-software-collaboratively>Building software collaboratively</h4><p>Getting their software controllers to coordinate in real time was a big time sink, as the controllers needed continuous updates depending on the group's immediate task. A bug in one agent's response to a command could also lead to a group wipe, setting off a lengthy recovery sequence and another round of debugging.</p>
+<p>For example, some of the earliest failure modes behind repeated wipes during questing involved group navigation and spatial awareness. Players could be close on the horizontal plane while still separated by floors or building structures. This caused downstream problems such as healing spells failing because the target wasn't in the line of sight.</p>
+<p>To fix this, the group collaborated on navigation tooling. They first tried to access one agent's local navigation service via HTTP before realising that they were in isolated networks.</p>
+<p><img src="https://i.imgur.com/mmdJ9RH.png" alt="Five agent RFC software collab 1/3" /></p>
+<p>They then used in-game chat to transfer source code instead. The clearest verified exchange was the mage sending navigation source to the priest in 12 numbered <code>NAVSRC</code> chunks via whispers. The priest confirmed receiving, compiling, and integrating a local copy. The group also had to get smarter about splitting and compressing messages in order to work within the message size constraints.</p>
+<p><img src="https://i.imgur.com/gtMQtfK.png" alt="Five agent RFC software collab 2/3" /></p>
+<p><img src="https://i.imgur.com/ao251zc.png" alt="Five agent RFC software collab 3/3" /></p>
+<p>This broader pattern of collaborative debugging showed up throughout the run. Sometimes it was as simple as sharing exact spell IDs or packet formats needed to interact with quest items or loot. Other times it involved more complex coordination, such as agreeing on chat-triggered combat routines. For example, the hunter implemented an <code>ARMED35</code> command containing a target ID. When triggered via chat, its controller checked readiness, approached the enemy, fired a bow shot, returned to the tank, and waited before continuing damage.</p>
+<p>One observation I had with this approach was how little validation the agents performed before compiling and running code sent by other agents. How easily could a malicious agent convince its peers to execute malware? Anthropic discusses a related problem in its <a href='https://www.anthropic.com/research/multiagent-systems'>research on multi-agent systems</a>, describing "epistemic failures" where agents fail to adequately question the reliability and intentions of other agents.</p>
+<h4 id=changing-strategies-tactics-and-roles>Changing strategies, tactics, and roles</h4><p>Adaptations happened at different levels throughout the run. Changes to the high-level strategy shaped entire arcs of gameplay spanning hours. A little over seven hours in, the group made its first RFC attempt at around level 8, with a crowd-control strategy planned out. They killed some trash but then wiped, decided their characters weren't ready, and returned to outdoor levelling.</p>
+<p>This levelling phase was more deliberate than the initial journey from 1 to 8. The group split up to work in pairs or solo towards class milestones: the hunter's pet and the warrior's defensive abilities. About two hours after deciding to retreat, they were back killing RFC trash with four characters at level 10 and the priest at level 9, this time with everyone surviving the previously failed encounter.</p>
+<p>This loop of getting blocked, formulating a strategy, executing the plan, and pushing forward defined multiple gameplay arcs. And even within each arc, the agents kept fine-tuning tactics by changing roles or approaches to combat.</p>
+<p>For example, early on, the warrior naturally became the group organiser and tank. By the late game, pet tanking emerged as a workaround when the warrior’s controller stalled. The group then adopted it more deliberately as the warrior recognised his level and equipment limitations.</p>
+<p>Besides changing roles, the group would also change its tactical approach to difficult fights. In the final stretch, the recurring failures were largely against the packs of mobs on the approach to the final boss. Repeated failures in this encounter forced them to pull enemies into safe areas while maintaining better crowd control. These adaptations eventually gave them a winning tactic by allowing the group to gain control over where fights happened and how many enemies would join.</p>
+<p>My observation is that the agents often focused on overcoming the immediate obstacle, even when stepping back might have been more efficient. They would repeatedly come back from wipes to retry difficult encounters, accepting many deaths and developing tactics that felt excessive for a low-level dungeon like RFC. Although it worked, persistence didn't necessarily lead to the fastest solution. A coordinated human group would have spent more time levelling first, making the fights easier and avoiding some of this complexity. The agents kept finding ways to make progress, but weren't always questioning whether they were taking the best route to the overall goal.</p>
+<h2 id=infrastructure-and-observability>Infrastructure and observability</h2><p>The previous run only had a single agent and took 40 minutes, so the setup was minimal. I used a single game client, a game master (GM) account to bind my camera to the agent's character, and Codex running in a separate window beside it.</p>
+<p>Although it worked, visibility into real-time character and target stats (health, mana, location, etc.) and in-game chat was poor. The built-in GM command for binding my camera to a character was also unreliable for long periods of unattended observation. It could break when the character changed state, such as logging out or dying, or changed maps, such as entering a dungeon or travelling to another continent.</p>
+<p>I also had to figure out a sandbox setup to put appropriate guardrails around what the agents could do. In the last run, I mentioned that the agent was quick to start reading through AzerothCore source code stored on the system. Although it didn't actually make any internal database calls, I wanted to prevent that kind of backend access in this run, given there would be five times as many agents running unattended for hours.</p>
+<p>The final setup looked like this, covering the game environment, observability, and sandboxing in a single Linux homelab.</p>
+<p><img src="https://i.imgur.com/sT3Jwdv.png" alt="5 agent RFC architecture" /></p>
+<h3 id=the-game-environment>The game environment</h3><p>As in the previous run, the game environment was a private <a href='https://www.azerothcore.org/'>AzerothCore</a> server running on the Linux host. AzerothCore is an open-source implementation of a WoW server for the <em>Wrath of the Lich King</em> expansion.</p>
+<p>Unlike the last run, I extended it with five modules for better observability.</p>
+<ol>
+<li><a href='https://github.com/agent-wow/mod-watch'><strong>mod-watch</strong></a>: This allows GMs to call <code>.watch &lt;character&gt;</code> in-game to bind their camera to a character's POV. It builds on <code>.bindsight</code> with logic to maintain or restore observation across disconnects, deaths, and map changes, until <code>.unwatch</code> is called. It's designed for long, unattended observation sessions. It also applies protections to keep the GM invulnerable and hidden from players and NPCs while automatically teleporting to the character's location to maintain the view.</li>
+<li><strong>Four full-stack character observability modules</strong>: These four modules (<a href='https://github.com/agent-wow/mod-chat-widget'><code>mod-chat-widget</code></a>, <a href='https://github.com/agent-wow/mod-unit-widget'><code>mod-unit-widget</code></a>, <a href='https://github.com/agent-wow/mod-char-widget'><code>mod-char-widget</code></a>, and <a href='https://github.com/agent-wow/mod-map-widget'><code>mod-map-widget</code></a>) follow the same pattern for different domains. Each AzerothCore module subscribes to some aspect of a character, such as in-game chat, health and mana, inventory, or location, and forwards it to an accompanying sidecar service for external querying. The sidecar also exposes a web UI widget that recreates in-game components such as the health bar or chat box.</li>
+</ol>
+<p>Together, these modules let me compose OBS scenes for long, unattended recordings of gameplay from each agent's perspective. Technically, most of these extensions aren't necessary for the agents to achieve their objective, but they make a live run much more enjoyable for humans to watch. Watching gameplay beats staring at logs for 24 hours (but we'll have those too for later).</p>
+<p>For this run, I had five WoW clients running in parallel, each logged into a separate GM character and assigned an agent to watch. I captured the clients in OBS and combined them with the module widgets and a <a href='https://github.com/agent-wow/codex-obs-overlay'>Codex session overlay</a> to create the following agent scene.</p>
+<p><img src="https://i.imgur.com/lGnXlys.png" alt="Example OBS scene from an agent's POV" /></p>
+<h3 id=the-agent-environment>The agent environment</h3><p>Given the increased difficulty of this run, I didn't want to give the agents an opportunity to cheat by accessing AzerothCore's backend instead of playing through its public network interface. Since this challenge also required coordination, I wanted all communication between agents to happen through the in-game chat system.</p>
+<p>In the previous run, I used the <a href='https://github.com/agent-wow/agent-wow-workspace'>agent-wow workspace</a> on the host to consolidate all the modules, scripts, journals, and logs produced by an agent during a session. For this run, I extended it to support stronger isolation with <a href='https://www.docker.com/products/docker-sandboxes/'>Docker Sandboxes</a> running locally. I configured each sandbox's microVM to restrict host access to AzerothCore's game-facing endpoints, while still allowing internet access. The intended boundary was the AzerothCore backend; searching for public game information to guide planning was allowed.</p>
+<p>As in the previous run, the agents used <a href='https://github.com/agent-wow/agent-wow'>agent-wow</a> to communicate with the game server via the WoW network protocol. I've been asked a few times whether agent-wow is even required. In principle, an agent could build the client machinery from scratch. However, agent-wow helps it skip the boilerplate and get to gameplay faster: authentication, character management, persistent TCP connections to the world server, and Warden handshakes are already handled. Ideally, agent-wow is just a way to efficiently get to the part of the test that matters: coordination between agents over long horizons.</p>
+<h3 id=scaling-past-five-agents>Scaling past five agents</h3><p>Although this was a significant improvement over the single-agent setup, it was still tedious to clickops my way through setting up all the sandboxes, WoW clients, observer accounts, and OBS scenes. Manually switching between agent scenes during a live run wasn't ideal either. The setup worked for five agents, but I expect it to become impractical at even 10 running in parallel.</p>
+<p>In future runs with more agents, I'll likely introduce a watch router and an agent orchestrator service. A watch router would ingest live telemetry from all the coding agents and decide which agent to actively watch. This would let me observe N agents with a single WoW client for gameplay recordings. The routing logic could also be a good use case for testing a system-one model like <a href='https://typesafe.ai/blog/introducing-system-one-models-and-jev'>Jev</a>.</p>
+<p>It also won't be practical to manually deploy every agent sandbox. It would be much better to move towards an infrastructure-as-code setup where I can define a task in YAML and have an agent orchestrator launch and manage the fleet of sandboxes for me.</p>
+<p><img src="https://i.imgur.com/JpFh6mS.png" alt="N agents architecture" /></p>
+<h2 id=token-cost>Token cost</h2><p>This run was done through my ChatGPT Pro 200 subscription. But I also wanted to estimate what it would have cost at API rates.</p>
+<p>The five main RFC tasks used about <strong>2.069 billion recorded tokens</strong>, mostly cached input. Using the audited counts and <a href='https://developers.openai.com/api/docs/models/gpt-6.1-sol'>GPT-6.1 Sol's Standard API rates</a>, in USD per million tokens:</p>
+<ul>
+<li>Uncached input: <code>28,530,484 ÷ 1,000,000 × $2.00 = $57.060968</code></li>
+<li>Cached input: <code>2,036,175,104 ÷ 1,000,000 × $0.10 = $203.6175104</code></li>
+<li>Output, including reasoning: <code>4,472,200 ÷ 1,000,000 × $10.00 = $44.722</code></li>
+</ul>
+<p>Total: <code>$57.060968 + $203.6175104 + $44.722 = $305.4004784 ≈ US$305.40</code></p>
+<p>This is an API-equivalent estimate, not my actual Codex bill or a measure of subscription usage. About <strong>98.6% of the input tokens were cached</strong>, which matters a lot to the result. That two-billion-token total mostly reflects repeatedly supplied cached context, not newly generated output.</p>
+<p>Let's go a step further and convert it to an average agent-hour cost to get a rough estimate for larger runs.</p>
+<ul>
+<li>Wall-clock time to the final boss: <code>24.52 hours</code></li>
+<li>Five agents: <code>122.61 agent-hours</code></li>
+<li>Estimated total API cost: <code>US$305.40</code></li>
+<li><code>US$305.40 ÷ 122.61 = US$2.49 per agent-hour</code></li>
+</ul>
+<p>Average tokens per agent-hour:</p>
+<ul>
+<li>Cached input: <code>16.61 million → US$1.66</code></li>
+<li>Uncached input: <code>about 232,700 → US$0.47</code></li>
+<li>Output: <code>about 36,500 → US$0.36</code></li>
+<li>Total: <code>16.88 million tokens → US$2.49</code></li>
+</ul>
+<p>Extrapolating to 1,000 agents over 30 days gives 720,000 agent-hours. If the same workload, cache behaviour, prices, and average utilisation held, that would imply an approximate token bill of <strong>US$1.79 million per month</strong>. Of course, this is a conditional estimate, not a forecast. I have no additional data showing that this rate would hold at that scale or over that period.</p>
+<h2 id=conclusion>Conclusion</h2><p>The ability of agents powered by frontier models to work together and persistently grind away at a problem until it's solved is honestly quite an amazing thing to see. Getting five agents to clear a low-level dungeon in a video game may seem like a toy, but much larger agent experiments have already produced consequential results. These range from <a href='https://openai.com/index/navier-stokes-solution/'>OpenAI reporting a proposed Navier–Stokes solution involving around 10,000 concurrent agents</a> to <a href='https://metr.org/blog/2026-08-26-openai-hugging-face-incident-investigation/'>700 agents participating in the Hugging Face attack</a>.</p>
+<p>I believe we're going to see a lot more cases like this, whether controlled or otherwise. Putting agents into simulated game worlds provides an insightful (and fun) way to study how multiple agents behave collectively when given complex and ambiguous goals.</p>
+<p>How do agents decide on roles? What communication conventions emerge, and how do they share tools? When something goes wrong, how do they recover and adapt over time? Being able to watch coordination emerge, break down, and change over a long run is a big part of what makes these experiments worth doing for me.</p>
+
+
+    
+
+    
+        
+
+        
+            <form id="upvote-form" action="/upvote/" method="post" style="display: inline">
+    <small>
+        <input hidden name="uid" value="GAEfBJXXIHHmxXEhJwvK" style="display:none">
+        <input hidden name="title" value="Five agents running on GPT-6.1 Sol clear World of Warcraft&#x27;s Ragefire Chasm in 24 hours" style="display:none">
+        <input hidden name="token" value="GAEfBJXXIHHmxXEhJwvK" style="display:none">
+
+        <button
+            class="upvote-button"
+            aria-label="Toast this post"
+            title="Toast this post"
+        >
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
+                <polyline points="17 11 12 6 7 11"></polyline>
+                <polyline points="17 18 12 13 7 18"></polyline>
+            </svg>
+            <small class="upvote-count" aria-hidden="true">&nbsp;</small>
+        </button>
+    </small>        
+</form>
+
+<script>
+    const $upvoteButton = document.querySelector('.upvote-button');
+    const $upvoteCount =  document.querySelector('.upvote-count')
+    let upvoteToken = '';
+    let upvoteTokenAt = Infinity;
+
+    fetch('/upvote-info/GAEfBJXXIHHmxXEhJwvK/').then(response => response.json()).then(data => {
+        $upvoteCount.innerText = data.upvote_count;
+        upvoteToken = data.token;
+        upvoteTokenAt = Date.now();
+        if (data.upvoted) {
+            $upvoteButton.disabled = true
+            $upvoteButton.style.color = "salmon"
+            $upvoteButton.ariaLabel = "Toasted"
+            $upvoteButton.title = "Toasted"
+        }
+        $upvoteButton.ariaLabel += ` (${data.upvote_count})`
+
+        document.addEventListener('touchmove', interaction, {once: true});
+        document.addEventListener('mousemove', interaction, {once: true});
+    });
+
+    const interaction = () => {
+        document.querySelector('input[name="title"]').value = "";
+        document.querySelector('input[name="token"]').value = upvoteToken;
+    }
+
+    document.querySelector('#upvote-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (Date.now() - upvoteTokenAt < 3000) return;
+
+        fetch(e.target.action, {
+            method: 'post',
+            body: new FormData(e.target),
+        });
+        
+        $upvoteButton.disabled = true
+        $upvoteButton.style.color = "salmon"
+        $upvoteButton.ariaLabel = "Toasted"
+        $upvoteButton.title = "Toasted"
+        const newUpvoteCount = `${(parseInt($upvoteCount.innerHTML.split(" ")[0]) + 1)}`
+        $upvoteCount.innerHTML = newUpvoteCount
+        $upvoteButton.ariaLabel += ` (${newUpvoteCount})`
+    });
+</script>
+
+        
+
+        
+            <script>
+            window.addEventListener("load", () => {
+                if (navigator.webdriver !== true) {
+                    const sendHit = score => {
+                        const params = new URLSearchParams({
+                            blog: "agent-wow",
+                            token: "GAEfBJXXIHHmxXEhJwvK",
+                            referrer: document.referrer.includes("agent-wow.sh") ? "" : document.referrer,
+                            title: "",
+                            score: score
+                        });
+                        new Image().src = `/hit/?${params.toString()}`;
+                    };
+
+                    document.addEventListener('touchmove', () => sendHit(100), { once: true });
+                    document.addEventListener('mousemove', () => sendHit(100), { once: true });
+                }
+            });
+            </script>
+        
+    
+
+
+  </main>
+  <footer>
+    
+    
+    <span>
+        Powered by <a href="https://bearblog.dev">Bear <span role="img" class="bear" aria-label="ASCII bear logo">ʕ•ᴥ•ʔ</span></a>
+    </span>
+
+  </footer>
+
+  
+  <script>
+        (() => {
+          "use strict";
+          const times = document.querySelectorAll('time');
+          const format_string = "d M, Y" || "d M, Y"
+
+          times.forEach(time => {
+              time.innerText = formatDate(time.dateTime, format_string)
+          });
+
+          function formatDate(dateStr, formatStr) {
+            const date = new Date(dateStr);
+            const day = date.getDate();
+            const month = date.getMonth();
+            const year = date.getFullYear();
+            const weekday = date.getDay();
+            const hours = date.getHours();
+            const minutes = date.getMinutes();
+            const monthsFull = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            const monthsShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const daysFull = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const daysShort = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            
+            function getOrdinal(n) {
+                const s = ['th', 'st', 'nd', 'rd'];
+                const v = n % 100;
+                return s[(v - 20) % 10] || s[v] || s[0];
+            }
+            
+            const map = {
+                'd': () => day.toString().padStart(2, '0'),
+                'm': () => (month + 1).toString().padStart(2, '0'),
+                'Y': () => year.toString(),
+                'y': () => year.toString().slice(-2),
+                'F': () => monthsFull[month],
+                'j': () => day.toString(),
+                'D': () => daysShort[weekday],
+                'l': () => daysFull[weekday],
+                'S': () => getOrdinal(day),
+                'M': () => monthsShort[month],
+                'H': () => hours.toString().padStart(2, '0'),
+                'h': () => {
+                    let h = hours % 12;
+                    h = h === 0 ? 12 : h;
+                    return h.toString().padStart(2, '0');
+                },
+                'g': () => {
+                    let h = hours % 12;
+                    return h === 0 ? '12' : h.toString();
+                },
+                'i': () => minutes.toString().padStart(2, '0'),
+                'a': () => hours < 12 ? 'am' : 'pm',
+                'A': () => hours < 12 ? 'AM' : 'PM',
+            };
+            
+            let result = '';
+            for (let char of formatStr) {
+                result += map[char] ? map[char]() : char;
+            }
+            return result;
+        }
+        })();
+    </script>
+    
+</body>
+<!-- ID: agent-wow -->
+<!-- 🐻 -->
+</html>

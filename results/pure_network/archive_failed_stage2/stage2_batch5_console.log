@@ -1,0 +1,103 @@
+ok  	wow-research/bridge	(cached)
+?   	wow-research/bridge/api	[no test files]
+{
+  "run_id": "stage2_batch5_unit1",
+  "status": "success",
+  "batch_class": "UNKNOWN",
+  "error": null,
+  "results": [
+    {
+      "action_id": "verify_alive",
+      "status": "success",
+      "detail": "postcondition observed"
+    },
+    {
+      "action_id": "select_target",
+      "status": "success",
+      "detail": "postcondition observed"
+    },
+    {
+      "action_id": "approach",
+      "status": "success",
+      "detail": "postcondition observed"
+    }
+  ],
+  "item_totals": {
+    "6125": 1,
+    "139": 1,
+    "140": 1,
+    "12282": 1,
+    "6948": 1,
+    "7098": 1,
+    "4915": 1,
+    "4867": 8,
+    "7099": 1,
+    "4919": 1,
+    "7101": 2,
+    "2652": 1
+  },
+  "health": 108,
+  "in_combat": false,
+  "elapsed_s": 34.009
+}
+ok  	wow-research/bridge	(cached)
+?   	wow-research/bridge/api	[no test files]
+{
+  "run_id": "stage2_batch5_unit1_verify",
+  "status": "failure",
+  "batch_class": "STOPPED",
+  "error": null,
+  "results": [
+    {
+      "action_id": "verify_alive",
+      "status": "success",
+      "detail": "postcondition observed"
+    },
+    {
+      "action_id": "approach",
+      "status": "failure",
+      "detail": "no target selected"
+    }
+  ],
+  "item_totals": {
+    "6125": 1,
+    "139": 1,
+    "140": 1,
+    "12282": 1,
+    "6948": 1,
+    "7098": 1,
+    "4915": 1,
+    "4867": 8,
+    "7099": 1,
+    "4919": 1,
+    "7101": 2,
+    "2652": 1
+  },
+  "health": 108,
+  "in_combat": false,
+  "elapsed_s": 29.305
+}
+{
+  "config": {
+    "batch_id": "stage2_batch5",
+    "limit": 1,
+    "goal": 8,
+    "unit_args": {
+      "combat_entry": 3124,
+      "max_target_level": 3,
+      "quest_item_entry": 4862,
+      "combat_budget": 35.0,
+      "budget_seconds": 240,
+      "action_budget": 10,
+      "boundary_max_age_seconds": 1800
+    }
+  },
+  "status": "STOPPED",
+  "units": [
+    {
+      "run_id": "stage2_batch5_unit1",
+      "status": "STOPPED",
+      "progress": null
+    }
+  ]
+}

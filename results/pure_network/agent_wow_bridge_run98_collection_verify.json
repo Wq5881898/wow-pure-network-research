@@ -1,0 +1,561 @@
+{
+  "status": "PASS",
+  "gateway": "172.22.112.1",
+  "scope": "Docker bridge world-state substream",
+  "operations": [
+    {
+      "cursor": 4,
+      "last_sequence": "8",
+      "page_count": 4
+    },
+    {
+      "cursor": 8,
+      "last_sequence": "8",
+      "page_count": 4
+    },
+    {
+      "cursor": 8,
+      "last_sequence": "8",
+      "page_count": 0
+    },
+    {
+      "cursor": 8,
+      "last_sequence": "8",
+      "page_count": 0
+    },
+    {
+      "cursor": 8,
+      "last_sequence": "8",
+      "page_count": 0
+    },
+    {
+      "cursor": 8,
+      "last_sequence": "8",
+      "page_count": 0
+    },
+    {
+      "cursor": 8,
+      "last_sequence": "8",
+      "page_count": 0
+    },
+    {
+      "cursor": 10,
+      "last_sequence": "10",
+      "page_count": 2
+    },
+    {
+      "cursor": 11,
+      "last_sequence": "11",
+      "page_count": 1
+    },
+    {
+      "cursor": 12,
+      "last_sequence": "12",
+      "page_count": 1
+    },
+    {
+      "cursor": 13,
+      "last_sequence": "13",
+      "page_count": 1
+    },
+    {
+      "cursor": 13,
+      "last_sequence": "13",
+      "page_count": 0
+    }
+  ],
+  "future_cursor_rejection": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "error": {
+      "code": -32000,
+      "message": "rpc error: code = InvalidArgument desc = cursor is ahead of stream",
+      "data": {
+        "grpc_details": null,
+        "grpc_message": "cursor is ahead of stream",
+        "grpc_status": "InvalidArgument",
+        "method": "poll",
+        "module": "bridge"
+      }
+    }
+  },
+  "oversize_page_rejection": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "error": {
+      "code": -32000,
+      "message": "rpc error: code = InvalidArgument desc = limit exceeds 128",
+      "data": {
+        "grpc_details": null,
+        "grpc_message": "limit exceeds 128",
+        "grpc_status": "InvalidArgument",
+        "method": "poll",
+        "module": "bridge"
+      }
+    }
+  },
+  "initial_self": {
+    "guid": "9",
+    "type_id": 4,
+    "created_seq": 3,
+    "movement": {
+      "update_flags": 97,
+      "position_xyzo": [
+        -710.0008544921875,
+        -4349.8779296875,
+        49.18696975708008,
+        1.6051901578903198
+      ],
+      "movement_flags": 0,
+      "movement_clock": 569311640,
+      "speeds": [
+        2.5,
+        7.0,
+        4.5,
+        4.722221851348877,
+        2.5,
+        7.0,
+        4.5,
+        3.1415939331054688,
+        3.140000104904175
+      ]
+    },
+    "last_seq": 11,
+    "field_count": 138,
+    "entry": 0,
+    "health": 89,
+    "max_health": 89,
+    "level": 2,
+    "bytes0": 16777474,
+    "powers": [
+      0,
+      462,
+      0,
+      100,
+      0,
+      0,
+      0
+    ],
+    "max_powers": [
+      0,
+      1000,
+      0,
+      100,
+      0,
+      0,
+      1000
+    ],
+    "unit_flags": 8,
+    "unit_flags_transmitted": true,
+    "in_combat": false,
+    "player_flags": 0,
+    "ghost": false,
+    "quest_log": [
+      {
+        "slot": 0,
+        "quest": 789,
+        "state": 0,
+        "counters": [
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  "queries": [
+    {
+      "entry": 3098,
+      "guid": "17379391013998560107",
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "result": {}
+      }
+    },
+    {
+      "entry": 10556,
+      "guid": "17379391139123036995",
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "result": {}
+      }
+    },
+    {
+      "entry": 5951,
+      "guid": "17379391061863957313",
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "result": {}
+      }
+    },
+    {
+      "entry": 3124,
+      "guid": "17379391014434767693",
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "result": {}
+      }
+    }
+  ],
+  "invalid_query_rejection": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "error": {
+      "code": -32000,
+      "message": "rpc error: code = InvalidArgument desc = entry and GUID must be valid nonzero values",
+      "data": {
+        "grpc_details": null,
+        "grpc_message": "entry and GUID must be valid nonzero values",
+        "grpc_status": "InvalidArgument",
+        "method": "query_creature",
+        "module": "bridge"
+      }
+    }
+  },
+  "missing_template_request": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {}
+  },
+  "creature_templates": {
+    "3098": {
+      "entry": 3098,
+      "found": true,
+      "name": "Mottled Boar",
+      "alternate_names": [
+        "",
+        "",
+        ""
+      ],
+      "title": "",
+      "icon": "",
+      "type_flags": 1,
+      "creature_type": 1,
+      "family": 5,
+      "rank": 0,
+      "kill_credit": [
+        0,
+        0
+      ],
+      "models": [
+        503,
+        0,
+        0,
+        0
+      ],
+      "modifiers": [
+        1.0,
+        1.0
+      ],
+      "racial_leader": 0,
+      "quest_items": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "movement_id": 100
+    },
+    "10556": {
+      "entry": 10556,
+      "found": true,
+      "name": "Lazy Peon",
+      "alternate_names": [
+        "",
+        "",
+        ""
+      ],
+      "title": "",
+      "icon": "",
+      "type_flags": 0,
+      "creature_type": 7,
+      "family": 0,
+      "rank": 0,
+      "kill_credit": [
+        0,
+        0
+      ],
+      "models": [
+        10038,
+        0,
+        0,
+        0
+      ],
+      "modifiers": [
+        1.0,
+        1.0
+      ],
+      "racial_leader": 0,
+      "quest_items": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "movement_id": 0
+    },
+    "5951": {
+      "entry": 5951,
+      "found": true,
+      "name": "Hare",
+      "alternate_names": [
+        "",
+        "",
+        ""
+      ],
+      "title": "",
+      "icon": "",
+      "type_flags": 0,
+      "creature_type": 8,
+      "family": 0,
+      "rank": 0,
+      "kill_credit": [
+        0,
+        0
+      ],
+      "models": [
+        1560,
+        0,
+        0,
+        0
+      ],
+      "modifiers": [
+        0.20000000298023224,
+        1.0
+      ],
+      "racial_leader": 0,
+      "quest_items": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "movement_id": 100
+    },
+    "3124": {
+      "entry": 3124,
+      "found": true,
+      "name": "Scorpid Worker",
+      "alternate_names": [
+        "",
+        "",
+        ""
+      ],
+      "title": "",
+      "icon": "",
+      "type_flags": 1,
+      "creature_type": 1,
+      "family": 20,
+      "rank": 0,
+      "kill_credit": [
+        0,
+        0
+      ],
+      "models": [
+        2485,
+        0,
+        0,
+        0
+      ],
+      "modifiers": [
+        1.0,
+        1.0
+      ],
+      "racial_leader": 0,
+      "quest_items": [
+        4862,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "movement_id": 100
+    },
+    "2147483647": {
+      "entry": 2147483647,
+      "found": false
+    }
+  },
+  "login_position": {
+    "map": 1,
+    "position_xyzo": [
+      -710.0008544921875,
+      -4349.8779296875,
+      49.18696975708008,
+      1.6051901578903198
+    ]
+  },
+  "observation_samples": [
+    {
+      "health": 89,
+      "max_health": 89,
+      "ghost": false,
+      "in_combat": false
+    },
+    {
+      "health": 89,
+      "max_health": 89,
+      "ghost": false,
+      "in_combat": false
+    },
+    {
+      "health": 89,
+      "max_health": 89,
+      "ghost": false,
+      "in_combat": false
+    },
+    {
+      "health": 89,
+      "max_health": 89,
+      "ghost": false,
+      "in_combat": false
+    },
+    {
+      "health": 89,
+      "max_health": 89,
+      "ghost": false,
+      "in_combat": false
+    },
+    {
+      "health": 89,
+      "max_health": 89,
+      "ghost": false,
+      "in_combat": false
+    },
+    {
+      "health": 89,
+      "max_health": 89,
+      "ghost": false,
+      "in_combat": false
+    },
+    {
+      "health": 89,
+      "max_health": 89,
+      "ghost": false,
+      "in_combat": false
+    },
+    {
+      "health": 89,
+      "max_health": 89,
+      "ghost": false,
+      "in_combat": false
+    },
+    {
+      "health": 89,
+      "max_health": 89,
+      "ghost": false,
+      "in_combat": false
+    }
+  ],
+  "final_quest_log": [
+    {
+      "slot": 0,
+      "quest": 789,
+      "state": 0,
+      "counters": [
+        0,
+        0
+      ]
+    }
+  ],
+  "final_self": {
+    "guid": "9",
+    "type_id": 4,
+    "created_seq": 3,
+    "movement": {
+      "update_flags": 97,
+      "position_xyzo": [
+        -710.0008544921875,
+        -4349.8779296875,
+        49.18696975708008,
+        1.6051901578903198
+      ],
+      "movement_flags": 0,
+      "movement_clock": 569311640,
+      "speeds": [
+        2.5,
+        7.0,
+        4.5,
+        4.722221851348877,
+        2.5,
+        7.0,
+        4.5,
+        3.1415939331054688,
+        3.140000104904175
+      ]
+    },
+    "last_seq": 36,
+    "field_count": 138,
+    "entry": 0,
+    "health": 89,
+    "max_health": 89,
+    "level": 2,
+    "bytes0": 16777474,
+    "powers": [
+      0,
+      402,
+      0,
+      100,
+      0,
+      0,
+      0
+    ],
+    "max_powers": [
+      0,
+      1000,
+      0,
+      100,
+      0,
+      0,
+      1000
+    ],
+    "unit_flags": 8,
+    "unit_flags_transmitted": true,
+    "in_combat": false,
+    "player_flags": 0,
+    "ghost": false,
+    "quest_log": [
+      {
+        "slot": 0,
+        "quest": 789,
+        "state": 0,
+        "counters": [
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  "owned_item_totals": {
+    "6125": 1,
+    "139": 1,
+    "140": 1,
+    "12282": 1,
+    "6948": 1,
+    "7098": 1,
+    "4915": 1,
+    "4867": 2,
+    "7099": 1,
+    "4862": 3,
+    "7101": 1
+  },
+  "quest_progress_events": [],
+  "logout": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+      "status": "closed"
+    }
+  },
+  "returncode": 0
+}

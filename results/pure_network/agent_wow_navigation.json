@@ -1,0 +1,32 @@
+[
+  {
+    "case": "short_trial_valley",
+    "args": [
+      "1",
+      "-618",
+      "-4251",
+      "38",
+      "-600",
+      "-4250",
+      "38"
+    ],
+    "returncode": 0,
+    "stdout": "{\"status\":\"PASS\",\"map\":1,\"loaded_tiles\":9,\"missing_tiles\":0,\"path_polygons\":1,\"waypoints\":[[-618.00000,-4251.00000,38.93078],[-600.00000,-4250.00000,39.09746]]}\r\n",
+    "stderr": ""
+  },
+  {
+    "case": "invalid_height",
+    "args": [
+      "1",
+      "-618",
+      "-4251",
+      "10000",
+      "-600",
+      "-4250",
+      "10000"
+    ],
+    "returncode": 1,
+    "stdout": "",
+    "stderr": "navigation probe: no endpoint polygon\r\n"
+  }
+]
