@@ -91,6 +91,7 @@ int main(int argc, char** argv) {
         // Walk small steps on connected surfaces instead of re-projecting each
         // sample globally (which can jump between overlapping height layers).
         std::vector<float> surface;
+        int boundarySnaps=0;
         float current[3]={pa[0],pa[1],pa[2]}; dtPolyRef currentRef=ra;
         surface.insert(surface.end(),current,current+3);
         for(int i=1;i<count;++i) {
@@ -106,9 +107,41 @@ int main(int argc, char** argv) {
                     throw std::runtime_error("surface walk failed");
                 for(int v=0;v<nv;++v)
                     if(std::find(polygons,polygons+n,visited[v])==polygons+n) {
+                        // Only accept an endpoint boundary tie: the entire
+                        // move prefix remains in the corridor, and the last
+                        // polygon projects to the SAME point/height as the
+                        // current corridor polygon. Do not follow the outside
+                        // polygon on the next sample.
+                        float onCurrent[3]{},onOther[3]{};bool overCurrent=false,overOther=false;
+                        bool adjacent=false;
+                        const dtMeshTile* tile=nullptr;const dtPoly* poly=nullptr;
+                        if(dtStatusSucceed(mesh->getTileAndPolyByRef(currentRef,&tile,&poly)))
+                            for(unsigned int link=poly->firstLink;link!=DT_NULL_LINK;link=tile->links[link].next)
+                                if(tile->links[link].ref==visited[v])adjacent=true;
+                        if(j==steps && v==nv-1 && adjacent
+                           && dtStatusSucceed(query->closestPointOnPoly(currentRef,goal,onCurrent,&overCurrent))
+                           && dtStatusSucceed(query->closestPointOnPoly(visited[v],goal,onOther,&overOther))
+                           && std::hypot(onCurrent[0]-goal[0],onCurrent[2]-goal[2])<=.001f
+                           && std::hypot(onOther[0]-goal[0],onOther[2]-goal[2])<=.001f
+                           && std::abs(onOther[1]-onCurrent[1])<=.01f) {
+                            std::copy(onCurrent,onCurrent+3,reached);
+                            visited[nv-1]=currentRef;
+                            ++boundarySnaps;
+                            continue;
+                        }
                         std::fprintf(stderr,"surface diagnostic: waypoint=%d sample=%d visited=%llu current=%llu wow_current=[%.5f,%.5f,%.5f] wow_goal=[%.5f,%.5f,%.5f]\n",
                             i,j,(unsigned long long)visited[v],(unsigned long long)currentRef,
-                            current[2],current[0],current[1],goal[2],goal[0],goal[1]);
+                             current[2],current[0],current[1],goal[2],goal[0],goal[1]);
+                        float other[3];bool inside=false;
+                        query->closestPointOnPoly(visited[v],goal,other,&inside);
+                        std::fprintf(stderr,"off-corridor projected height=%.6f inside=%d\n",other[1],inside);
+                        for(int k=0;k<n;++k) {
+                            float p[3];bool over=false;
+                            if(dtStatusFailed(query->closestPointOnPoly(polygons[k],goal,p,&over)))continue;
+                            float d=std::hypot(p[0]-goal[0],p[2]-goal[2]);
+                            if(d<.2f)std::fprintf(stderr,"corridor candidate index=%d ref=%llu horizontal=%.8f height=%.6f inside=%d\n",
+                                k,(unsigned long long)polygons[k],d,p[1],over);
+                        }
                         throw std::runtime_error("surface walk left planned corridor");
                     }
                 if(std::hypot(reached[0]-goal[0],reached[2]-goal[2])>0.1f)
@@ -132,7 +165,7 @@ int main(int argc, char** argv) {
         }
         std::printf("{\"status\":\"PASS\",\"map\":%d,\"loaded_tiles\":%d,\"missing_tiles\":%d,\"path_polygons\":%d,\"waypoints\":[",map,loaded,missing,n);
         for (int i=0;i<count;++i) std::printf("%s[%.5f,%.5f,%.5f]",i?",":"",pts[3*i+2],pts[3*i],pts[3*i+1]);
-        std::printf("],\"surface_samples\":[");
+        std::printf("],\"boundary_snaps\":%d,\"surface_samples\":[",boundarySnaps);
         for(size_t i=0;i<surface.size()/3;++i)
             std::printf("%s[%.5f,%.5f,%.5f]",i?",":"",surface[i*3+2],surface[i*3],surface[i*3+1]);
         std::printf("]}\n");
