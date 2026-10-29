@@ -39,6 +39,10 @@ def fight(rpc, drain, target_guid, self_position, now_ms, budget=18):
             angle=math.atan2(tp[1]-self_position[1],tp[0]-self_position[0])
             row={'elapsed_ms':round((time.monotonic()-start)*1000),'self_health':me['health'],'in_combat':me['in_combat'],'target_health':target['health'],'target_position_estimate':tp,'position_source':source,'distance_estimate':distance}
             rows.append(row)
+            if sent and distance > 5:
+                # A fleeing target must not drag an unverified pursuit into
+                # nearby packs. Stop this attempt; no automatic restart.
+                outcome='target_left_melee';break
             # Face continues while the game executes the attack timer.
             if last_angle is None or abs((angle-last_angle+math.pi)%(2*math.pi)-math.pi)>.12:
                 row['face']=rpc('bridge.face',{'angle':angle})
