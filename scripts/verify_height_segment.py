@@ -10,7 +10,7 @@ FOLDER = Path(__file__).resolve().parents[1] / 'results/pure_network'
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--segment', type=int, required=True)
-    parser.add_argument('--case', choices=['H001', 'Q792'], default='H001')
+    parser.add_argument('--case', choices=['H001', 'Q792', 'R792'], default='H001')
     args = parser.parse_args()
     name = f'height_{args.case}_segment{args.segment}'
     plan = json.loads((FOLDER / f'{name}_plan.json').read_bytes())
