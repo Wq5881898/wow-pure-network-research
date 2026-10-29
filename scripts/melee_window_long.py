@@ -7,6 +7,7 @@ from pathlib import Path
 from agent_wow_session import PureNetworkBackend
 from agent_wow_combat_control import estimated_position
 from agent_wow_objective import progress
+from agent_wow_finalize import finalize
 
 ROOT = Path(__file__).resolve().parents[1]
 FOLDER = ROOT / 'results/pure_network'
@@ -76,8 +77,14 @@ def main():
         report['status'] = 'unknown'
         report['error'] = f'{type(exc).__name__}: {exc}'
     finally:
-        backend.close()
-        save()
+        try:
+            if backend.session_id:
+                report['cleanup'] = finalize(backend)
+        finally:
+            try:
+                backend.close()
+            finally:
+                save()
     print(json.dumps({k: v for k, v in report.items() if k != 'samples'}, indent=2))
 
 
