@@ -23,6 +23,9 @@ def main():
     try:
         backend.open()
         report['observation'] = backend.observe().to_dict()
+        report['visible_candidates'] = [
+            {key: obj.get(key) for key in ('guid', 'entry', 'health', 'level', 'movement')}
+            for obj in backend.state['visible_objects'] if obj.get('entry') in (3145, 3101)]
         report['logout'] = backend._do_logout({}, 45)
         if report['logout'].get('status') == 'closed':
             report['status'] = 'observed_and_closed'

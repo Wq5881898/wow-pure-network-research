@@ -11,6 +11,7 @@ import shutil
 import subprocess
 import time
 from pathlib import Path
+from agent_wow_objective import progress, increased
 
 ROOT = Path(__file__).resolve().parents[1]
 WINDOWS_ROOT = os.environ.get('AGENT_WOW_WINDOWS_ROOT', '')
@@ -18,6 +19,8 @@ ACTIVE_PROCESS_PATTERN = r'agent-wow-cli|wsl_task_runner|wsl_bridge_probe'
 
 
 def classify(report):
+    objective = report.get('objective', {'kind': 'item', 'entry': 4862, 'total': 8})
+    kill_objective = objective.get('kind') == 'kill'
     records = report.get('run', {}).get('records', [])
     # Two terminal unknowns carry their own evidence and can still be a unit
     # success: an approach confirmed only across the session boundary, and a
@@ -51,7 +54,7 @@ def classify(report):
     # logout may also be done by the executor's finalization (confirmed closed
     # logout) instead of contract actions. select_target is optional: it
     # re-points the original entry when the boundary target died or respawned.
-    required = {'verify_alive', 'fight', 'loot'}
+    required = {'verify_alive', 'fight'} if kill_objective else {'verify_alive', 'fight', 'loot'}
     allowed = set(required) | {'approach', 'select_target', 'settle', 'logout'}
     if not approach_cross:
         required |= {'select_target', 'approach'}
@@ -69,6 +72,24 @@ def classify(report):
     if not approach_cross and by_id['approach'].get('status') != 'success':
         return 'UNKNOWN', None
     final = report.get('final_observation', {})
+    if kill_objective:
+        fight = by_id['fight']
+        before = fight.get('observation_before', {})
+        after = fight.get('observation_after', {})
+        if (fight.get('evidence', {}).get('outcome') != 'target_dead'
+                or not before.get('session_id')
+                or before.get('session_id') != after.get('session_id')
+                or before.get('session_id') != final.get('session_id')
+                or before.get('character') != '9' or after.get('character') != '9'
+                or not increased(before, after, objective)
+                or progress(final, objective) != progress(after, objective)):
+            return 'UNKNOWN', None
+        logout = by_id.get('logout', {}).get('evidence', {}) or report.get('finalize', {})
+        if (final.get('character') != '9' or final.get('health', 0) <= 0
+                or final.get('ghost') is not False or final.get('in_combat') is not False
+                or logout.get('status') != 'closed'):
+            return 'UNKNOWN', None
+        return 'CONFIRMED', {'before': progress(before, objective), 'after': progress(after, objective)}
     loot = by_id['loot']
     if loot.get('status') not in ('success', 'unknown') or (
             loot.get('status') == 'unknown' and not loot.get('evidence', {}).get('received')):
@@ -188,15 +209,21 @@ def main():
     parser.add_argument('--combat-entry', type=int, default=3124)
     parser.add_argument('--max-target-level', type=int, default=3)
     parser.add_argument('--quest-item-entry', type=int, default=4862)
+    parser.add_argument('--quest-id', type=int)
+    parser.add_argument('--kill-slot', type=int, choices=range(4), default=0)
     parser.add_argument('--combat-budget', type=float, default=35)
     parser.add_argument('--budget-seconds', type=float, default=240)
     parser.add_argument('--action-budget', type=int, default=10)
     parser.add_argument('--boundary-max-age-seconds', type=float, default=1800)
     args = parser.parse_args()
+    if args.quest_id is not None and args.quest_id < 1:
+        parser.error('quest ID must be positive')
     unit_args = {'combat_entry': args.combat_entry, 'max_target_level': args.max_target_level,
                  'quest_item_entry': args.quest_item_entry, 'combat_budget': args.combat_budget,
                  'budget_seconds': args.budget_seconds, 'action_budget': args.action_budget,
-                 'boundary_max_age_seconds': args.boundary_max_age_seconds}
+                  'boundary_max_age_seconds': args.boundary_max_age_seconds}
+    if args.quest_id:
+        unit_args.update(quest_id=args.quest_id, kill_slot=args.kill_slot)
 
     def check_no_active_session():
         pattern = ACTIVE_PROCESS_PATTERN.replace("'", r"'\''")
@@ -232,7 +259,10 @@ def main():
                   '--quest-item-entry', str(args.quest_item_entry),
                   '--combat-budget', str(args.combat_budget),
                   '--budget-seconds', str(args.budget_seconds),
-                  '--action-budget', str(args.action_budget)]
+                   '--action-budget', str(args.action_budget)]
+        if args.quest_id:
+            common += ['--quest-id', str(args.quest_id), '--kill-slot', str(args.kill_slot),
+                       '--objective-total', str(args.goal)]
         if shutil.which('wsl'):
             drive, rest = str(ROOT)[0].lower(), str(ROOT)[2:].replace('\\', '/')
             return ['wsl', '-d', 'WoWLab', '-u', 'wowlab', '--exec',

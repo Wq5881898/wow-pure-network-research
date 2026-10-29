@@ -23,6 +23,9 @@ def parse_options(argv=None):
     parser.add_argument('--combat-entry', type=int, default=3124)
     parser.add_argument('--max-target-level', type=int, default=3)
     parser.add_argument('--quest-item-entry', type=int, default=4862)
+    parser.add_argument('--quest-id', type=int)
+    parser.add_argument('--kill-slot', type=int, choices=range(4), default=0)
+    parser.add_argument('--objective-total', type=int, default=8)
     parser.add_argument('--combat-budget', type=float, default=35)
     parser.add_argument('--budget-seconds', type=float, default=240)
     parser.add_argument('--action-budget', type=int, default=10)
@@ -35,6 +38,8 @@ def parse_options(argv=None):
                         help='Verify a closed movement-only boundary in a fresh session; no combat')
     parser.add_argument('--boundary-max-age-seconds', type=float, default=1800)
     options = parser.parse_args(argv)
+    if options.objective_total < 1 or (options.quest_id is not None and options.quest_id < 1):
+        parser.error('objective total and quest ID must be positive')
     if options.combat_after_verification and not options.verify_movement_from:
         parser.error('combat-after-verification requires verify-movement-from')
     if options.movement_only and options.verify_movement_from:
@@ -56,6 +61,11 @@ def write_json_atomic(path, value):
 
 def main(argv=None):
     options = parse_options(argv)
+    from agent_wow_objective import progress, increased
+    objective = ({'kind': 'kill', 'quest': options.quest_id, 'slot': options.kill_slot,
+                  'entry': options.combat_entry, 'total': options.objective_total}
+                 if options.quest_id else {'kind': 'item', 'entry': options.quest_item_entry,
+                                           'total': options.objective_total})
     report_path = root / f'results/pure_network/agent_wow_task_{options.run_id}.json'
     unified_name = f'agent_wow_task_{options.run_id.removesuffix("_verify")}_unified.json'
     if report_path.exists() or (options.verify_movement_from
@@ -73,6 +83,10 @@ def main(argv=None):
     def alive(observation):
         return observation.health > 0 and not observation.ghost and observation.in_combat is False
 
+    def eligible(observation):
+        count = progress(observation.to_dict(), objective)
+        return alive(observation) and isinstance(count, int) and count < objective['total']
+
     def build_plan():
         if boundary and not options.combat_after_verification:
             return [Action('verify_alive', 'require_alive', precondition=alive,
@@ -81,7 +95,7 @@ def main(argv=None):
                            expectation=lambda before, after, evidence: evidence.get('status') == 'closed')]
         actions = [
             Action('verify_alive', 'require_alive', {}, timeout=10,
-                   precondition=alive,
+                   precondition=eligible,
                    expectation=lambda before, after, evidence: after.health > 0 and not after.ghost),
             Action('select_target', 'select_target',
                    {'entry': options.combat_entry, 'max_level': options.max_target_level}, timeout=15,
@@ -90,7 +104,8 @@ def main(argv=None):
                    expectation=lambda before, after, evidence: bool(evidence.get('reached'))),
             Action('fight', 'fight', {'budget': options.combat_budget}, timeout=options.combat_budget + 30,
                    side_effecting=True,
-                   expectation=lambda before, after, evidence: evidence.get('outcome') == 'target_dead'),
+                   expectation=lambda before, after, evidence: evidence.get('outcome') == 'target_dead'
+                   and (not options.quest_id or increased(before.to_dict(), after.to_dict(), objective))),
             Action('loot', 'loot', {}, timeout=30, side_effecting=True,
                    expectation=lambda before, after, evidence: evidence.get('received') is not None
                    and int(after.item_totals.get(str(options.quest_item_entry), 0))
@@ -100,6 +115,8 @@ def main(argv=None):
             Action('logout', 'logout', {}, timeout=45, side_effecting=True,
                    expectation=lambda before, after, evidence: evidence.get('status') == 'closed'),
         ]
+        if options.quest_id:
+            actions = [a for a in actions if a.id != 'loot']
         if boundary and options.combat_after_verification:
             # A two-session unit: the movement leg is proven by this fresh
             # login landing on the previous session's submitted endpoint, so
@@ -114,7 +131,7 @@ def main(argv=None):
 
     plan = build_plan()
     backend = PureNetworkBackend(options.run_id)
-    report = {'run_id': options.run_id, 'plan': [a.to_dict() for a in plan]}
+    report = {'run_id': options.run_id, 'objective': objective, 'plan': [a.to_dict() for a in plan]}
     started = time.monotonic()
     try:
         backend.open()

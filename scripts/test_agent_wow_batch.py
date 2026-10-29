@@ -100,6 +100,24 @@ class BatchTests(unittest.TestCase):
         data['final_observation']['in_combat'] = True
         self.assertEqual(classify(data)[0], 'UNKNOWN')
 
+    def test_kill_credit_without_loot(self):
+        data = report()
+        data['objective'] = {'kind': 'kill', 'quest': 792, 'entry': 3101, 'slot': 0, 'total': 8}
+        data['run']['records'] = [r for r in data['run']['records'] if r['action_id'] != 'loot']
+        fight = next(r for r in data['run']['records'] if r['action_id'] == 'fight')
+        fight.update(evidence={'outcome': 'target_dead'},
+                     observation_before={'quest_log': [{'quest': 792, 'counters': [0, 0]}]},
+                     observation_after={'quest_log': [{'quest': 792, 'counters': [1, 0]}]})
+        data['final_observation']['quest_log'] = [{'quest': 792, 'counters': [1, 0]}]
+        for observation in (fight['observation_before'], fight['observation_after'], data['final_observation']):
+            observation.update(session_id='same_session', character='9')
+        self.assertEqual(classify(data), ('CONFIRMED', {'before': 0, 'after': 1}))
+        fight['observation_after']['session_id'] = 'other_session'
+        self.assertEqual(classify(data)[0], 'UNKNOWN')
+        fight['observation_after']['session_id'] = 'same_session'
+        data['final_observation']['quest_log'] = []
+        self.assertEqual(classify(data)[0], 'UNKNOWN')
+
     def test_incomplete_or_ambiguous_evidence_rejected(self):
         for mutation in ('duplicate', 'unexpected', 'final_total_missing', 'close_error', 'false_cross'):
             with self.subTest(mutation=mutation):
