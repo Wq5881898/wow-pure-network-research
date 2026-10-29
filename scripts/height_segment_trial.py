@@ -15,13 +15,17 @@ def main():
     parser.add_argument('--segment', type=int, default=1)
     parser.add_argument('--distance', type=float, default=6)
     parser.add_argument('--from-observation', type=Path)
+    parser.add_argument('--case', choices=['H001', 'Q792'], default='H001')
     args = parser.parse_args()
     if args.segment < 1 or not 1 <= args.distance <= 20:
         parser.error('segment must be positive and distance 1..20')
-    run_id = f'height_H001_segment{args.segment}'
+    run_id = f'height_{args.case}_segment{args.segment}'
     plan_path = FOLDER / f'{run_id}_plan.json'
     if not args.execute:
         original = json.loads((FOLDER / 'height_route_H001_20261029.json').read_bytes())
+        if args.case == 'Q792':
+            routes = json.loads((FOLDER / 'quest792_static_hunt_routes.json').read_bytes())
+            original['end'] = next(c['end'] for c in routes['candidates'] if c['static_spawn_id'] == 13055)
         if args.from_observation:
             source = json.loads(args.from_observation.read_bytes())
             if source.get('status') != 'observed_and_closed':
@@ -45,7 +49,7 @@ def main():
         with plan_path.open('x', encoding='utf-8') as handle:
             json.dump({'nav': nav, 'points': points, 'length': length,
                        'source_observation': str(args.from_observation) if args.from_observation else None,
-                       'scope': 'bounded H001 segment only'}, handle, indent=2)
+                       'scope': f'bounded {args.case} segment only'}, handle, indent=2)
         print(json.dumps({'length': length, 'start': points[0], 'end': points[-1]}))
         return
     from agent_wow_session import PureNetworkBackend
