@@ -105,8 +105,12 @@ int main(int argc, char** argv) {
                 if(dtStatusFailed(s)||dtStatusDetail(s,DT_BUFFER_TOO_SMALL)||!nv)
                     throw std::runtime_error("surface walk failed");
                 for(int v=0;v<nv;++v)
-                    if(std::find(polygons,polygons+n,visited[v])==polygons+n)
+                    if(std::find(polygons,polygons+n,visited[v])==polygons+n) {
+                        std::fprintf(stderr,"surface diagnostic: waypoint=%d sample=%d visited=%llu current=%llu wow_current=[%.5f,%.5f,%.5f] wow_goal=[%.5f,%.5f,%.5f]\n",
+                            i,j,(unsigned long long)visited[v],(unsigned long long)currentRef,
+                            current[2],current[0],current[1],goal[2],goal[0],goal[1]);
                         throw std::runtime_error("surface walk left planned corridor");
+                    }
                 if(std::hypot(reached[0]-goal[0],reached[2]-goal[2])>0.1f)
                     throw std::runtime_error("surface walk blocked before sample");
                 currentRef=visited[nv-1];float height=0;
