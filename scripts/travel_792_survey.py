@@ -2,6 +2,7 @@
 import json
 import subprocess
 import sys
+import argparse
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -16,9 +17,17 @@ def call(command):
 
 
 def main():
-    source = FOLDER / 'agent_wow_readonly_quest792_accept_verify.json'
-    with (FOLDER / 'quest792_travel_survey.jsonl').open('x', encoding='utf-8') as journal:
-        for number in range(1, 23):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--start', type=int, default=1)
+    parser.add_argument('--last', type=int, default=22)
+    parser.add_argument('--max-target-level', type=int, default=4)
+    args = parser.parse_args()
+    if not 1 <= args.start <= args.last <= 22:
+        parser.error('segment range must be within 1..22')
+    source = FOLDER / ('agent_wow_readonly_quest792_accept_verify.json' if args.start == 1
+                      else f'agent_wow_readonly_height_Q792_segment{args.start-1}_verify.json')
+    with (FOLDER / f'quest792_travel_survey_{args.start}_{args.last}.jsonl').open('x', encoding='utf-8') as journal:
+        for number in range(args.start, args.last+1):
             observation = json.loads(source.read_bytes())['observation']
             if not any(q['quest'] == 792 for q in observation['quest_log']):
                 raise RuntimeError('quest792 missing')
@@ -37,7 +46,7 @@ def main():
             journal.write(json.dumps(row) + '\n')
             journal.flush()
             print(json.dumps(row), flush=True)
-            if targets:
+            if any(o.get('health', 0) > 0 and o.get('level', 999) <= args.max_target_level for o in targets):
                 print('LIVE_TARGETS_VISIBLE_STOP_NO_ATTACK', flush=True)
                 return
         raise RuntimeError('travel budget reached without live target; inspect before retry')

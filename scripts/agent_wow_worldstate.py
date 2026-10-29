@@ -124,6 +124,10 @@ def monster_move(data):
 def attack_stop(data):
     r = Reader(data)
     attacker = r.guid()
+    # CombatHandler::SendAttackStop(nullptr) emits only the attacker's
+    # packed GUID. This says nothing about a target's death.
+    if r.pos == len(data):
+        return {'attacker_guid': attacker, 'target_guid': None, 'target_dead': None}
     target = r.guid()
     dead = r.u32()
     r.end()
