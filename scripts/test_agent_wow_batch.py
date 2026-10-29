@@ -70,10 +70,52 @@ class BatchTests(unittest.TestCase):
         self.assertEqual(state['status'], 'BUDGET_REACHED')
         self.assertEqual(self.calls, [])
 
+    def test_missing_report_never_calls_permissive_launcher(self):
+        calls = []
+        def launch(run_id, **kwargs):
+            calls.append((run_id, kwargs))
+            raise TimeoutError('effect unknown')
+        coordinate(self.folder, 'missing', 1, 8, launch)
+        for _ in range(3):
+            state = coordinate(self.folder, 'missing', 1, 8, launch)
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(state['status'], 'UNKNOWN')
+        self.assertIn('refusing to resend', state['units'][0]['error'])
+
+    def test_old_lock_not_deleted_or_bypassed(self):
+        lock = self.folder / '.cache/task_batch.lock'
+        lock.parent.mkdir()
+        original = json.dumps({'pid': 123, 'acquired_at': 1})
+        lock.write_text(original)
+        with patch.object(agent_wow_batch, 'ROOT', self.folder), \
+                patch.object(agent_wow_batch.subprocess, 'run') as run, \
+                patch('sys.argv', ['batch', '--batch-id', 'locked']):
+            with self.assertRaisesRegex(RuntimeError, 'reconcile owner'):
+                agent_wow_batch.main()
+            run.assert_not_called()
+        self.assertEqual(lock.read_text(), original)
+
     def test_false_success_rejected(self):
         data = report()
         data['final_observation']['in_combat'] = True
         self.assertEqual(classify(data)[0], 'UNKNOWN')
+
+    def test_incomplete_or_ambiguous_evidence_rejected(self):
+        for mutation in ('duplicate', 'unexpected', 'final_total_missing', 'close_error', 'false_cross'):
+            with self.subTest(mutation=mutation):
+                data = report()
+                if mutation == 'duplicate':
+                    data['run']['records'].append(dict(data['run']['records'][0]))
+                elif mutation == 'unexpected':
+                    data['run']['records'].append({'action_id': 'unplanned', 'status': 'success'})
+                elif mutation == 'final_total_missing':
+                    data['final_observation']['item_totals'] = {}
+                elif mutation == 'close_error':
+                    data['close_error'] = 'transport close failed'
+                else:
+                    data['run']['records'].append({'action_id': 'approach', 'status': 'failure',
+                        'evidence': {'confirmed_by': 'fresh_session_login', 'reached': False}})
+                self.assertEqual(classify(data)[0], 'UNKNOWN')
 
     def test_movement_only_report_is_not_confirmed_until_boundary_verified(self):
         # The movement-only session alone lacks fight/loot/settle/logout; it is
@@ -183,6 +225,17 @@ class BatchTests(unittest.TestCase):
             state = json.loads((Path(temp) / 'results' / 'pure_network' / 'agent_wow_batch_busy_launch.json').read_text())
         self.assertEqual(state['status'], 'UNKNOWN')
         self.assertIn('existing task or bridge session is active', state['units'][0]['error'])
+
+    def test_failed_occupancy_query_blocks_launch(self):
+        with patch.object(agent_wow_batch, 'ROOT', self.folder), \
+                patch.object(agent_wow_batch.shutil, 'which', return_value=None), \
+                patch.object(agent_wow_batch.subprocess, 'run',
+                             return_value=subprocess.CompletedProcess([], 2, '', 'pgrep failed')) as run, \
+                patch('sys.argv', ['batch', '--batch-id', 'check_failed', '--limit', '1']):
+            agent_wow_batch.main()
+        self.assertEqual(run.call_count, 1)
+        data = json.loads((self.folder / 'results/pure_network/agent_wow_batch_check_failed.json').read_text())
+        self.assertIn('occupancy check failed', data['units'][0]['error'])
 
 
 if __name__ == '__main__':

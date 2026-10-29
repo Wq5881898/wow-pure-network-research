@@ -231,17 +231,6 @@ class TaskExecutor:
             elif action.side_effecting:
                 outcome = UNKNOWN
                 detail = 'request applied but postcondition not observed'
-                # A loot whose only missing postcondition is the inventory
-                # total has already produced a confirmed item receipt; that is
-                # a proven effect, not an unresolved side effect, so the unit
-                # continues to settle and logout and the batch classifier makes
-                # the final verdict from fresh observations. Other side-effect
-                # unknowns stay terminal: the contract forbids guessing that a
-                # later success (for example a fresh settle observation)
-                # proves an earlier unconfirmed effect like a fight start.
-                if (action.kind == 'loot' and evidence.get('received')
-                        and before.item_totals != after.item_totals):
-                    self.completed.append(action.id)
             else:
                 outcome = FAILURE
                 detail = 'postcondition not observed'

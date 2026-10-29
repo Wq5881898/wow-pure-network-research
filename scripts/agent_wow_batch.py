@@ -25,8 +25,16 @@ def classify(report):
     # classifier re-derives the verdict from records instead of trusting the
     # executor's status field.
     approach_cross = any(r.get('action_id') == 'approach'
+                         and r.get('status') == 'success'
+                         and r.get('evidence', {}).get('reached') is True
                          and r.get('evidence', {}).get('confirmed_by') == 'fresh_session_login'
                          for r in records)
+    if any(r.get('evidence', {}).get('confirmed_by') == 'fresh_session_login'
+           and (r.get('action_id') != 'approach' or r.get('status') != 'success'
+                or r.get('evidence', {}).get('reached') is not True) for r in records):
+        return 'UNKNOWN', None
+    if any(report.get(key) for key in ('error', 'close_error', 'final_observation_error')):
+        return 'UNKNOWN', None
     loot_confirmed = any(r.get('action_id') == 'loot' and r.get('status') == 'unknown'
                          and bool(r.get('evidence', {}).get('received')) for r in records)
     terminal_unknown = (report.get('run', {}).get('status') == 'unknown'
@@ -47,7 +55,7 @@ def classify(report):
     allowed = set(required) | {'approach', 'select_target', 'settle', 'logout'}
     if not approach_cross:
         required |= {'select_target', 'approach'}
-    if not required <= set(by_id):
+    if not required <= set(by_id) or set(by_id) - allowed or len(by_id) != len(rows):
         return 'UNKNOWN', None
     if any(r.get('action_id') not in ('approach', 'loot') and r.get('status') != 'success'
            for r in rows):
@@ -84,7 +92,7 @@ def classify(report):
         logout = logout.get('evidence', {})
     if (final.get('character') != '9' or final.get('health', 0) <= 0
             or final.get('ghost') is not False or final.get('in_combat') is not False
-            or final.get('item_totals', {}).get('4862', after) != after
+            or final.get('item_totals', {}).get('4862') != after
             or logout.get('status') != 'closed'):
         return 'UNKNOWN', None
     return 'CONFIRMED', {'before': before, 'after': after}
@@ -113,21 +121,16 @@ def coordinate(folder, batch_id, limit, goal, launch, unit_args=None):
 
     # Dispatch is persisted before launch. A recovery unit with a late report is
     # only classified (never re-dispatched, since its movement side effect may
-    # already have happened); a recovery unit with no report at all is
-    # re-dispatched once without the pre-launch occupancy guard.
+    # already have happened). A missing report cannot prove no dispatch occurred.
     for unit in state['units']:
         if unit['status'] != 'DISPATCHED':
             continue
         report_path = folder / f"agent_wow_task_{unit['run_id']}_unified.json"
         if not report_path.exists():
-            try:
-                launch(unit['run_id'], check_session=False)
-                status, progress = classify(json.loads(report_path.read_text(encoding='utf-8')))
-            except Exception as exc:
-                state['status'] = 'UNKNOWN'
-                unit['error'] = f'{type(exc).__name__}: {exc}'
-                save()
-                return state
+            state['status'] = 'UNKNOWN'
+            unit['error'] = 'dispatched unit has no report; refusing to resend'
+            save()
+            return state
         else:
             status, progress = classify(json.loads(report_path.read_text(encoding='utf-8')))
         unit.update(status=status, progress=progress)
@@ -214,9 +217,10 @@ def main():
             # Native WSL coordinator: pgrep sees our own sh -c here, so drop any
             # line carrying the check marker. The pattern itself is never echoed
             # by this command, so a surviving line can only be a real session.
-            active = subprocess.run(['sh', '-c',
-                                     f"pgrep -fa '{pattern}' | grep -v -- '--pgrep-check-only' || true"],
+            active = subprocess.run(['pgrep', '-fa', ACTIVE_PROCESS_PATTERN],
                                     capture_output=True, text=True)
+            if active.returncode not in (0, 1):
+                raise RuntimeError('process occupancy check failed')
             body = active.stdout
         matches = body.strip()
         if matches:
@@ -274,16 +278,8 @@ def main():
                                      'acquired_at': time.time()}) + '\n')
         acquired = True
     except FileExistsError:
-        try:
-            owner = json.loads(lock.read_text(encoding='utf-8'))
-            if time.time() - float(owner.get('acquired_at', 0)) > 3600:
-                lock.unlink()
-                with lock.open('x', encoding='utf-8') as handle:
-                    handle.write(json.dumps({'batch_id': args.batch_id, 'pid': os.getpid(),
-                                             'acquired_at': time.time()}) + '\n')
-                acquired = True
-        except (OSError, ValueError, TypeError, json.JSONDecodeError):
-            pass
+        # Age alone does not establish that the owner stopped running.
+        raise RuntimeError('task batch lock exists; reconcile owner before retrying')
     if not acquired:
         raise RuntimeError('another task batch holds the lock')
     try:
