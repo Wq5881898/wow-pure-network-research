@@ -88,8 +88,49 @@ int main(int argc, char** argv) {
                 throw std::runtime_error("waypoint surface projection shifted horizontally");
             pts[i*3+1]=projected[1];
         }
+        // Walk small steps on connected surfaces instead of re-projecting each
+        // sample globally (which can jump between overlapping height layers).
+        std::vector<float> surface;
+        float current[3]={pa[0],pa[1],pa[2]}; dtPolyRef currentRef=ra;
+        surface.insert(surface.end(),current,current+3);
+        for(int i=1;i<count;++i) {
+            float* end=&pts[i*3];
+            float dx=end[0]-current[0], dz=end[2]-current[2];
+            int steps=std::max(1,int(std::ceil(std::sqrt(dx*dx+dz*dz)/0.5f)));
+            float origin[3]={current[0],current[1],current[2]};
+            for(int j=1;j<=steps;++j) {
+                float goal[3]; for(int k=0;k<3;++k) goal[k]=origin[k]+(end[k]-origin[k])*float(j)/steps;
+                float reached[3];dtPolyRef visited[64];int nv=0;
+                dtStatus s=query->moveAlongSurface(currentRef,current,goal,&filter,reached,visited,&nv,64);
+                if(dtStatusFailed(s)||dtStatusDetail(s,DT_BUFFER_TOO_SMALL)||!nv)
+                    throw std::runtime_error("surface walk failed");
+                for(int v=0;v<nv;++v)
+                    if(std::find(polygons,polygons+n,visited[v])==polygons+n)
+                        throw std::runtime_error("surface walk left planned corridor");
+                if(std::hypot(reached[0]-goal[0],reached[2]-goal[2])>0.1f)
+                    throw std::runtime_error("surface walk blocked before sample");
+                currentRef=visited[nv-1];float height=0;
+                if(dtStatusFailed(query->getPolyHeight(currentRef,reached,&height))) {
+                    // Portal boundary floating-point error: constrain the fix to
+                    // the SAME visited polygon, never search another floor.
+                    float closest[3];bool over=false;
+                    if(dtStatusFailed(query->closestPointOnPoly(currentRef,reached,closest,&over))
+                       ||std::hypot(closest[0]-reached[0],closest[2]-reached[2])>0.1f)
+                        throw std::runtime_error("surface height unavailable");
+                    std::copy(closest,closest+3,reached);height=closest[1];
+                }
+                reached[1]=height;
+                if(std::abs(reached[1]-current[1])>2.f)
+                    throw std::runtime_error("surface sample vertical discontinuity");
+                std::copy(reached,reached+3,current);
+                surface.insert(surface.end(),current,current+3);
+            }
+        }
         std::printf("{\"status\":\"PASS\",\"map\":%d,\"loaded_tiles\":%d,\"missing_tiles\":%d,\"path_polygons\":%d,\"waypoints\":[",map,loaded,missing,n);
         for (int i=0;i<count;++i) std::printf("%s[%.5f,%.5f,%.5f]",i?",":"",pts[3*i+2],pts[3*i],pts[3*i+1]);
+        std::printf("],\"surface_samples\":[");
+        for(size_t i=0;i<surface.size()/3;++i)
+            std::printf("%s[%.5f,%.5f,%.5f]",i?",":"",surface[i*3+2],surface[i*3],surface[i*3+1]);
         std::printf("]}\n");
         return 0;
     } catch (const std::exception& e) {
