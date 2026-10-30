@@ -162,16 +162,30 @@ class BatchTests(unittest.TestCase):
         data['run']['records'][0]['observation_before'] = {'item_totals': {'4862': 6}}
         self.assertEqual(classify(data)[0], 'CONFIRMED')
 
-    def test_loot_confirmed_by_final_observation_counts(self):
-        # A loot whose in-session echo missed the new total still counts when
-        # the loot was received and the fresh final observation is higher.
+    def test_unknown_loot_cannot_be_promoted_by_attempted_receipt(self):
+        # "received" in the backend is an attempted take list, not an item push.
         data = report()
         for row in data['run']['records']:
             if row['action_id'] == 'loot':
                 row['status'] = 'unknown'
                 row['observation_after'] = {'item_totals': {'4862': 5}}
                 row['evidence'] = {'received': [4862]}
-        self.assertEqual(classify(data)[0], 'CONFIRMED')
+        self.assertEqual(classify(data)[0], 'UNKNOWN')
+        data['run']['status'] = 'unknown'
+        self.assertEqual(classify(data)[0], 'STOPPED')
+
+    def test_unknown_loot_with_matching_attempt_and_inventory_echo_still_stops(self):
+        data = report()
+        data['run']['status'] = 'unknown'
+        data['run']['records'][4].update(status='unknown', evidence={'received': [4862]})
+        # received comes from take_loot requests, and a same-session inventory
+        # echo does not justify disregarding a terminal unknown side effect.
+        self.assertEqual(classify(data)[0], 'STOPPED')
+
+    def test_wrong_item_attempt_cannot_confirm_in_session_increment(self):
+        data = report()
+        data['run']['records'][4].update(status='unknown', evidence={'received': [7101]})
+        self.assertEqual(classify(data)[0], 'UNKNOWN')
 
     def test_loot_without_receipt_needs_in_session_total(self):
         data = report()

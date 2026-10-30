@@ -22,11 +22,9 @@ def classify(report):
     objective = report.get('objective', {'kind': 'item', 'entry': 4862, 'total': 8})
     kill_objective = objective.get('kind') == 'kill'
     records = report.get('run', {}).get('records', [])
-    # Two terminal unknowns carry their own evidence and can still be a unit
-    # success: an approach confirmed only across the session boundary, and a
-    # loot whose effect is proven by the fresh post-loot observation. The
-    # classifier re-derives the verdict from records instead of trusting the
-    # executor's status field.
+    # A synthesized approach confirms a movement boundary; it does not prove
+    # that a later UNKNOWN loot took effect. The backend's "received" field
+    # lists attempted take_loot entries, not server item-push acknowledgements.
     approach_cross = any(r.get('action_id') == 'approach'
                          and r.get('status') == 'success'
                          and r.get('evidence', {}).get('reached') is True
@@ -38,11 +36,7 @@ def classify(report):
         return 'UNKNOWN', None
     if any(report.get(key) for key in ('error', 'close_error', 'final_observation_error')):
         return 'UNKNOWN', None
-    loot_confirmed = any(r.get('action_id') == 'loot' and r.get('status') == 'unknown'
-                         and bool(r.get('evidence', {}).get('received')) for r in records)
-    terminal_unknown = (report.get('run', {}).get('status') == 'unknown'
-                        and (approach_cross or loot_confirmed))
-    if report.get('run', {}).get('status') != 'success' and not terminal_unknown:
+    if report.get('run', {}).get('status') != 'success':
         return 'STOPPED', None
     rows = [r for r in records
             if r.get('evidence', {}).get('confirmed_by') != 'fresh_session_login']
@@ -63,8 +57,7 @@ def classify(report):
     if any(r.get('action_id') not in ('approach', 'loot') and r.get('status') != 'success'
            for r in rows):
         return 'UNKNOWN', None
-    if any(r.get('action_id') == 'loot' and r.get('status') == 'unknown'
-           and not r.get('evidence', {}).get('received') for r in rows):
+    if any(r.get('action_id') == 'loot' and r.get('status') != 'success' for r in rows):
         return 'UNKNOWN', None
     # The executed approach row may legitimately stay unconfirmed in-session;
     # an executed approach (single-session unit) must then be backed by the
@@ -95,21 +88,12 @@ def classify(report):
         return 'UNKNOWN', None
     entry = str(entry)
     loot = by_id['loot']
-    if loot.get('status') not in ('success', 'unknown') or (
-            loot.get('status') == 'unknown' and not loot.get('evidence', {}).get('received')):
+    if loot.get('status') != 'success':
         return 'UNKNOWN', None
     before = loot.get('observation_before', {}).get('item_totals', {}).get(entry)
     after = loot.get('observation_after', {}).get('item_totals', {}).get(entry)
     if not (isinstance(before, int) and isinstance(after, int) and after > before):
-        # A loot whose in-session echo never showed the new inventory total can
-        # still count when the loot was actually received and the fresh final
-        # observation carries a strictly higher total than before the fight.
-        if not (isinstance(before, int)
-                and isinstance(final.get('item_totals', {}).get(entry), int)
-                and final['item_totals'][entry] > before
-                and loot.get('evidence', {}).get('received')):
-            return 'UNKNOWN', None
-        after = final['item_totals'][entry]
+        return 'UNKNOWN', None
     # The logout leg is proven either by an explicit logout action record or by
     # the executor's finalization (confirmed closed logout in 'finalize').
     logout = by_id['logout'] if 'logout' in by_id else report.get('finalize', {})
