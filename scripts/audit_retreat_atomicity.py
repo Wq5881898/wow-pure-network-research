@@ -15,12 +15,27 @@ BRIDGE_RUNNING_SPEED = 7     # probes/AgentWowBridge/actions.go:46-47
 
 def audit(chunks):
     lengths = []
-    for points in chunks:
-        lengths.append(sum(math.hypot(b[0] - a[0], b[1] - a[1])
-                           for a, b in zip(points, points[1:])))
+    valid = bool(chunks)
+    for index, points in enumerate(chunks):
+        if len(points) < 2 or any(len(point) != 3 or not all(math.isfinite(v) for v in point)
+                                  for point in points):
+            raise ValueError('route points must be finite XYZ triples')
+        if index and math.dist(chunks[index - 1][-1], points[0]) > .1:
+            valid = False
+        if index and points[0] != chunks[index - 1][-1]:
+            # Concatenation omits a repeated start. Even a sub-yard mismatch
+            # creates an unaccounted bridge step and invalidates this audit.
+            valid = False
+        horizontal = 0.0
+        for a, b in zip(points, points[1:]):
+            step = math.hypot(b[0] - a[0], b[1] - a[1])
+            if step > 15 or abs(b[2] - a[2]) > 3:
+                valid = False
+            horizontal += step
+        lengths.append(horizontal)
     # A single FollowPath has one 50-yard path budget, regardless of how many
     # independently verified 20-yard chunks could be concatenated.
-    combined_points = sum(len(points) for points in chunks) - len(chunks) + 1
+    combined_points = sum(len(points) for points in chunks) - len(chunks) + 1 if chunks else 0
     return {
         'source': 'height_R792_segment1..6_plan.json and *_reconciled.json',
         'chunk_horizontal_lengths': lengths,
@@ -28,7 +43,8 @@ def audit(chunks):
         'single_call_horizontal_limit': BRIDGE_MAX_HORIZONTAL,
         'single_call_waypoint_limit': BRIDGE_MAX_WAYPOINTS,
         'combined_waypoints': combined_points,
-        'one_call_full_route_possible': (sum(lengths) <= BRIDGE_MAX_HORIZONTAL
+        'route_bridge_segments_valid': valid,
+        'one_call_full_route_possible': (valid and .05 <= sum(lengths) <= BRIDGE_MAX_HORIZONTAL
                                          and combined_points <= BRIDGE_MAX_WAYPOINTS),
         'minimum_calls_from_distance_only': math.ceil(sum(lengths) / BRIDGE_MAX_HORIZONTAL),
         'running_motion_seconds_lower_bound': sum(lengths) / BRIDGE_RUNNING_SPEED,
