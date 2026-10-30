@@ -182,6 +182,29 @@ class BatchTests(unittest.TestCase):
                 row['evidence'] = {'received': None}
         self.assertEqual(classify(data)[0], 'UNKNOWN')
 
+    def test_nondefault_item_entry_counts(self):
+        data = report()
+        data['objective'] = {'kind': 'item', 'entry': 9999, 'total': 8}
+        for observation in (data['run']['records'][4]['observation_before'],
+                            data['run']['records'][4]['observation_after'],
+                            data['final_observation']):
+            observation['item_totals']['9999'] = observation['item_totals'].pop('4862')
+        self.assertEqual(classify(data), ('CONFIRMED', {'before': 6, 'after': 7}))
+        # Only the default 4862 increases while the objective 9999 stays flat.
+        data['run']['records'][4]['observation_before']['item_totals']['4862'] = 6
+        data['run']['records'][4]['observation_after']['item_totals']['4862'] = 7
+        data['final_observation']['item_totals']['4862'] = 7
+        data['run']['records'][4]['observation_after']['item_totals']['9999'] = 6
+        data['final_observation']['item_totals']['9999'] = 6
+        self.assertEqual(classify(data)[0], 'UNKNOWN')
+
+    def test_invalid_item_entry_is_unknown(self):
+        for entry in (0, -1, True, False, '4862', None):
+            with self.subTest(entry=entry):
+                data = report()
+                data['objective'] = {'kind': 'item', 'entry': entry, 'total': 8}
+                self.assertEqual(classify(data), ('UNKNOWN', None))
+
     def test_changed_configuration_rejected(self):
         coordinate(self.folder, 'test', 1, 8, self.launch)
         with self.assertRaises(ValueError):
