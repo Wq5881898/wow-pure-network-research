@@ -493,6 +493,14 @@ class PureNetworkBackend:
                 return {'loot': loot, 'takes': takes, 'confirmed_item_pushes': pushes,
                         'attempted_take_entries': [take['item']['entry'] for take in takes],
                         'side_effect_applied': True, 'reason': 'take reply failed; no further requests sent'}
+            if not confirmed:
+                # A delayed push could otherwise be attributed to a later
+                # take of the same item. Keep this attempt unknown and never
+                # send a second take or release on an unconfirmed effect.
+                return {'loot': loot, 'takes': takes, 'confirmed_item_pushes': pushes,
+                        'attempted_take_entries': [take['item']['entry'] for take in takes],
+                        'side_effect_applied': True,
+                        'reason': 'take item push not observed; no further requests sent'}
         try:
             released = self.rpc('bridge.release_loot', {'guid': guid})
         except Exception as exc:

@@ -41,6 +41,27 @@ class LootBackendEvidenceTests(unittest.TestCase):
         result = backend._do_loot({}, 30)
         self.assertEqual(result['attempted_take_entries'], [4862])
         self.assertEqual(result['confirmed_item_pushes'], [])
+        self.assertIn('not observed', result['reason'])
+        self.assertNotIn('bridge.release_loot', backend.rpc_calls)
+
+    @patch('agent_wow_session.time.sleep', return_value=None)
+    def test_unconfirmed_first_item_blocks_second_take(self, _sleep):
+        backend = self.backend([])
+        original_drain = backend.drain.side_effect
+
+        def drain():
+            state = original_drain()
+            for event in state['event_log']:
+                if event.get('opcode') == 0x160:
+                    event['loot']['items'] = [{'slot': 0, 'entry': 4862},
+                                              {'slot': 1, 'entry': 4862}]
+            return state
+
+        backend.drain.side_effect = drain
+        result = backend._do_loot({}, 30)
+        self.assertEqual(backend.rpc_calls.count('bridge.take_loot'), 1)
+        self.assertEqual(result['attempted_take_entries'], [4862])
+        self.assertNotIn('bridge.release_loot', backend.rpc_calls)
 
     @patch('agent_wow_session.time.sleep', return_value=None)
     def test_fresh_matching_push_is_separate_evidence(self, _sleep):
@@ -92,7 +113,10 @@ class LootBackendEvidenceTests(unittest.TestCase):
 
     @patch('agent_wow_session.time.sleep', return_value=None)
     def test_release_failure_does_not_confirm_success(self, _sleep):
-        backend = self.backend([])
+        backend = self.backend([{'sequence': 14, 'opcode': 0x166,
+                                'loot': {'player_guid': '9', 'entry': 4862,
+                                         'received': 0, 'created': 0,
+                                         'count': 1, 'inventory_count': 1}}])
         original = backend.rpc.side_effect
         def rpc(method, params):
             if method == 'bridge.release_loot':
