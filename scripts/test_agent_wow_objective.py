@@ -21,6 +21,26 @@ class ObjectiveTests(unittest.TestCase):
         for slot in range(4):
             self.assertEqual(progress(observation, {**self.goal, 'slot': slot}), slot + 1)
 
+    def test_duplicate_quest_entries(self):
+        duplicated = {'quest_log': [
+            {'quest': 792, 'counters': [6, 0]},
+            {'quest': 792, 'counters': [7, 0]},
+        ]}
+        self.assertIsNone(progress(duplicated, self.goal))
+        self.assertFalse(increased(self.obs(6), duplicated, self.goal))
+
+    def test_slot3_high_bits_of_second_uint32(self):
+        before = {'quest_log': [{'quest': 792,
+                                 'counters': [0x0102 | (0x0304 << 16), 0x0506 | (6 << 16)]}]}
+        after = {'quest_log': [{'quest': 792,
+                                'counters': [0x0102 | (0x0304 << 16), 0x0506 | (7 << 16)]}]}
+        slot3 = {**self.goal, 'slot': 3}
+        self.assertEqual(progress(before, slot3), 6)
+        self.assertEqual(progress(after, slot3), 7)
+        self.assertTrue(increased(before, after, slot3))
+        for slot, sentinel in ((0, 0x0102), (1, 0x0304), (2, 0x0506)):
+            self.assertEqual(progress(after, {**self.goal, 'slot': slot}), sentinel)
+
 
 if __name__ == '__main__':
     unittest.main()
