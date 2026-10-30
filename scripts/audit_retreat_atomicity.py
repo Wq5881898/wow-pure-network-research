@@ -46,6 +46,10 @@ def audit(chunks):
         'route_bridge_segments_valid': valid,
         'one_call_full_route_possible': (valid and .05 <= sum(lengths) <= BRIDGE_MAX_HORIZONTAL
                                          and combined_points <= BRIDGE_MAX_WAYPOINTS),
+        'one_call_parameters_fit': (valid and .05 <= sum(lengths) <= BRIDGE_MAX_HORIZONTAL
+                                    and combined_points <= BRIDGE_MAX_WAYPOINTS),
+        'arrival_confirmed': False,
+        'scope': 'offline bridge input capacity only',
         'minimum_calls_from_distance_only': math.ceil(sum(lengths) / BRIDGE_MAX_HORIZONTAL),
         'running_motion_seconds_lower_bound': sum(lengths) / BRIDGE_RUNNING_SPEED,
         'semantics': ('speed is a nominal command timing bound, not observed server motion; '
