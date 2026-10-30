@@ -16,12 +16,53 @@ def prepare(folder):
     for i in range(1, 7):
         plan = json.loads((folder / f'height_R792_segment{i}_plan.json').read_text(encoding='utf-8'))
         verdict = json.loads((folder / f'height_R792_segment{i}_reconciled.json').read_text(encoding='utf-8'))
+        trial = json.loads((folder / f'height_R792_segment{i}_trial.json').read_text(encoding='utf-8'))
+        verified = json.loads((folder / f'agent_wow_readonly_height_R792_segment{i}_verify.json').read_text(encoding='utf-8'))
         points = plan['points']
         if not verdict.get('confirmed') or not 2 <= len(points) <= 128:
             raise ValueError(f'unverified retreat chunk {i}')
+        before = trial.get('before', {})
+        observation = verified.get('observation', {})
+        checks = verdict.get('checks', {})
+        if (not all(checks.get(key) is True for key in
+                    ('no_trial_error', 'movement_reply', 'separate_session',
+                     'same_character_map', 'landing_within_01', 'health_preserved',
+                     'safe', 'both_closed'))
+                or trial.get('status') != 'submitted_requires_fresh_login'
+                or verified.get('scope') != 'login/poll/logout only'
+                or trial.get('plan') != f'height_R792_segment{i}_plan.json'
+                or trial.get('error') or trial.get('logout', {}).get('status') != 'closed'
+                or verified.get('status') != 'observed_and_closed'
+                or verified.get('run_id') != f'height_R792_segment{i}_verify'
+                or verified.get('logout', {}).get('status') != 'closed'
+                or not before.get('session_id') or not observation.get('session_id')
+                or before['session_id'] == observation['session_id']
+                or any(s.get('character') != '9' or s.get('map_id') != 1
+                       or s.get('health', 0) <= 0 or s.get('health') != s.get('max_health')
+                       or s.get('ghost') is not False
+                       or s.get('in_combat') is not False for s in (before, observation))):
+            raise ValueError(f'retreat evidence mismatch {i}')
         if any(len(p) != 3 or not all(isinstance(x, (int, float)) and math.isfinite(x) for x in p)
                for p in points):
             raise ValueError(f'invalid retreat coordinates {i}')
+        positions = (before.get('position'), observation.get('position'))
+        if any(not isinstance(p, (list, tuple)) or len(p) != 3
+               or not all(isinstance(x, (int, float)) and math.isfinite(x) for x in p)
+               for p in positions):
+            raise ValueError(f'retreat position evidence missing {i}')
+        landing_error = math.dist(observation['position'], points[-1])
+        movement_reply = trial.get('movement', {}).get('result', {}).get('submittedPosition')
+        if (not isinstance(movement_reply, list) or len(movement_reply) < 3
+                or not all(isinstance(x, (int, float)) and math.isfinite(x)
+                           for x in movement_reply[:3])
+                or math.dist(movement_reply[:3], points[-1]) > .1):
+            raise ValueError(f'retreat movement submission mismatch {i}')
+        if (math.dist(before['position'], points[0]) > .1
+                or landing_error > .1
+                or not isinstance(verdict.get('landing_error'), (float, int))
+                or not math.isfinite(verdict['landing_error'])
+                or abs(landing_error - verdict['landing_error']) > .01):
+            raise ValueError(f'retreat landing evidence mismatch {i}')
         if previous is not None and math.dist(previous, points[0]) > .1:
             raise ValueError(f'retreat corridor discontinuity {i}')
         if any(math.hypot(b[0]-a[0], b[1]-a[1]) > 15
