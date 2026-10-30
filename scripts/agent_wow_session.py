@@ -15,6 +15,7 @@ from pathlib import Path
 
 from wsl_lab_connect import Relay, Server, gateway, root
 from agent_wow_combat_control import estimated_position, fight
+from agent_wow_loot_evidence import item_pushes
 from agent_wow_contract import Observation
 from agent_wow_position import landing_evidence, movement_sequence
 from agent_wow_position_context import PositionContext
@@ -430,29 +431,90 @@ class PureNetworkBackend:
         if self.target is None:
             return {'error': 'no target selected'}
         guid = self.target['guid']
-        opened = self.rpc('bridge.open_loot', {'guid': guid})
+        # Capture the cursor BEFORE dispatch. A reply can race the RPC return;
+        # sampling afterwards would discard the new loot response as "old".
+        open_sequence = self.cursor
+        try:
+            opened = self.rpc('bridge.open_loot', {'guid': guid})
+        except Exception as exc:
+            return {'loot_open_error': f'{type(exc).__name__}: {exc}',
+                    'side_effect_applied': True}
+        if 'error' in opened:
+            return {'loot_open': opened, 'side_effect_applied': True}
         deadline = time.monotonic() + 5
         loot = None
         while time.monotonic() < deadline:
             observed = self.drain()
             replies = [e['loot'] for e in observed['event_log']
-                       if e.get('opcode') == 0x160 and e.get('loot', {}).get('guid') == guid]
+                       if e.get('opcode') == 0x160 and e.get('sequence', 0) > open_sequence
+                       and e.get('loot', {}).get('guid') == guid]
             if replies:
                 loot = replies[-1]
                 break
             time.sleep(.1)
         if loot is None:
-            return {'error': 'loot response missing', 'open_loot': opened}
+            return {'loot_open': opened, 'reason': 'loot response missing',
+                    'side_effect_applied': True}
         takes = []
+        pushes = []
+        inventory_before = {}
+        for obj in self.state['visible_objects']:
+            if obj.get('type_id') in (1, 2) and obj.get('owner_guid') == self.self_guid:
+                entry = obj['entry']
+                inventory_before[entry] = inventory_before.get(entry, 0) + obj['stack_count']
         for item in loot.get('items', []):
-            takes.append({'item': item, 'response': self.rpc('bridge.take_loot', {'slot': item['slot']})})
+            if self.cursor < open_sequence:
+                return {'loot': loot, 'takes': takes, 'confirmed_item_pushes': pushes,
+                        'reason': 'capture cursor regressed; no take dispatched',
+                        'side_effect_applied': True}
+            before_take = self.cursor
+            try:
+                reply = self.rpc('bridge.take_loot', {'slot': item['slot']})
+            except Exception as exc:  # request may have reached the server
+                return {'loot': loot, 'takes': takes, 'confirmed_item_pushes': pushes,
+                        'attempted_take_entries': [take['item']['entry'] for take in takes] + [item['entry']],
+                        'side_effect_applied': True,
+                        'take_error': f'{type(exc).__name__}: {exc}'}
+            takes.append({'item': item, 'response': reply, 'before_sequence': before_take})
             time.sleep(.2)
-            self.drain()
-        released = self.rpc('bridge.release_loot', {'guid': guid})
+            try:
+                observed = self.drain()
+            except Exception as exc:
+                return {'loot': loot, 'takes': takes, 'confirmed_item_pushes': pushes,
+                        'attempted_take_entries': [take['item']['entry'] for take in takes],
+                        'side_effect_applied': True,
+                        'observation_error': f'{type(exc).__name__}: {exc}'}
+            confirmed = item_pushes(observed, before_take, self.self_guid, item['entry'],
+                                    inventory_before.get(item['entry'], 0))
+            pushes.extend(confirmed)
+            if confirmed:
+                inventory_before[item['entry']] = max(p['inventory_count'] for p in confirmed)
+            if 'error' in reply:
+                return {'loot': loot, 'takes': takes, 'confirmed_item_pushes': pushes,
+                        'attempted_take_entries': [take['item']['entry'] for take in takes],
+                        'side_effect_applied': True, 'reason': 'take reply failed; no further requests sent'}
+        try:
+            released = self.rpc('bridge.release_loot', {'guid': guid})
+        except Exception as exc:
+            return {'loot': loot, 'takes': takes, 'confirmed_item_pushes': pushes,
+                    'attempted_take_entries': [take['item']['entry'] for take in takes],
+                    'release_error': f'{type(exc).__name__}: {exc}',
+                    'side_effect_applied': True}
+        if 'error' in released:
+            return {'loot': loot, 'takes': takes, 'confirmed_item_pushes': pushes,
+                    'attempted_take_entries': [take['item']['entry'] for take in takes],
+                    'released': released, 'side_effect_applied': True}
         time.sleep(.2)
-        self.drain()
+        try:
+            self.drain()
+        except Exception as exc:
+            return {'loot': loot, 'takes': takes, 'confirmed_item_pushes': pushes,
+                    'attempted_take_entries': [take['item']['entry'] for take in takes],
+                    'released': released, 'observation_error': f'{type(exc).__name__}: {exc}',
+                    'side_effect_applied': True}
         return {'loot': loot, 'takes': takes, 'released': released,
-                'received': [take['item']['entry'] for take in takes]}
+                'attempted_take_entries': [take['item']['entry'] for take in takes],
+                'confirmed_item_pushes': pushes, 'side_effect_applied': True}
 
     def _do_settle(self, params, timeout):
         state = self.drain()

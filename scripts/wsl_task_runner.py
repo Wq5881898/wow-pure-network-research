@@ -107,8 +107,14 @@ def main(argv=None):
                    expectation=lambda before, after, evidence: evidence.get('outcome') == 'target_dead'
                    and (not options.quest_id or increased(before.to_dict(), after.to_dict(), objective))),
             Action('loot', 'loot', {}, timeout=30, side_effecting=True,
-                   expectation=lambda before, after, evidence: evidence.get('received') is not None
-                   and int(after.item_totals.get(str(options.quest_item_entry), 0))
+                    expectation=lambda before, after, evidence: (
+                        not any(evidence.get(key) for key in
+                                ('take_error', 'observation_error', 'reason', 'release_error',
+                                 'loot_open_error'))
+                        and evidence.get('released', {}).get('result') is not None
+                        and any(push['entry'] == options.quest_item_entry
+                                for push in evidence.get('confirmed_item_pushes', [])))
+                    and int(after.item_totals.get(str(options.quest_item_entry), 0))
                    > int(before.item_totals.get(str(options.quest_item_entry), 0))),
             Action('settle', 'settle', {}, timeout=90, side_effecting=True,
                    expectation=lambda before, after, evidence: after.in_combat is False),
