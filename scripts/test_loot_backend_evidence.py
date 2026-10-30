@@ -64,6 +64,30 @@ class LootBackendEvidenceTests(unittest.TestCase):
         self.assertNotIn('bridge.release_loot', backend.rpc_calls)
 
     @patch('agent_wow_session.time.sleep', return_value=None)
+    def test_confirmed_first_same_entry_does_not_authorize_second_take(self, _sleep):
+        backend = self.backend([{'sequence': 14, 'opcode': 0x166,
+                                'loot': {'player_guid': '9', 'entry': 4862,
+                                         'received': 0, 'created': 0,
+                                         'count': 1, 'inventory_count': 1}}])
+        original_drain = backend.drain.side_effect
+
+        def drain():
+            state = original_drain()
+            for event in state['event_log']:
+                if event.get('opcode') == 0x160:
+                    event['loot']['items'] = [{'slot': 0, 'entry': 4862},
+                                              {'slot': 1, 'entry': 4862}]
+            return state
+
+        backend.drain.side_effect = drain
+        result = backend._do_loot({}, 30)
+        self.assertEqual(backend.rpc_calls.count('bridge.take_loot'), 1)
+        self.assertEqual(result['attempted_take_entries'], [4862])
+        self.assertEqual([p['sequence'] for p in result['confirmed_item_pushes']], [14])
+        self.assertIn('slot attribution unavailable', result['reason'])
+        self.assertNotIn('bridge.release_loot', backend.rpc_calls)
+
+    @patch('agent_wow_session.time.sleep', return_value=None)
     def test_fresh_matching_push_is_separate_evidence(self, _sleep):
         pushes = [
             {'sequence': 9, 'opcode': 0x166, 'loot': {

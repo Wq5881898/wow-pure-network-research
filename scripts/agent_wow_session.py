@@ -467,6 +467,14 @@ class PureNetworkBackend:
                 return {'loot': loot, 'takes': takes, 'confirmed_item_pushes': pushes,
                         'reason': 'capture cursor regressed; no take dispatched',
                         'side_effect_applied': True}
+            if any(take['item']['entry'] == item['entry'] for take in takes):
+                # SMSG_ITEM_PUSH_RESULT identifies an item entry and inventory
+                # total, not the source loot slot. Do not claim a late push for
+                # an earlier same-entry slot as proof of this second take.
+                return {'loot': loot, 'takes': takes, 'confirmed_item_pushes': pushes,
+                        'attempted_take_entries': [take['item']['entry'] for take in takes],
+                        'side_effect_applied': True,
+                        'reason': 'another loot slot has the same entry; slot attribution unavailable'}
             before_take = self.cursor
             try:
                 reply = self.rpc('bridge.take_loot', {'slot': item['slot']})
