@@ -67,6 +67,28 @@ class RetreatBindingEdgeTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 agent_wow_retreat.prepare(temp)
 
+    def test_tampered_before_map_id_rejected(self):
+        with TemporaryDirectory() as temp:
+            folder = Path(temp)
+            fixture(folder)
+            path = folder / 'height_R792_segment3_trial.json'
+            payload = json.loads(path.read_text(encoding='utf-8'))
+            payload['before']['map_id'] = 0
+            path.write_text(json.dumps(payload), encoding='utf-8')
+            with self.assertRaises(ValueError):
+                agent_wow_retreat.prepare(temp)
+
+    def test_tampered_observation_ghost_rejected(self):
+        with TemporaryDirectory() as temp:
+            folder = Path(temp)
+            fixture(folder)
+            path = folder / 'agent_wow_readonly_height_R792_segment3_verify.json'
+            payload = json.loads(path.read_text(encoding='utf-8'))
+            payload['observation']['ghost'] = True
+            path.write_text(json.dumps(payload), encoding='utf-8')
+            with self.assertRaises(ValueError):
+                agent_wow_retreat.prepare(temp)
+
 
 if __name__ == '__main__':
     unittest.main()
