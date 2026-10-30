@@ -13,6 +13,7 @@ def observation(position=(0.0, 0.0, 0.0), health=100, in_combat=True,
                 position_confirmed=True):
     obs = MagicMock()
     obs.to_dict.return_value = {
+        'backend': 'pure-network', 'session_id': 'aw-test',
         'character': '9',
         'map_id': 1,
         'ghost': False,
@@ -20,7 +21,9 @@ def observation(position=(0.0, 0.0, 0.0), health=100, in_combat=True,
         'in_combat': in_combat,
         'position': list(position),
         'context': {'position_evidence':
-                    {'current_position_confirmed': position_confirmed}},
+                    {'current_position_confirmed': position_confirmed,
+                     'source': 'fresh_server_self_movement', 'session_id': 'aw-test',
+                     'movement_sequence': 5, 'login_sequence': 3}},
     }
     return obs
 

@@ -5,16 +5,19 @@ import unittest
 from pathlib import Path
 from unittest.mock import Mock
 
-from agent_wow_retreat import execute
+from agent_wow_retreat import execute, prepare
 
 
 CHUNK = [[[0, 0, 0], [2, 0, 0]]]
 
 
 def sample(hp=108, combat=True, position=None):
-    return {'character': '9', 'map_id': 1, 'health': hp, 'ghost': False,
+    return {'backend': 'pure-network', 'session_id': 'aw-test',
+            'character': '9', 'map_id': 1, 'health': hp, 'ghost': False,
             'in_combat': combat, 'position': position or [0, 0, 0],
-            'context': {'position_evidence': {'current_position_confirmed': True}}}
+            'context': {'position_evidence': {'current_position_confirmed': True,
+                'source': 'fresh_server_self_movement', 'session_id': 'aw-test',
+                'movement_sequence': 5, 'login_sequence': 3}}}
 
 
 def backend(states, reply=None):
@@ -56,12 +59,34 @@ class RetreatControllerTests(unittest.TestCase):
         self.assertEqual(execute(client, CHUNK, self.journal)['status'], 'precondition_failed')
         client.rpc.assert_not_called()
 
+    def test_spoofed_flag_without_fresh_sequence_fails_closed(self):
+        stale = sample()
+        stale['context']['position_evidence']['movement_sequence'] = 3
+        client = backend([stale])
+        self.assertEqual(execute(client, CHUNK, self.journal)['status'], 'precondition_failed')
+        client.rpc.assert_not_called()
+
     def test_preflight_rejects_wrong_location_and_multi_chunk(self):
         client = backend([sample(position=[4, 0, 0])])
         self.assertEqual(execute(client, CHUNK, self.journal)['status'], 'precondition_failed')
         self.assertEqual(client.rpc.call_count, 0)
         with self.assertRaises(ValueError):
             execute(client, CHUNK * 2, self.journal)
+
+    def test_bridge_waypoint_bounds_checked_before_journal(self):
+        client = backend([])
+        for points in ([[[0, 0, 0], [16, 0, 0]]],
+                       [[[0, 0, 0], [1, 0, 4]]]):
+            with self.subTest(points=points), self.assertRaisesRegex(ValueError, 'segment bound'):
+                execute(client, points, self.journal)
+        self.assertFalse(self.journal.exists())
+        client.rpc.assert_not_called()
+
+    def test_archived_six_chunk_plan_matches_bridge_bounds(self):
+        folder = Path(__file__).resolve().parents[1] / 'results/pure_network'
+        chunks = prepare(folder)
+        self.assertEqual(len(chunks), 6)
+        self.assertTrue(all(2 <= len(chunk) <= 128 for chunk in chunks))
 
 
 if __name__ == '__main__':

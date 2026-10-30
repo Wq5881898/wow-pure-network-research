@@ -24,6 +24,9 @@ def prepare(folder):
             raise ValueError(f'invalid retreat coordinates {i}')
         if previous is not None and math.dist(previous, points[0]) > .1:
             raise ValueError(f'retreat corridor discontinuity {i}')
+        if any(math.hypot(b[0]-a[0], b[1]-a[1]) > 15
+               or abs(b[2]-a[2]) > 3 for a, b in zip(points, points[1:])):
+            raise ValueError(f'retreat waypoint exceeds bridge segment bound {i}')
         length = sum(math.dist(a, b) for a, b in zip(points, points[1:]))
         if not .05 <= length <= 20.1 or abs(length - plan['length']) > .1:
             raise ValueError(f'retreat chunk length mismatch {i}')
@@ -43,8 +46,10 @@ def execute(backend, chunks, journal, *, clock=time.monotonic,
     """
     # The mover never receives its own position updates. Do not chain a second
     # chunk from a submitted (not independently observed) first endpoint.
-    if len(chunks) != 1 or limit_seconds <= 0:
+    if len(chunks) != 1 or not 0 < limit_seconds <= 12:
         raise ValueError('one confirmed-start retreat chunk per dispatch')
+    if not isinstance(minimum_health, int) or not 1 <= minimum_health <= 108:
+        raise ValueError('invalid health floor')
     for i, points in enumerate(chunks):
         if not 2 <= len(points) <= 128:
             raise ValueError('invalid retreat point count')
@@ -53,6 +58,9 @@ def execute(backend, chunks, journal, *, clock=time.monotonic,
             raise ValueError('invalid retreat coordinates')
         if i and math.dist(chunks[i-1][-1], points[0]) > .1:
             raise ValueError('retreat corridor discontinuity')
+        if any(math.hypot(b[0]-a[0], b[1]-a[1]) > 15
+               or abs(b[2]-a[2]) > 3 for a, b in zip(points, points[1:])):
+            raise ValueError('retreat waypoint exceeds bridge segment bound')
         length = sum(math.dist(a, b) for a, b in zip(points, points[1:]))
         if not .05 <= length <= 20.1:
             raise ValueError('invalid retreat chunk length')
@@ -78,7 +86,11 @@ def execute(backend, chunks, journal, *, clock=time.monotonic,
         current = sample()
         report['initial'] = current
         position_evidence = current.get('context', {}).get('position_evidence', {})
-        if (position_evidence.get('current_position_confirmed') is not True
+        if (current.get('backend') != 'pure-network'
+                or position_evidence.get('current_position_confirmed') is not True
+                or position_evidence.get('source') != 'fresh_server_self_movement'
+                or position_evidence.get('session_id') != current.get('session_id')
+                or position_evidence.get('movement_sequence', 0) <= position_evidence.get('login_sequence', 0)
                 or math.dist(current['position'], chunks[0][0]) > .1
                 or current['health'] < minimum_health
                 or current.get('in_combat') is not True):
@@ -94,8 +106,13 @@ def execute(backend, chunks, journal, *, clock=time.monotonic,
         deadline = clock() + limit_seconds
         for i, points in enumerate(chunks, 1):
             current = sample()
+            fresh = current.get('context', {}).get('position_evidence', {})
             if (current['health'] < minimum_health or current['in_combat'] is not True
-                    or i == 1 and math.dist(current['position'], points[0]) > .1):
+                    or fresh.get('current_position_confirmed') is not True
+                    or fresh.get('source') != 'fresh_server_self_movement'
+                    or fresh.get('session_id') != current.get('session_id')
+                    or fresh.get('movement_sequence', 0) <= fresh.get('login_sequence', 0)
+                    or math.dist(current['position'], points[0]) > .1):
                 report['status'] = 'state_changed'
                 return report
             if clock() >= deadline:
