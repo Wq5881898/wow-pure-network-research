@@ -23,6 +23,10 @@ class EvidenceInventoryTests(unittest.TestCase):
         self.inventory.write_text(json.dumps({'references': [{**self.ref, **changes}]}), encoding='utf-8')
         return check(self.inventory, self.root)
 
+    def test_new_documents_are_in_approved_scope(self):
+        for number in (76, 80, 81):
+            self.assertTrue(any(path.startswith(f'docs/{number}_') for path in SOURCES))
+
     def test_present_requires_canonical_root_file(self):
         archive = self.root / 'results/pure_network/recovery/example.json'
         archive.parent.mkdir(parents=True)

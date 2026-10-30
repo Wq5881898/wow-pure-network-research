@@ -12,6 +12,9 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCES = {
     'docs/73_792接取持久化与狩猎路线前置核查.md',
     'docs/75_长测试01联合验收与AttackStop解析修复.md',
+    'docs/76_长测试战斗方向审计与低血逃跑边界.md',
+    'docs/80_撤离路线前置检查与走廊边界拒绝.md',
+    'docs/81_撤离走廊边界诊断与中间点候选.md',
     'docs/82_撤离候选非战斗逆向通行验收.md',
 }
 
