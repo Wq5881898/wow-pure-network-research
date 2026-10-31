@@ -174,9 +174,9 @@ class TaskExecutorTests(unittest.TestCase):
         backend = FakeBackend(effects={'a': {}, 'b': {}})
         report = self.executor(backend).run(plan(expectation_a=lambda b, a, e: True,
                                                   expectation_b=lambda b, a, e: True))
-        self.assertEqual(report['status'], 'success')
-        self.assertEqual(backend.calls, ['a', 'b'])
-        self.assertEqual(json.loads(self.checkpoint.read_text())['run_id'], 'run')
+        self.assertEqual(report['status'], 'unknown')
+        self.assertEqual(backend.calls, [])
+        self.assertEqual(json.loads(self.checkpoint.read_text())['run_id'], 'other')
 
     def test_resume_rejects_invalid_checkpoint_without_overwrite_or_dispatch(self):
         original = {'schema': 1, 'run_id': 'other', 'completed': [],
@@ -199,6 +199,19 @@ class TaskExecutorTests(unittest.TestCase):
         self.assertEqual(backend.calls, [])
         self.assertFalse(self.checkpoint.exists())
 
+    def test_existing_run_cannot_resend_by_omitting_resume(self):
+        backend = FakeBackend(timeouts={'a'})
+        action = Action('a', 'noop', side_effecting=True,
+                        expectation=lambda b, a, e: False)
+        self.assertEqual(self.executor(backend).run([action])['status'], 'unknown')
+        original = self.checkpoint.read_bytes()
+        backend.calls.clear()
+        backend.timeouts.clear()
+        report = self.executor(backend).run([action])
+        self.assertEqual(report['status'], 'unknown')
+        self.assertEqual(backend.calls, [])
+        self.assertEqual(self.checkpoint.read_bytes(), original)
+
     def test_checkpoint_flush_failure_preserves_old_bytes_and_blocks_dispatch(self):
         original = b'{"schema":1,"run_id":"run","completed":[],"attempted":[],"records":[]}'
         self.checkpoint.write_bytes(original)
@@ -206,7 +219,7 @@ class TaskExecutorTests(unittest.TestCase):
         executor = self.executor(backend)
         with patch('agent_wow_contract.os.fsync', side_effect=OSError('flush failed')):
             with self.assertRaisesRegex(OSError, 'flush failed'):
-                executor.run([Action('a', 'noop', side_effecting=True)])
+                executor.run([Action('a', 'noop', side_effecting=True)], resume=True)
         self.assertEqual(backend.calls, [])
         self.assertEqual(self.checkpoint.read_bytes(), original)
         self.assertEqual(list(self.folder.glob('checkpoint.json.*.tmp')), [])
@@ -218,7 +231,7 @@ class TaskExecutorTests(unittest.TestCase):
         executor = self.executor(backend)
         with patch('agent_wow_contract.os.replace', side_effect=OSError('replace failed')):
             with self.assertRaisesRegex(OSError, 'replace failed'):
-                executor.run([Action('a', 'noop', side_effecting=True)])
+                executor.run([Action('a', 'noop', side_effecting=True)], resume=True)
         self.assertEqual(backend.calls, [])
         self.assertEqual(self.checkpoint.read_bytes(), original)
 

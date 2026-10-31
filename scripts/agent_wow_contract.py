@@ -92,6 +92,7 @@ class TaskExecutor:
         self.attempted = []
         self._checkpoint_rejected = None
         self._checkpoint_loaded = False
+        self._checkpoint_present = bool(self.checkpoint_path and self.checkpoint_path.exists())
         self._load_checkpoint()
 
     def _load_checkpoint(self):
@@ -133,6 +134,7 @@ class TaskExecutor:
                 handle.flush()
                 os.fsync(handle.fileno())
             os.replace(temporary, self.checkpoint_path)
+            self._checkpoint_present = True
         finally:
             if temporary is not None and temporary.exists():
                 temporary.unlink()
@@ -157,6 +159,11 @@ class TaskExecutor:
         results = []
         started = time.monotonic()
         status = SUCCESS
+        if not resume and self._checkpoint_present:
+            detail = 'run checkpoint already exists; explicit reconciliation/resume required'
+            return {'run_id': self.run_id, 'status': UNKNOWN,
+                    'results': [Result('checkpoint', 'checkpoint', UNKNOWN, detail).to_dict()],
+                    'records': list(self.records), 'completed': list(self.completed)}
         if resume and not self._checkpoint_loaded:
             detail = self._checkpoint_rejected or 'resume checkpoint missing'
             return {'run_id': self.run_id, 'status': UNKNOWN,
