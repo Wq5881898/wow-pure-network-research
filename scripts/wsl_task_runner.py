@@ -63,6 +63,35 @@ def write_json_atomic(path, value):
     temporary.replace(path)
 
 
+def _supervise_until_safe(backend, report, *, budget_seconds=180, poll_interval=0.5):
+    """Keep the session open and polling until the character is safe.
+
+    Used when close() refused because the character was alive and still in
+    combat. The server keeps attacking such a character after the client is
+    gone, so the session must stay open and supervised until the combat
+    clears (or the character dies). Returns a summary of the supervision.
+    """
+    deadline = time.monotonic() + budget_seconds
+    samples = []
+    while time.monotonic() < deadline:
+        try:
+            observation = backend.observe()
+        except Exception as exc:  # noqa: BLE001
+            return {'cleared': False, 'error': f'{type(exc).__name__}: {exc}',
+                    'sample_count': len(samples)}
+        samples.append({'health': observation.health, 'ghost': observation.ghost,
+                        'in_combat': observation.in_combat})
+        if observation.health <= 0 or observation.ghost:
+            return {'cleared': True, 'died': True, 'sample_count': len(samples),
+                    'final': {'health': observation.health, 'ghost': observation.ghost}}
+        if observation.in_combat is not True:
+            return {'cleared': True, 'died': False, 'sample_count': len(samples),
+                    'final': {'health': observation.health, 'in_combat': observation.in_combat}}
+        time.sleep(poll_interval)
+    return {'cleared': False, 'died': False, 'sample_count': len(samples),
+            'reason': 'still in combat after the supervision budget'}
+
+
 def main(argv=None):
     options = parse_options(argv)
     from agent_wow_objective import progress, increased
@@ -233,6 +262,16 @@ def main(argv=None):
         except Exception as exc:  # noqa: BLE001
             report.setdefault('close_error', f'{type(exc).__name__}: {exc}')
             report['close_refused'] = True
+            # The session is still open with the character in combat. Leaving
+            # it unattended is what kills it, so keep polling until the server
+            # clears the combat (or the character dies) and only then close.
+            report['supervised_after_refusal'] = _supervise_until_safe(
+                backend, report)
+            try:
+                backend.close()
+            except Exception as exc:  # noqa: BLE001
+                report.setdefault('close_error_after_supervision',
+                                  f'{type(exc).__name__}: {exc}')
     report['elapsed_s'] = round(time.monotonic() - started, 3)
     write_json_atomic(report_path, report)
     if options.verify_movement_from:

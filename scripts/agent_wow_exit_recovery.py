@@ -119,14 +119,20 @@ def _retreat_out_of_reach(backend, observation):
     origin = getattr(backend, 'outbound_origin', None)
     if not route or not origin:
         return None
+    # The walk out has to actually cover the route: about 12 s per 30-yard
+    # chunk is what the bridge needs, so scale the wait with the route length
+    # instead of using a fixed timeout that ends before the hostile's reach is
+    # left behind.
+    wait_seconds = max(15.0, 14.0 * (len(route) / 30.0))
     try:
         from agent_wow_escape_control import retreat
         result, state = retreat(backend.rpc, backend.drain, route, origin,
-                                wait_seconds=12)
+                                wait_seconds=wait_seconds)
     except Exception as exc:  # noqa: BLE001 - a failed retreat must not abort the exit
         return {'outcome': 'retreat_failed', 'error': f'{type(exc).__name__}: {exc}',
-                'samples': [], 'final': observation}
+                'samples': [], 'final': observation, 'wait_seconds': wait_seconds}
     result['final'] = state['self']
+    result['wait_seconds'] = wait_seconds
     return result
 
 
@@ -138,6 +144,12 @@ def close_session(backend, *, report, budget_seconds=60, poll_interval=0.5,
     The character is never left in combat for the session teardown to decide:
     the exit path waits for the server to clear combat before logging out, and
     it always attempts the logout so the outcome is recorded either way.
+
+    When the escape cannot clear the combat, the session is deliberately NOT
+    closed: the close guard in the backend refuses to tear down a living
+    in-combat character, because the server keeps attacking it after the
+    client is gone (2026-11-01 cs002, esc003). The caller is told to keep
+    the session alive and supervise it instead of abandoning the character.
     """
     observation = backend.observe()
     result = {'initial_self': {'health': observation.health,
@@ -160,6 +172,16 @@ def close_session(backend, *, report, budget_seconds=60, poll_interval=0.5,
         result['status'] = 'unresolved'
         result['reason'] = 'character is dead or a ghost; no logout attempted'
         result['ghost'] = observation.ghost
+        report['finalize'] = result
+        return result
+    if observation.in_combat is True:
+        # The escape failed. Logging out now would be refused by the server
+        # and the character would keep being attacked; tearing the session
+        # down would kill it. Neither is acceptable, so the session stays open
+        # and the caller must keep supervising it.
+        result['status'] = 'still_in_combat'
+        result['reason'] = ('escape did not clear combat; the session must stay open '
+                            'and be supervised - do not log out and do not close')
         report['finalize'] = result
         return result
     result['status'] = 'resolved'
