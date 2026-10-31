@@ -88,6 +88,53 @@ class LootBackendEvidenceTests(unittest.TestCase):
         self.assertNotIn('bridge.release_loot', backend.rpc_calls)
 
     @patch('agent_wow_session.time.sleep', return_value=None)
+    def test_distinct_items_second_push_delayed_stops_after_two_takes(self, _sleep):
+        first_push = {'sequence': 14, 'opcode': 0x166,
+                      'loot': {'player_guid': '9', 'entry': 4862, 'received': 0,
+                               'created': 0, 'count': 1, 'inventory_count': 1}}
+        backend = self.backend([first_push])
+        loot = {'sequence': 11, 'opcode': 0x160,
+                'loot': {'guid': '123', 'items': [{'slot': 0, 'entry': 4862},
+                                                 {'slot': 1, 'entry': 7101}]}}
+        calls = 0
+
+        def drain():
+            nonlocal calls
+            calls += 1
+            backend.cursor = (11, 14, 15)[min(calls - 1, 2)]
+            return {'event_log': [loot] if calls == 1 else [loot, first_push]}
+
+        backend.drain.side_effect = drain
+        result = backend._do_loot({}, 30)
+        self.assertEqual(backend.rpc_calls.count('bridge.take_loot'), 2)
+        self.assertEqual(result['attempted_take_entries'], [4862, 7101])
+        self.assertEqual([push['sequence'] for push in result['confirmed_item_pushes']], [14])
+        self.assertIn('not observed', result['reason'])
+        self.assertNotIn('bridge.release_loot', backend.rpc_calls)
+
+    @patch('agent_wow_session.time.sleep', return_value=None)
+    def test_exhausted_budget_before_next_take_never_dispatches_it(self, _sleep):
+        backend = self.backend([{'sequence': 14, 'opcode': 0x166,
+                                'loot': {'player_guid': '9', 'entry': 4862,
+                                         'received': 0, 'created': 0,
+                                         'count': 1, 'inventory_count': 1}}])
+        loot = {'sequence': 11, 'opcode': 0x160,
+                'loot': {'guid': '123', 'items': [{'slot': 0, 'entry': 4862},
+                                                 {'slot': 1, 'entry': 7101}]}}
+        original = backend.drain.side_effect
+        def drain():
+            state = original()
+            state['event_log'][0] = loot
+            return state
+        backend.drain.side_effect = drain
+        from agent_wow_session import time
+        with patch.object(time, 'monotonic', side_effect=[0, 0, .1, .2, .3, .4, 31]):
+            result = backend._do_loot({}, 30)
+        self.assertEqual(backend.rpc_calls.count('bridge.take_loot'), 1)
+        self.assertIn('before next take', result['reason'])
+        self.assertNotIn('bridge.release_loot', backend.rpc_calls)
+
+    @patch('agent_wow_session.time.sleep', return_value=None)
     def test_fresh_matching_push_is_separate_evidence(self, _sleep):
         pushes = [
             {'sequence': 9, 'opcode': 0x166, 'loot': {

@@ -430,6 +430,10 @@ class PureNetworkBackend:
     def _do_loot(self, params, timeout):
         if self.target is None:
             return {'error': 'no target selected'}
+        deadline = time.monotonic() + min(30, max(0, float(timeout or 0)))
+        if time.monotonic() >= deadline:
+            return {'reason': 'loot action budget exhausted before open',
+                    'side_effect_applied': False}
         guid = self.target['guid']
         # Capture the cursor BEFORE dispatch. A reply can race the RPC return;
         # sampling afterwards would discard the new loot response as "old".
@@ -441,9 +445,9 @@ class PureNetworkBackend:
                     'side_effect_applied': True}
         if 'error' in opened:
             return {'loot_open': opened, 'side_effect_applied': True}
-        deadline = time.monotonic() + 5
+        open_deadline = min(deadline, time.monotonic() + 5)
         loot = None
-        while time.monotonic() < deadline:
+        while time.monotonic() < open_deadline:
             observed = self.drain()
             replies = [e['loot'] for e in observed['event_log']
                        if e.get('opcode') == 0x160 and e.get('sequence', 0) > open_sequence
@@ -463,6 +467,11 @@ class PureNetworkBackend:
                 entry = obj['entry']
                 inventory_before[entry] = inventory_before.get(entry, 0) + obj['stack_count']
         for item in loot.get('items', []):
+            if time.monotonic() >= deadline:
+                return {'loot': loot, 'takes': takes, 'confirmed_item_pushes': pushes,
+                        'attempted_take_entries': [take['item']['entry'] for take in takes],
+                        'side_effect_applied': True,
+                        'reason': 'loot action budget exhausted before next take'}
             if self.cursor < open_sequence:
                 return {'loot': loot, 'takes': takes, 'confirmed_item_pushes': pushes,
                         'reason': 'capture cursor regressed; no take dispatched',
@@ -484,7 +493,7 @@ class PureNetworkBackend:
                         'side_effect_applied': True,
                         'take_error': f'{type(exc).__name__}: {exc}'}
             takes.append({'item': item, 'response': reply, 'before_sequence': before_take})
-            time.sleep(.2)
+            time.sleep(min(.2, max(0, deadline - time.monotonic())))
             try:
                 observed = self.drain()
             except Exception as exc:
@@ -509,6 +518,11 @@ class PureNetworkBackend:
                         'attempted_take_entries': [take['item']['entry'] for take in takes],
                         'side_effect_applied': True,
                         'reason': 'take item push not observed; no further requests sent'}
+        if time.monotonic() >= deadline:
+            return {'loot': loot, 'takes': takes, 'confirmed_item_pushes': pushes,
+                    'attempted_take_entries': [take['item']['entry'] for take in takes],
+                    'side_effect_applied': True,
+                    'reason': 'loot action budget exhausted before release'}
         try:
             released = self.rpc('bridge.release_loot', {'guid': guid})
         except Exception as exc:
@@ -520,7 +534,7 @@ class PureNetworkBackend:
             return {'loot': loot, 'takes': takes, 'confirmed_item_pushes': pushes,
                     'attempted_take_entries': [take['item']['entry'] for take in takes],
                     'released': released, 'side_effect_applied': True}
-        time.sleep(.2)
+        time.sleep(min(.2, max(0, deadline - time.monotonic())))
         try:
             self.drain()
         except Exception as exc:
