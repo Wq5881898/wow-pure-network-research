@@ -178,7 +178,17 @@ class CombatStateMachine:
         self.target_guid = target_guid
         self.escape_path_planned = bool(escape_path_planned)
         self._start_sent = bool(start_sent)
+        # A start given at construction time models a fight that was already
+        # dispatched (and, for the legacy recovery callers, already fought);
+        # it seeds the witnessed-combat authority so a recovery window may
+        # open. An advisory start advised later inside precheck does not set
+        # this: a pending, never-observed start must not be mistaken for a
+        # finished fight (combat-state-002 fix A).
         self._engaged = bool(start_sent)
+        # Whether any sample so far witnessed a confirmed in_combat=True.
+        # This, not _engaged, is what distinguishes "combat ended" from "an
+        # attack is still pending server confirmation".
+        self._combat_observed = bool(start_sent)
         self._state = PRECHECK
         self._reasons = ()
         self._out_of_combat_streak = 0
@@ -217,6 +227,11 @@ class CombatStateMachine:
     def out_of_combat_streak(self):
         return self._out_of_combat_streak
 
+    @property
+    def combat_observed(self):
+        """True once any sample confirmed in_combat=True (ever, across revivals)."""
+        return self._combat_observed
+
     def health_ratio(self, observation):
         if observation.health is None:
             return None
@@ -228,7 +243,16 @@ class CombatStateMachine:
     def step(self, observation):
         """Consume one injected observation; return the decision for it."""
         if self._finished:
-            return StepResult(self._state, DECISION_NONE, self._reasons)
+            if (self._state == DISENGAGED_CONFIRMED
+                    and observation.in_combat is True):
+                # A confirmed disengagement is a claim about a past window,
+                # not a permanent session assertion: a later confirmed
+                # in-combat sample revives tracking (combat-state-002 fix B).
+                # dead/ghost/unresolved stay truly terminal.
+                self._finished = False
+                self._reasons = ()
+            else:
+                return StepResult(self._state, DECISION_NONE, self._reasons)
         reason = self._classify_self(observation)
         if reason is not None:
             return self._self_exit(observation, reason)
@@ -236,6 +260,17 @@ class CombatStateMachine:
             # Latched: no later observation re-enters combat or restarts.
             return self._latched(observation)
         if self._state == PRECHECK and observation.in_combat is not True:
+            if (self._engaged and observation.in_combat is False
+                    and not self._combat_observed):
+                # Pending start: the attack was advised/dispatched but no
+                # sample ever confirmed combat. A confirmed non-combat
+                # sample here does not prove the fight ended — the fight
+                # outcome is still unknown — so it must not open a recovery
+                # window. Wait in engaging (hold_and_observe) for a
+                # confirmed in-combat sample (combat-state-002 fix A).
+                self._state = ENGAGING
+                return StepResult(ENGAGING, DECISION_HOLD_AND_OBSERVE,
+                                  (REASON_OUT_OF_COMBAT_NOT_YET_CONFIRMED,))
             # Precheck is a gate, not a disengagement window: it advises
             # start_attack (or withholds it) without consuming any
             # confirmation budget. Confirmation rules begin once combat
@@ -334,10 +369,17 @@ class CombatStateMachine:
         dispatched by an older controller), unknown-combat samples are
         uninformative and stay in precheck: a pending start could already
         have entered combat, so they must not open a recovery window. A
-        confirmed non-combat sample, however, opens the window immediately:
-        the fight ended before anything was confirmed.
+        confirmed non-combat sample after a pending start is handled by the
+        _combat_observed gate in step()/_advance(), which routes a
+        never-witnessed start to engaging and only a witnessed fight to the
+        recovery window (combat-state-002 fix A). Precheck itself never
+        consumes any confirmation budget.
         """
         if self._engaged:
+            # Reached only via the precheck-re-entry gate (combat_observed):
+            # the fight was witnessed and has ended, so the confirmed
+            # non-combat sample opens the recovery window. Unknown combat
+            # is uninformative and never opens one.
             if opening:
                 return self._observe_disengage(observation)
             return StepResult(PRECHECK, DECISION_NONE,
@@ -353,24 +395,28 @@ class CombatStateMachine:
                               (REASON_HEALTH_UNKNOWN,))
         if health_reason is not None:
             # A known-ratio low before any combat is a precheck failure, not
-            # a combat exit: never advise starting into a known low budget.
-            return self._observe_disengage(observation)
+            # a combat exit: never advise starting into a known low budget,
+            # and never open a recovery window for a fight that was never
+            # observed (combat-state-002 fix A).
+            return StepResult(PRECHECK, DECISION_NONE, (health_reason,))
         target_reason = self._target_gate(observation)
         if target_reason is not None:
-            # Missing/dead/over-range target: no start advice; the confirmed
-            # non-combat sample opens the recovery window instead.
-            return self._observe_disengage(observation)
+            # Missing/dead/over-range target: no start advice, and no
+            # recovery window either — nothing was ever fought here.
+            return StepResult(PRECHECK, DECISION_NONE, (target_reason,))
         self._start_sent = True
         # An advised start is pending: unknown-combat samples must not
-        # re-advise it, and a later confirmed non-combat sample opens the
-        # recovery window (a dispatched start could already have entered
-        # combat). Precheck itself never consumes any confirmation budget.
+        # re-advise it, and confirmed non-combat samples must not open a
+        # recovery window for a fight that was never observed (they route
+        # to engaging instead). Precheck itself never consumes any
+        # confirmation budget.
         self._engaged = True
         return StepResult(PRECHECK, DECISION_START_ATTACK, ())
 
     def _advance(self, observation):
         if observation.in_combat is True:
             self._engaged = True
+            self._combat_observed = True
             self._state = IN_COMBAT
             self._out_of_combat_streak = 0
             self._clean_run_started_at = None
@@ -392,8 +438,10 @@ class CombatStateMachine:
         if observation.in_combat is False:
             if self._state == PRECHECK:
                 # Precheck keeps its own gate bookkeeping: the engaged flag
-                # alone distinguishes "start advised/dispatched" from "never
-                # started", and the window opens on the engaged path.
+                # distinguishes "start advised/dispatched" from "never
+                # started", and only a witnessed combat (_combat_observed)
+                # may open the recovery window; a pending start moves to
+                # engaging instead (combat-state-002 fix A).
                 return self._precheck(observation, opening=True)
             return self._observe_disengage(observation)
 
@@ -419,13 +467,22 @@ class CombatStateMachine:
             self._last_known_health = observation.health
 
     def _observe_disengage(self, observation):
-        if self._state == PRECHECK:
-            # A unit that dispatched an attack but has not yet seen a
-            # confirmed in-combat sample engages on the dispatch, so its
-            # recovery window is the disengagement window.
+        if not self._combat_observed:
+            # Combat was never witnessed: a legacy recovery start injected
+            # via the constructor, a pending advised start, or a precheck
+            # failure must not be mistaken for a finished fight. Wait in
+            # engaging (hold_and_observe); only a confirmed in-combat sample
+            # may open the recovery window (combat-state-002 fix A).
             self._engaged = True
+            self._state = ENGAGING
+            self._out_of_combat_streak = 0
+            self._clean_run_started_at = None
+            return StepResult(ENGAGING, DECISION_HOLD_AND_OBSERVE,
+                              (REASON_OUT_OF_COMBAT_NOT_YET_CONFIRMED,))
         # A health-unknown sample always flags why the window is invalid;
         # it resets the streak and never counts toward confirmation.
+        # Only reachable once combat was witnessed, so the unit is engaged.
+        self._engaged = True
         health_unknown_now = False
         self._state = DISENGAGING
         if observation.in_combat is not False:

@@ -346,11 +346,17 @@ class StartAndEngageTests(unittest.TestCase):
     def test_advisory_start_attack_opens_recovery_on_next_noncombat_sample(self):
         # A pending advisory start could already have entered combat, so a
         # later non-combat sample is handled as recovery, not re-advising.
+        # combat-state-002 correction: while the start was never confirmed
+        # by an in-combat sample, the recovery window opens in *engaging*
+        # (waiting for combat confirmation), not disengaging — a pending,
+        # never-observed start must never reach disengaged_confirmed. The
+        # behavioral core (not re-advising start_attack, no confirmation)
+        # is unchanged.
         sm = CombatStateMachine()
         first = sm.step(obs(now=0.0, in_combat=False))
         self.assertEqual(first.decision, DECISION_START_ATTACK)
         second = sm.step(obs(now=1.0, in_combat=False))
-        self.assertEqual(second.state, DISENGAGING)
+        self.assertEqual(second.state, ENGAGING)
         self.assertNotEqual(second.decision, DECISION_START_ATTACK)
 
     def test_advisory_start_attack_unknown_combat_stays_precheck(self):
