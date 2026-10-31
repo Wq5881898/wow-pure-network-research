@@ -1,0 +1,4287 @@
+{
+  "run_id": "quest792cs002",
+  "objective": {
+    "kind": "kill",
+    "quest": 792,
+    "slot": 0,
+    "entry": 3101,
+    "total": 8
+  },
+  "plan": [
+    {
+      "id": "verify_alive",
+      "kind": "require_alive",
+      "params": {},
+      "timeout": 10,
+      "side_effecting": false
+    },
+    {
+      "id": "select_target",
+      "kind": "select_target",
+      "params": {
+        "entry": 3101,
+        "max_level": 4
+      },
+      "timeout": 15,
+      "side_effecting": false
+    },
+    {
+      "id": "fight",
+      "kind": "fight",
+      "params": {
+        "budget": 35.0
+      },
+      "timeout": 65.0,
+      "side_effecting": true
+    },
+    {
+      "id": "settle",
+      "kind": "settle",
+      "params": {},
+      "timeout": 90,
+      "side_effecting": true
+    },
+    {
+      "id": "logout",
+      "kind": "logout",
+      "params": {},
+      "timeout": 45,
+      "side_effecting": true
+    }
+  ],
+  "position_verification": {
+    "confirmed": true,
+    "source_session": "aw-1352880862",
+    "verification_session": "aw-3609481860",
+    "character": "9",
+    "map": 1,
+    "expected_map": 1,
+    "expected_xyz": [
+      -253.29733,
+      -4316.932,
+      56.30327
+    ],
+    "login_xyz": [
+      -253.29733276367188,
+      -4316.93212890625,
+      56.30326843261719
+    ],
+    "distance": 0.0001289453989665153,
+    "tolerance": 1,
+    "scope": "later login boundary; not live movement acknowledgement"
+  },
+  "verification_login_position": [
+    -253.29733276367188,
+    -4316.93212890625,
+    56.30326843261719
+  ],
+  "run": {
+    "run_id": "quest792cs002",
+    "status": "unknown",
+    "results": [
+      {
+        "action_id": "verify_alive",
+        "kind": "require_alive",
+        "status": "success",
+        "detail": "postcondition observed",
+        "elapsed_ms": 13,
+        "evidence": {}
+      },
+      {
+        "action_id": "select_target",
+        "kind": "select_target",
+        "status": "success",
+        "detail": "postcondition observed",
+        "elapsed_ms": 13,
+        "evidence": {
+          "target": {
+            "guid": "17379391014048896447",
+            "entry": 3101,
+            "health": 83,
+            "level": 4,
+            "position_source": "linear receive-time estimate"
+          }
+        }
+      },
+      {
+        "action_id": "fight",
+        "kind": "fight",
+        "status": "unknown",
+        "detail": "request applied but postcondition not observed",
+        "elapsed_ms": 22011,
+        "evidence": {
+          "outcome": "target_left_melee",
+          "phase": {
+            "outcome": "target_left_melee",
+            "start_sent_once": true,
+            "observations": [
+              {
+                "elapsed_ms": 7,
+                "self_health": 108,
+                "in_combat": false,
+                "target_health": 83,
+                "target_position_estimate": [
+                  -253.94198355827768,
+                  -4318.596773101926,
+                  56.183607564354475
+                ],
+                "position_source": "linear receive-time estimate",
+                "distance_estimate": 1.7891153312680346,
+                "advisory_state": "precheck",
+                "advisory_decision": "start_attack",
+                "advisory_reasons": [],
+                "face": {
+                  "jsonrpc": "2.0",
+                  "id": 1,
+                  "result": {}
+                },
+                "start": {
+                  "jsonrpc": "2.0",
+                  "id": 1,
+                  "result": {}
+                }
+              },
+              {
+                "elapsed_ms": 243,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 73,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": [],
+                "face": {
+                  "jsonrpc": "2.0",
+                  "id": 1,
+                  "result": {}
+                }
+              },
+              {
+                "elapsed_ms": 460,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 73,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 671,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 73,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 879,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 73,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 1094,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 73,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 1305,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 73,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 1520,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 73,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 1732,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 73,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 1949,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 73,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 2158,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 73,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 2368,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 73,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 2587,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 73,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 2801,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 73,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 3018,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 73,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 3231,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 61,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 3451,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 61,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 3688,
+                "self_health": 102,
+                "in_combat": true,
+                "target_health": 61,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 3910,
+                "self_health": 102,
+                "in_combat": true,
+                "target_health": 61,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 4134,
+                "self_health": 102,
+                "in_combat": true,
+                "target_health": 61,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 4346,
+                "self_health": 102,
+                "in_combat": true,
+                "target_health": 61,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 4562,
+                "self_health": 102,
+                "in_combat": true,
+                "target_health": 61,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 4778,
+                "self_health": 102,
+                "in_combat": true,
+                "target_health": 61,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 4995,
+                "self_health": 102,
+                "in_combat": true,
+                "target_health": 61,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 5210,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 61,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 5422,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 61,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 5635,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 61,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 5846,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 61,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 6082,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 6294,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 6515,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 6732,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 6945,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 7158,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 7371,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 7581,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 7798,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 8035,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 8267,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 8483,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 8711,
+                "self_health": 93,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 8921,
+                "self_health": 93,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 9145,
+                "self_health": 93,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 9358,
+                "self_health": 93,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 9582,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 9799,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 10023,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 10233,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 10450,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 10667,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 10902,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 11114,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 11325,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 11540,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 11763,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 11976,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 12193,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 36,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 12405,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 36,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 12624,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 36,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 12847,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 36,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 13056,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 36,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 13275,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 36,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 13484,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 36,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 13696,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 36,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 13911,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 36,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 14135,
+                "self_health": 83,
+                "in_combat": true,
+                "target_health": 36,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 14345,
+                "self_health": 83,
+                "in_combat": true,
+                "target_health": 36,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 14568,
+                "self_health": 83,
+                "in_combat": true,
+                "target_health": 36,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 14781,
+                "self_health": 83,
+                "in_combat": true,
+                "target_health": 36,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 15008,
+                "self_health": 83,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 15223,
+                "self_health": 83,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 15435,
+                "self_health": 83,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 15652,
+                "self_health": 79,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 15874,
+                "self_health": 79,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 16097,
+                "self_health": 79,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 16314,
+                "self_health": 79,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 16531,
+                "self_health": 79,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 16746,
+                "self_health": 79,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 16958,
+                "self_health": 79,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 17180,
+                "self_health": 79,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 17396,
+                "self_health": 79,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 17605,
+                "self_health": 79,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 17844,
+                "self_health": 75,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 18058,
+                "self_health": 75,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 18270,
+                "self_health": 75,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 18480,
+                "self_health": 75,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 18692,
+                "self_health": 75,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 18906,
+                "self_health": 75,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 19125,
+                "self_health": 71,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 19335,
+                "self_health": 71,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 19571,
+                "self_health": 71,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 19784,
+                "self_health": 71,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 20002,
+                "self_health": 71,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 20214,
+                "self_health": 71,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 20439,
+                "self_health": 71,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 20650,
+                "self_health": 71,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 20878,
+                "self_health": 71,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 21097,
+                "self_health": 71,
+                "in_combat": true,
+                "target_health": 11,
+                "target_position_estimate": [
+                  -252.90920808024038,
+                  -4319.242327279976,
+                  56.226757319382486
+                ],
+                "position_source": "linear receive-time estimate",
+                "distance_estimate": 2.343824064707868,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 21309,
+                "self_health": 71,
+                "in_combat": true,
+                "target_health": 11,
+                "target_position_estimate": [
+                  -252.0375989617558,
+                  -4319.385244109309,
+                  56.61914582250238
+                ],
+                "position_source": "linear receive-time estimate",
+                "distance_estimate": 2.7756948637427303,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": [],
+                "face": {
+                  "jsonrpc": "2.0",
+                  "id": 1,
+                  "result": {}
+                }
+              },
+              {
+                "elapsed_ms": 21530,
+                "self_health": 71,
+                "in_combat": true,
+                "target_health": 11,
+                "target_position_estimate": [
+                  -251.3079306408076,
+                  -4319.504887055537,
+                  56.94763419436418
+                ],
+                "position_source": "linear receive-time estimate",
+                "distance_estimate": 3.315420416190621,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": [],
+                "face": {
+                  "jsonrpc": "2.0",
+                  "id": 1,
+                  "result": {}
+                }
+              },
+              {
+                "elapsed_ms": 21747,
+                "self_health": 71,
+                "in_combat": true,
+                "target_health": 11,
+                "target_position_estimate": [
+                  -251.30390255034698,
+                  -4319.505547537288,
+                  56.949447594835505
+                ],
+                "position_source": "linear receive-time estimate",
+                "distance_estimate": 3.3187038095703456,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 21976,
+                "self_health": 71,
+                "in_combat": true,
+                "target_health": 11,
+                "target_position_estimate": [
+                  -249.19356083950586,
+                  -4319.851578045376,
+                  57.899499409837354
+                ],
+                "position_source": "linear receive-time estimate",
+                "distance_estimate": 5.283188489364708,
+                "advisory_state": "target_out_of_range",
+                "advisory_decision": "stop_attack",
+                "advisory_reasons": [
+                  "target_distance_unconfirmed"
+                ]
+              }
+            ],
+            "stop": {
+              "jsonrpc": "2.0",
+              "id": 1,
+              "result": {}
+            },
+            "advisory_final_state": "target_out_of_range"
+          },
+          "side_effect_applied": true,
+          "reference_position": [
+            -253.29733276367188,
+            -4316.93212890625,
+            56.30326843261719
+          ]
+        }
+      }
+    ],
+    "records": [
+      {
+        "action_id": "verify_alive",
+        "kind": "require_alive",
+        "status": "success",
+        "detail": "postcondition observed",
+        "elapsed_ms": 13,
+        "evidence": {},
+        "observation_before": {
+          "backend": "pure-network",
+          "character": "9",
+          "session_id": "aw-3609481860",
+          "sequence": 3,
+          "sampled_at": 1793480645.843241,
+          "map_id": 1,
+          "position": [
+            -253.29733276367188,
+            -4316.93212890625,
+            56.30326843261719
+          ],
+          "health": 108,
+          "health_transmitted": true,
+          "max_health": 108,
+          "ghost": false,
+          "in_combat": false,
+          "level": 3,
+          "quest_log": [
+            {
+              "slot": 0,
+              "quest": 792,
+              "state": 0,
+              "counters": [
+                0,
+                0
+              ]
+            }
+          ],
+          "item_totals": {
+            "6125": 1,
+            "139": 1,
+            "140": 1,
+            "12282": 1,
+            "6948": 1,
+            "7098": 1,
+            "4915": 1,
+            "4867": 10,
+            "7099": 1,
+            "4919": 1,
+            "7101": 4,
+            "2652": 1
+          },
+          "available": [
+            "creature_templates",
+            "errors",
+            "event_log",
+            "events",
+            "field_semantics",
+            "login",
+            "motions",
+            "packets",
+            "scope",
+            "self",
+            "session_id",
+            "status",
+            "visible_objects"
+          ],
+          "context": {
+            "target": null,
+            "position_evidence": {
+              "source": "last server object movement update",
+              "movement_sequence": 3,
+              "current_position_confirmed": false,
+              "submitted_position": [
+                -253.29733276367188,
+                -4316.93212890625,
+                56.30326843261719
+              ],
+              "submitted_position_semantics": "local movement submission, not server acknowledgement"
+            },
+            "position_model": {
+              "identity": [
+                "aw-3609481860",
+                "9",
+                1
+              ],
+              "observed": {
+                "xyz": [
+                  -253.29733276367188,
+                  -4316.93212890625,
+                  56.30326843261719
+                ],
+                "at": 27.822905747,
+                "sequence": 3,
+                "source": "movement",
+                "action_id": ""
+              },
+              "predicted": null,
+              "usable_for_estimation": true,
+              "selected_age_seconds": 0.06290517000000051,
+              "reason": null,
+              "position_confirmed": true,
+              "teleport_evidence": null,
+              "timestamp_semantics": "host first processing of position event, not server time",
+              "correction_coverage": "incomplete; estimate is not authorized for action success"
+            },
+            "login_position": [
+              -253.29733276367188,
+              -4316.93212890625,
+              56.30326843261719
+            ]
+          }
+        },
+        "observation_after": {
+          "backend": "pure-network",
+          "character": "9",
+          "session_id": "aw-3609481860",
+          "sequence": 3,
+          "sampled_at": 1793480645.8636446,
+          "map_id": 1,
+          "position": [
+            -253.29733276367188,
+            -4316.93212890625,
+            56.30326843261719
+          ],
+          "health": 108,
+          "health_transmitted": true,
+          "max_health": 108,
+          "ghost": false,
+          "in_combat": false,
+          "level": 3,
+          "quest_log": [
+            {
+              "slot": 0,
+              "quest": 792,
+              "state": 0,
+              "counters": [
+                0,
+                0
+              ]
+            }
+          ],
+          "item_totals": {
+            "6125": 1,
+            "139": 1,
+            "140": 1,
+            "12282": 1,
+            "6948": 1,
+            "7098": 1,
+            "4915": 1,
+            "4867": 10,
+            "7099": 1,
+            "4919": 1,
+            "7101": 4,
+            "2652": 1
+          },
+          "available": [
+            "creature_templates",
+            "errors",
+            "event_log",
+            "events",
+            "field_semantics",
+            "login",
+            "motions",
+            "packets",
+            "scope",
+            "self",
+            "session_id",
+            "status",
+            "visible_objects"
+          ],
+          "context": {
+            "target": null,
+            "position_evidence": {
+              "source": "last server object movement update",
+              "movement_sequence": 3,
+              "current_position_confirmed": false,
+              "submitted_position": [
+                -253.29733276367188,
+                -4316.93212890625,
+                56.30326843261719
+              ],
+              "submitted_position_semantics": "local movement submission, not server acknowledgement"
+            },
+            "position_model": {
+              "identity": [
+                "aw-3609481860",
+                "9",
+                1
+              ],
+              "observed": {
+                "xyz": [
+                  -253.29733276367188,
+                  -4316.93212890625,
+                  56.30326843261719
+                ],
+                "at": 27.822905747,
+                "sequence": 3,
+                "source": "movement",
+                "action_id": ""
+              },
+              "predicted": null,
+              "usable_for_estimation": true,
+              "selected_age_seconds": 0.083305940999999,
+              "reason": null,
+              "position_confirmed": true,
+              "teleport_evidence": null,
+              "timestamp_semantics": "host first processing of position event, not server time",
+              "correction_coverage": "incomplete; estimate is not authorized for action success"
+            },
+            "login_position": [
+              -253.29733276367188,
+              -4316.93212890625,
+              56.30326843261719
+            ]
+          }
+        }
+      },
+      {
+        "action_id": "select_target",
+        "kind": "select_target",
+        "status": "success",
+        "detail": "postcondition observed",
+        "elapsed_ms": 13,
+        "evidence": {
+          "target": {
+            "guid": "17379391014048896447",
+            "entry": 3101,
+            "health": 83,
+            "level": 4,
+            "position_source": "linear receive-time estimate"
+          }
+        },
+        "observation_before": {
+          "backend": "pure-network",
+          "character": "9",
+          "session_id": "aw-3609481860",
+          "sequence": 3,
+          "sampled_at": 1793480645.888727,
+          "map_id": 1,
+          "position": [
+            -253.29733276367188,
+            -4316.93212890625,
+            56.30326843261719
+          ],
+          "health": 108,
+          "health_transmitted": true,
+          "max_health": 108,
+          "ghost": false,
+          "in_combat": false,
+          "level": 3,
+          "quest_log": [
+            {
+              "slot": 0,
+              "quest": 792,
+              "state": 0,
+              "counters": [
+                0,
+                0
+              ]
+            }
+          ],
+          "item_totals": {
+            "6125": 1,
+            "139": 1,
+            "140": 1,
+            "12282": 1,
+            "6948": 1,
+            "7098": 1,
+            "4915": 1,
+            "4867": 10,
+            "7099": 1,
+            "4919": 1,
+            "7101": 4,
+            "2652": 1
+          },
+          "available": [
+            "creature_templates",
+            "errors",
+            "event_log",
+            "events",
+            "field_semantics",
+            "login",
+            "motions",
+            "packets",
+            "scope",
+            "self",
+            "session_id",
+            "status",
+            "visible_objects"
+          ],
+          "context": {
+            "target": null,
+            "position_evidence": {
+              "source": "last server object movement update",
+              "movement_sequence": 3,
+              "current_position_confirmed": false,
+              "submitted_position": [
+                -253.29733276367188,
+                -4316.93212890625,
+                56.30326843261719
+              ],
+              "submitted_position_semantics": "local movement submission, not server acknowledgement"
+            },
+            "position_model": {
+              "identity": [
+                "aw-3609481860",
+                "9",
+                1
+              ],
+              "observed": {
+                "xyz": [
+                  -253.29733276367188,
+                  -4316.93212890625,
+                  56.30326843261719
+                ],
+                "at": 27.822905747,
+                "sequence": 3,
+                "source": "movement",
+                "action_id": ""
+              },
+              "predicted": null,
+              "usable_for_estimation": true,
+              "selected_age_seconds": 0.1084133790000017,
+              "reason": null,
+              "position_confirmed": true,
+              "teleport_evidence": null,
+              "timestamp_semantics": "host first processing of position event, not server time",
+              "correction_coverage": "incomplete; estimate is not authorized for action success"
+            },
+            "login_position": [
+              -253.29733276367188,
+              -4316.93212890625,
+              56.30326843261719
+            ]
+          }
+        },
+        "observation_after": {
+          "backend": "pure-network",
+          "character": "9",
+          "session_id": "aw-3609481860",
+          "sequence": 3,
+          "sampled_at": 1793480645.9085565,
+          "map_id": 1,
+          "position": [
+            -253.29733276367188,
+            -4316.93212890625,
+            56.30326843261719
+          ],
+          "health": 108,
+          "health_transmitted": true,
+          "max_health": 108,
+          "ghost": false,
+          "in_combat": false,
+          "level": 3,
+          "quest_log": [
+            {
+              "slot": 0,
+              "quest": 792,
+              "state": 0,
+              "counters": [
+                0,
+                0
+              ]
+            }
+          ],
+          "item_totals": {
+            "6125": 1,
+            "139": 1,
+            "140": 1,
+            "12282": 1,
+            "6948": 1,
+            "7098": 1,
+            "4915": 1,
+            "4867": 10,
+            "7099": 1,
+            "4919": 1,
+            "7101": 4,
+            "2652": 1
+          },
+          "available": [
+            "creature_templates",
+            "errors",
+            "event_log",
+            "events",
+            "field_semantics",
+            "login",
+            "motions",
+            "packets",
+            "scope",
+            "self",
+            "session_id",
+            "status",
+            "visible_objects"
+          ],
+          "context": {
+            "target": {
+              "guid": "17379391014048896447",
+              "entry": 3101,
+              "health": 83
+            },
+            "position_evidence": {
+              "source": "last server object movement update",
+              "movement_sequence": 3,
+              "current_position_confirmed": false,
+              "submitted_position": [
+                -253.29733276367188,
+                -4316.93212890625,
+                56.30326843261719
+              ],
+              "submitted_position_semantics": "local movement submission, not server acknowledgement"
+            },
+            "position_model": {
+              "identity": [
+                "aw-3609481860",
+                "9",
+                1
+              ],
+              "observed": {
+                "xyz": [
+                  -253.29733276367188,
+                  -4316.93212890625,
+                  56.30326843261719
+                ],
+                "at": 27.822905747,
+                "sequence": 3,
+                "source": "movement",
+                "action_id": ""
+              },
+              "predicted": null,
+              "usable_for_estimation": true,
+              "selected_age_seconds": 0.12822047299999895,
+              "reason": null,
+              "position_confirmed": true,
+              "teleport_evidence": null,
+              "timestamp_semantics": "host first processing of position event, not server time",
+              "correction_coverage": "incomplete; estimate is not authorized for action success"
+            },
+            "login_position": [
+              -253.29733276367188,
+              -4316.93212890625,
+              56.30326843261719
+            ]
+          }
+        }
+      },
+      {
+        "action_id": "fight",
+        "kind": "fight",
+        "status": "unknown",
+        "detail": "request applied but postcondition not observed",
+        "elapsed_ms": 22011,
+        "evidence": {
+          "outcome": "target_left_melee",
+          "phase": {
+            "outcome": "target_left_melee",
+            "start_sent_once": true,
+            "observations": [
+              {
+                "elapsed_ms": 7,
+                "self_health": 108,
+                "in_combat": false,
+                "target_health": 83,
+                "target_position_estimate": [
+                  -253.94198355827768,
+                  -4318.596773101926,
+                  56.183607564354475
+                ],
+                "position_source": "linear receive-time estimate",
+                "distance_estimate": 1.7891153312680346,
+                "advisory_state": "precheck",
+                "advisory_decision": "start_attack",
+                "advisory_reasons": [],
+                "face": {
+                  "jsonrpc": "2.0",
+                  "id": 1,
+                  "result": {}
+                },
+                "start": {
+                  "jsonrpc": "2.0",
+                  "id": 1,
+                  "result": {}
+                }
+              },
+              {
+                "elapsed_ms": 243,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 73,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": [],
+                "face": {
+                  "jsonrpc": "2.0",
+                  "id": 1,
+                  "result": {}
+                }
+              },
+              {
+                "elapsed_ms": 460,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 73,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 671,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 73,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 879,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 73,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 1094,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 73,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 1305,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 73,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 1520,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 73,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 1732,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 73,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 1949,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 73,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 2158,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 73,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 2368,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 73,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 2587,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 73,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 2801,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 73,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 3018,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 73,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 3231,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 61,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 3451,
+                "self_health": 108,
+                "in_combat": true,
+                "target_health": 61,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 3688,
+                "self_health": 102,
+                "in_combat": true,
+                "target_health": 61,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 3910,
+                "self_health": 102,
+                "in_combat": true,
+                "target_health": 61,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 4134,
+                "self_health": 102,
+                "in_combat": true,
+                "target_health": 61,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 4346,
+                "self_health": 102,
+                "in_combat": true,
+                "target_health": 61,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 4562,
+                "self_health": 102,
+                "in_combat": true,
+                "target_health": 61,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 4778,
+                "self_health": 102,
+                "in_combat": true,
+                "target_health": 61,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 4995,
+                "self_health": 102,
+                "in_combat": true,
+                "target_health": 61,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 5210,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 61,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 5422,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 61,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 5635,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 61,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 5846,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 61,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 6082,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 6294,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 6515,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 6732,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 6945,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 7158,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 7371,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 7581,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 7798,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 8035,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 8267,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 8483,
+                "self_health": 99,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 8711,
+                "self_health": 93,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 8921,
+                "self_health": 93,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 9145,
+                "self_health": 93,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 9358,
+                "self_health": 93,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 9582,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 9799,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 10023,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 10233,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 10450,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 10667,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 10902,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 11114,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 11325,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 11540,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 11763,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 11976,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 49,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 12193,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 36,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 12405,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 36,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 12624,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 36,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 12847,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 36,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 13056,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 36,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 13275,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 36,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 13484,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 36,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 13696,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 36,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 13911,
+                "self_health": 89,
+                "in_combat": true,
+                "target_health": 36,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 14135,
+                "self_health": 83,
+                "in_combat": true,
+                "target_health": 36,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 14345,
+                "self_health": 83,
+                "in_combat": true,
+                "target_health": 36,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 14568,
+                "self_health": 83,
+                "in_combat": true,
+                "target_health": 36,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 14781,
+                "self_health": 83,
+                "in_combat": true,
+                "target_health": 36,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 15008,
+                "self_health": 83,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 15223,
+                "self_health": 83,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 15435,
+                "self_health": 83,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 15652,
+                "self_health": 79,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 15874,
+                "self_health": 79,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 16097,
+                "self_health": 79,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 16314,
+                "self_health": 79,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 16531,
+                "self_health": 79,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 16746,
+                "self_health": 79,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 16958,
+                "self_health": 79,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 17180,
+                "self_health": 79,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 17396,
+                "self_health": 79,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 17605,
+                "self_health": 79,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 17844,
+                "self_health": 75,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 18058,
+                "self_health": 75,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 18270,
+                "self_health": 75,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 18480,
+                "self_health": 75,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 18692,
+                "self_health": 75,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 18906,
+                "self_health": 75,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 19125,
+                "self_health": 71,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 19335,
+                "self_health": 71,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 19571,
+                "self_health": 71,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 19784,
+                "self_health": 71,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 20002,
+                "self_health": 71,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 20214,
+                "self_health": 71,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 20439,
+                "self_health": 71,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 20650,
+                "self_health": 71,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 20878,
+                "self_health": 71,
+                "in_combat": true,
+                "target_health": 23,
+                "target_position_estimate": [
+                  -252.9338836669922,
+                  -4319.23828125,
+                  56.21564865112305
+                ],
+                "position_source": "server stop",
+                "distance_estimate": 2.3362600678370504,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 21097,
+                "self_health": 71,
+                "in_combat": true,
+                "target_health": 11,
+                "target_position_estimate": [
+                  -252.90920808024038,
+                  -4319.242327279976,
+                  56.226757319382486
+                ],
+                "position_source": "linear receive-time estimate",
+                "distance_estimate": 2.343824064707868,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 21309,
+                "self_health": 71,
+                "in_combat": true,
+                "target_health": 11,
+                "target_position_estimate": [
+                  -252.0375989617558,
+                  -4319.385244109309,
+                  56.61914582250238
+                ],
+                "position_source": "linear receive-time estimate",
+                "distance_estimate": 2.7756948637427303,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": [],
+                "face": {
+                  "jsonrpc": "2.0",
+                  "id": 1,
+                  "result": {}
+                }
+              },
+              {
+                "elapsed_ms": 21530,
+                "self_health": 71,
+                "in_combat": true,
+                "target_health": 11,
+                "target_position_estimate": [
+                  -251.3079306408076,
+                  -4319.504887055537,
+                  56.94763419436418
+                ],
+                "position_source": "linear receive-time estimate",
+                "distance_estimate": 3.315420416190621,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": [],
+                "face": {
+                  "jsonrpc": "2.0",
+                  "id": 1,
+                  "result": {}
+                }
+              },
+              {
+                "elapsed_ms": 21747,
+                "self_health": 71,
+                "in_combat": true,
+                "target_health": 11,
+                "target_position_estimate": [
+                  -251.30390255034698,
+                  -4319.505547537288,
+                  56.949447594835505
+                ],
+                "position_source": "linear receive-time estimate",
+                "distance_estimate": 3.3187038095703456,
+                "advisory_state": "in_combat",
+                "advisory_decision": "continue_attack",
+                "advisory_reasons": []
+              },
+              {
+                "elapsed_ms": 21976,
+                "self_health": 71,
+                "in_combat": true,
+                "target_health": 11,
+                "target_position_estimate": [
+                  -249.19356083950586,
+                  -4319.851578045376,
+                  57.899499409837354
+                ],
+                "position_source": "linear receive-time estimate",
+                "distance_estimate": 5.283188489364708,
+                "advisory_state": "target_out_of_range",
+                "advisory_decision": "stop_attack",
+                "advisory_reasons": [
+                  "target_distance_unconfirmed"
+                ]
+              }
+            ],
+            "stop": {
+              "jsonrpc": "2.0",
+              "id": 1,
+              "result": {}
+            },
+            "advisory_final_state": "target_out_of_range"
+          },
+          "side_effect_applied": true,
+          "reference_position": [
+            -253.29733276367188,
+            -4316.93212890625,
+            56.30326843261719
+          ]
+        },
+        "observation_before": {
+          "backend": "pure-network",
+          "character": "9",
+          "session_id": "aw-3609481860",
+          "sequence": 3,
+          "sampled_at": 1793480645.932536,
+          "map_id": 1,
+          "position": [
+            -253.29733276367188,
+            -4316.93212890625,
+            56.30326843261719
+          ],
+          "health": 108,
+          "health_transmitted": true,
+          "max_health": 108,
+          "ghost": false,
+          "in_combat": false,
+          "level": 3,
+          "quest_log": [
+            {
+              "slot": 0,
+              "quest": 792,
+              "state": 0,
+              "counters": [
+                0,
+                0
+              ]
+            }
+          ],
+          "item_totals": {
+            "6125": 1,
+            "139": 1,
+            "140": 1,
+            "12282": 1,
+            "6948": 1,
+            "7098": 1,
+            "4915": 1,
+            "4867": 10,
+            "7099": 1,
+            "4919": 1,
+            "7101": 4,
+            "2652": 1
+          },
+          "available": [
+            "creature_templates",
+            "errors",
+            "event_log",
+            "events",
+            "field_semantics",
+            "login",
+            "motions",
+            "packets",
+            "scope",
+            "self",
+            "session_id",
+            "status",
+            "visible_objects"
+          ],
+          "context": {
+            "target": {
+              "guid": "17379391014048896447",
+              "entry": 3101,
+              "health": 83
+            },
+            "position_evidence": {
+              "source": "last server object movement update",
+              "movement_sequence": 3,
+              "current_position_confirmed": false,
+              "submitted_position": [
+                -253.29733276367188,
+                -4316.93212890625,
+                56.30326843261719
+              ],
+              "submitted_position_semantics": "local movement submission, not server acknowledgement"
+            },
+            "position_model": {
+              "identity": [
+                "aw-3609481860",
+                "9",
+                1
+              ],
+              "observed": {
+                "xyz": [
+                  -253.29733276367188,
+                  -4316.93212890625,
+                  56.30326843261719
+                ],
+                "at": 27.822905747,
+                "sequence": 3,
+                "source": "movement",
+                "action_id": ""
+              },
+              "predicted": null,
+              "usable_for_estimation": true,
+              "selected_age_seconds": 0.152196012000001,
+              "reason": null,
+              "position_confirmed": true,
+              "teleport_evidence": null,
+              "timestamp_semantics": "host first processing of position event, not server time",
+              "correction_coverage": "incomplete; estimate is not authorized for action success"
+            },
+            "login_position": [
+              -253.29733276367188,
+              -4316.93212890625,
+              56.30326843261719
+            ]
+          }
+        },
+        "observation_after": {
+          "backend": "pure-network",
+          "character": "9",
+          "session_id": "aw-3609481860",
+          "sequence": 150,
+          "sampled_at": 1793480667.9636598,
+          "map_id": 1,
+          "position": [
+            -253.29733276367188,
+            -4316.93212890625,
+            56.30326843261719
+          ],
+          "health": 71,
+          "health_transmitted": true,
+          "max_health": 108,
+          "ghost": false,
+          "in_combat": true,
+          "level": 3,
+          "quest_log": [
+            {
+              "slot": 0,
+              "quest": 792,
+              "state": 0,
+              "counters": [
+                0,
+                0
+              ]
+            }
+          ],
+          "item_totals": {
+            "6125": 1,
+            "139": 1,
+            "140": 1,
+            "12282": 1,
+            "6948": 1,
+            "7098": 1,
+            "4915": 1,
+            "4867": 10,
+            "7099": 1,
+            "4919": 1,
+            "7101": 4,
+            "2652": 1
+          },
+          "available": [
+            "creature_templates",
+            "errors",
+            "event_log",
+            "events",
+            "field_semantics",
+            "login",
+            "motions",
+            "packets",
+            "scope",
+            "self",
+            "session_id",
+            "status",
+            "visible_objects"
+          ],
+          "context": {
+            "target": {
+              "guid": "17379391014048896447",
+              "entry": 3101,
+              "health": 83
+            },
+            "position_evidence": {
+              "source": "last server object movement update",
+              "movement_sequence": 3,
+              "current_position_confirmed": false,
+              "submitted_position": [
+                -253.29733276367188,
+                -4316.93212890625,
+                56.30326843261719
+              ],
+              "submitted_position_semantics": "local movement submission, not server acknowledgement"
+            },
+            "position_model": {
+              "identity": [
+                "aw-3609481860",
+                "9",
+                1
+              ],
+              "observed": {
+                "xyz": [
+                  -253.29733276367188,
+                  -4316.93212890625,
+                  56.30326843261719
+                ],
+                "at": 27.822905747,
+                "sequence": 3,
+                "source": "movement",
+                "action_id": ""
+              },
+              "predicted": null,
+              "usable_for_estimation": false,
+              "selected_age_seconds": 22.183329285,
+              "reason": null,
+              "position_confirmed": false,
+              "teleport_evidence": null,
+              "timestamp_semantics": "host first processing of position event, not server time",
+              "correction_coverage": "incomplete; estimate is not authorized for action success"
+            },
+            "login_position": [
+              -253.29733276367188,
+              -4316.93212890625,
+              56.30326843261719
+            ]
+          }
+        }
+      },
+      {
+        "action_id": "approach",
+        "kind": "approach",
+        "status": "success",
+        "detail": "submitted endpoint confirmed by fresh-session login",
+        "elapsed_ms": 0,
+        "evidence": {
+          "reached": true,
+          "confirmed_by": "fresh_session_login",
+          "submitted_position": [
+            -253.29733,
+            -4316.932,
+            56.30327
+          ],
+          "verification_login_position": [
+            -253.29733276367188,
+            -4316.93212890625,
+            56.30326843261719
+          ],
+          "distance": 0.0001289453989665153,
+          "scope": "cross-session boundary confirmation"
+        },
+        "observation_before": {},
+        "observation_after": {}
+      }
+    ],
+    "completed": [
+      "verify_alive",
+      "select_target"
+    ]
+  },
+  "final_observation": {
+    "backend": "pure-network",
+    "character": "9",
+    "session_id": "aw-3609481860",
+    "sequence": 150,
+    "sampled_at": 1793480668.0436168,
+    "map_id": 1,
+    "position": [
+      -253.29733276367188,
+      -4316.93212890625,
+      56.30326843261719
+    ],
+    "health": 71,
+    "health_transmitted": true,
+    "max_health": 108,
+    "ghost": false,
+    "in_combat": true,
+    "level": 3,
+    "quest_log": [
+      {
+        "slot": 0,
+        "quest": 792,
+        "state": 0,
+        "counters": [
+          0,
+          0
+        ]
+      }
+    ],
+    "item_totals": {
+      "6125": 1,
+      "139": 1,
+      "140": 1,
+      "12282": 1,
+      "6948": 1,
+      "7098": 1,
+      "4915": 1,
+      "4867": 10,
+      "7099": 1,
+      "4919": 1,
+      "7101": 4,
+      "2652": 1
+    },
+    "available": [
+      "creature_templates",
+      "errors",
+      "event_log",
+      "events",
+      "field_semantics",
+      "login",
+      "motions",
+      "packets",
+      "scope",
+      "self",
+      "session_id",
+      "status",
+      "visible_objects"
+    ],
+    "context": {
+      "target": {
+        "guid": "17379391014048896447",
+        "entry": 3101,
+        "health": 83
+      },
+      "position_evidence": {
+        "source": "last server object movement update",
+        "movement_sequence": 3,
+        "current_position_confirmed": false,
+        "submitted_position": [
+          -253.29733276367188,
+          -4316.93212890625,
+          56.30326843261719
+        ],
+        "submitted_position_semantics": "local movement submission, not server acknowledgement"
+      },
+      "position_model": {
+        "identity": [
+          "aw-3609481860",
+          "9",
+          1
+        ],
+        "observed": {
+          "xyz": [
+            -253.29733276367188,
+            -4316.93212890625,
+            56.30326843261719
+          ],
+          "at": 27.822905747,
+          "sequence": 3,
+          "source": "movement",
+          "action_id": ""
+        },
+        "predicted": null,
+        "usable_for_estimation": false,
+        "selected_age_seconds": 22.263281089000003,
+        "reason": null,
+        "position_confirmed": false,
+        "teleport_evidence": null,
+        "timestamp_semantics": "host first processing of position event, not server time",
+        "correction_coverage": "incomplete; estimate is not authorized for action success"
+      },
+      "login_position": [
+        -253.29733276367188,
+        -4316.93212890625,
+        56.30326843261719
+      ]
+    }
+  },
+  "finalize": {
+    "status": "unresolved",
+    "reason": "not alive and out of combat",
+    "ghost": false
+  },
+  "elapsed_s": 43.844
+}
