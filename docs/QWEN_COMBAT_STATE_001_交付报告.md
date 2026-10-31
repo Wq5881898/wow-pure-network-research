@@ -198,4 +198,15 @@ Ran 283 tests in 38.242s
 OK (skipped=11)
 ```
 
-- 修正提交：56492dd（仅报告+状态机+单测 3 文件，见第 8 节）。规格探针 S1–S7 全部有对应测试并通过：S1/S3=`test_clean_run_spanning_dwell_confirms`/`test_clean_run_can_confirm_after_its_own_span`；S2/S4/S5=`test_dwell_restarts_after_health_drop/unknown_health/unknown_in_combat`；S6/S7=`test_precheck_unknown_combat_advises_start_attack`/`test_precheck_start_attack_is_reachable`。基线 225 项既有测试断言零删改（`git diff --name-only 0793a0c -- scripts/` 仅含本任务文件）。
+- 修正提交：56492dd（仅报告+状态机+单测 3 文件，见第 8 节）。规格探针 S1–S7 全部有对应测试并通过：S1/S3=`test_clean_run_spanning_dwell_confirms`/`test_clean_run_can_confirm_after_its_own_span`；S2/S4/S5=`test_dwell_restarts_after_health_drop/unknown_health/unknown_in_combat`；S6/S7=`test_precheck_unknown_combat_does_not_advise_start_attack`/`test_precheck_start_attack_is_reachable`。基线 225 项既有测试断言零删改（`git diff --name-only 0793a0c -- scripts/` 仅含本任务文件）。
+
+## 10. 主控最终验收（2026-10-31）
+
+主控在合入前独立复验，未采信交付方自报数字：
+
+- **测试**：Windows 全量 283 项通过、skipped=11（=基线 225 + 新增 58）；WSL 全量 283 项通过、无跳过。
+- **`health_transmitted` 正确性**：主控对全部 379 个存档 trace 逐包重放，逐样本核对 `summary.health_transmitted` 与原始字段 24 是否存在，**379 个 trace 零不一致**；`run40` 的 health 确认未下发且被判为未知而非死亡。
+- **独立对抗探针**（主控自写，非交付方测试）：S1–S7 规格全部成立；低血 latch 后连续 5 次采样**无一次**产出 `start_attack`；`start_attack` 在 precheck 下**确实可达**（穷举 2000 条观测路径可复现），因此低血 latch 断言**非空转**；`in_combat` 未知时**不授权** `start_attack`，与 `agent_wow_effect_gate.attempt_gate`／`wsl_task_runner.alive` 的既有纪律一致。
+- **变更面**：`git diff --name-only 0793a0c -- scripts/` 仅含本任务文件，**基线 225 项既有测试断言零删改**；`results/` 零改动；`.cache` 未入库。
+- **主控侧修正**：`test_precheck_unknown_combat_advises_start_attack` 改名为 `test_precheck_unknown_combat_does_not_advise_start_attack`（第二轮修正后该用例断言的是"未知战斗状态**不得**建议 start_attack"，原名与断言相反，会误导后续读者）；报告第 9 节的用例名同步更新。**未改动任何断言逻辑。**
+- **仍未证明**：本轮零实机。283 项离线测试**不等于**战斗恢复在游戏中成功；最短停留 2.0 秒、确认次数 3、max_range 5.0 码均未实机标定；强制接入（真正否决派发）不在本轮范围内，留待主控单独决定与验证。

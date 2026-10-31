@@ -12,7 +12,7 @@ from pathlib import Path
 
 
 def run_worker(directory, log_dir, prompt, permissions, model, *, timeout=120,
-               executable='opencode'):
+               executable='opencode', session=None):
     directory = Path(directory).resolve()
     log_dir = Path(log_dir).resolve()
     if not directory.is_dir() or not (directory / '.git').exists():
@@ -25,8 +25,12 @@ def run_worker(directory, log_dir, prompt, permissions, model, *, timeout=120,
     if not 1 <= timeout <= 600:
         raise ValueError('timeout must be 1..600 seconds')
     command = [executable, 'run', '--pure', '--dir', str(directory), '--model', model,
-               '--format', 'json', '--title', 'Bounded offline worker',
-               Path(prompt).read_text(encoding='utf-8')]
+               '--format', 'json', '--title', 'Bounded offline worker']
+    # A bounded task may exceed one budget. Continuing the same session keeps
+    # the worker's own context instead of restarting from the task book.
+    if session:
+        command.extend(['--session', session])
+    command.append(Path(prompt).read_text(encoding='utf-8'))
     env = os.environ.copy()
     env['OPENCODE_CONFIG_CONTENT'] = json.dumps(config, ensure_ascii=False)
     started = time.monotonic()
@@ -59,6 +63,8 @@ if __name__ == '__main__':
     parser.add_argument('--permissions', required=True, type=Path)
     parser.add_argument('--model', required=True)
     parser.add_argument('--timeout', type=int, default=120)
+    parser.add_argument('--session', help='continue an existing worker session')
     args = parser.parse_args()
     print(json.dumps(run_worker(args.clone, args.log_dir, args.prompt,
-                                args.permissions, args.model, timeout=args.timeout)))
+                                args.permissions, args.model, timeout=args.timeout,
+                                session=args.session)))

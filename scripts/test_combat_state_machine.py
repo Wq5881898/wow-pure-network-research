@@ -330,7 +330,7 @@ class StartAndEngageTests(unittest.TestCase):
         self.assertEqual(step.state, IN_COMBAT)
         self.assertEqual(step.decision, DECISION_CONTINUE_ATTACK)
 
-    def test_precheck_unknown_combat_advises_start_attack(self):
+    def test_precheck_unknown_combat_does_not_advise_start_attack(self):
         # Second-round spec: unknown combat never authorizes an action (S6);
         # only a confirmed non-combat sample may advise start_attack (S7).
         sm = CombatStateMachine()
