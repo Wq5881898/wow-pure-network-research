@@ -192,11 +192,38 @@ class PureNetworkBackend:
         self.state = self.drain()
         return self
 
-    def close(self):
+    def close(self, force=False):
+        """Close the session. Refuses to tear down a living in-combat character.
+
+        A character that is still flagged in combat keeps being attacked by
+        the server after the client is gone, and it dies there: the 2026-11-01
+        runs cs002 and esc003 both ended that way. The refusal is a hard
+        constraint, not a convention, so a caller that forgets to resolve the
+        combat state cannot kill the character by accident.
+
+        ``force=True`` is the explicit escape hatch and is recorded.
+        """
+        in_combat = None
+        if self.state:
+            me = self.state.get('self') or {}
+            in_combat = me.get('in_combat')
+            alive = (me.get('health') or 0) > 0 and not me.get('ghost')
+        else:
+            alive = False
+        if alive and in_combat is True and not force:
+            self.result['close_refused'] = ('character is alive and still in combat; '
+                                            'refusing to tear down the session')
+            self._write_trace(capture_complete=False)
+            raise RuntimeError('refusing to close: character is alive and still in combat')
+        if force and alive and in_combat is True:
+            self.result['close_forced_in_combat'] = True
         if self.session:
             self.session.close()
+        self._write_trace(capture_complete=self.result.get('status') == 'PASS')
+
+    def _write_trace(self, capture_complete):
         trace = {'schema': 1, 'session_id': self.session_id, 'self_guid': self.self_guid,
-                 'capture_complete': self.result.get('status') == 'PASS',
+                 'capture_complete': capture_complete,
                  'scope': 'bridge packets polled before logout; not entire session', 'packets': self.packets}
         self.trace_path.write_text(json.dumps(trace, indent=2) + '\n')
 

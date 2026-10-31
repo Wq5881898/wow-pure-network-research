@@ -225,9 +225,14 @@ def main(argv=None):
                 report['finalize'] = {'error': f'{type(close_exc).__name__}: {close_exc}'}
     finally:
         try:
+            # close() refuses to tear down a living character that is still in
+            # combat: the server keeps attacking it after the client is gone
+            # and it dies there (2026-11-01 cs002, esc003). The refusal is
+            # recorded rather than raised past the report.
             backend.close()
         except Exception as exc:  # noqa: BLE001
             report.setdefault('close_error', f'{type(exc).__name__}: {exc}')
+            report['close_refused'] = True
     report['elapsed_s'] = round(time.monotonic() - started, 3)
     write_json_atomic(report_path, report)
     if options.verify_movement_from:
