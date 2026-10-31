@@ -155,33 +155,21 @@ OK
 - 未做：真实时钟下的 settle 行为差异实验、run40 场景的强制接入端到端实验、跨等级升级瞬间（max_health 变化）的比例阈值连续性实机验证。
 - 任务外问题（仅建议，未顺手改）：`wsl_bridge_probe.py`/`verify_789_chain.py` 等 WSL 侧脚本若要用 A 项语义需自行适配；`docs/88` 的只读契约结论未受本轮影响。
 
-## 8. Git status 与最终 commit
+## 8. Git 提交历史
 
-提交前 `git status --short`（全部为本任务允许文件，无 `.cache`、无 `results/` 变更）：
-```
- M scripts/agent_wow_combat_control.py
- M scripts/agent_wow_contract.py
- M scripts/agent_wow_session.py
- M scripts/agent_wow_session_supervisor.py
- M scripts/agent_wow_worldstate.py
-?? scripts/agent_wow_combat_state_machine.py
-?? scripts/replay_combat_state_machine.py
-?? scripts/test_combat_state_machine.py
-?? scripts/test_combat_state_machine_replay.py
-```
-`git diff --check`：退出码 0，无输出。
-
-最终 commit 与提交后状态（提交后追加，见 `.cache/combat-state-001/git_after_commit.txt`）：
-
-最终 commit（分支 worker/combat-state-001，提交后 git status 为 clean）：
+本任务在分支 worker/combat-state-001 上共两个提交（第一轮交付 + 第二轮修正），交付后 git status --short 为空（clean）：
 
 `
-70da10c combat-state-001: 战斗恢复状态机整块交付（低血退出、目标离距、脱战确认）
+56492dd combat-state-001 第二轮修正：干净段独占 dwell 起点、start_attack 需确认脱战
+42459ce combat-state-001: 战斗恢复状态机独立交互（低血退出、目标距离、脱战确认）
 0793a0c docs: hand off combat recovery state machine as one bounded worker task
-72f1d49 docs: add controller acceptance notes for reliability task
 `
 
-提交后 git status --short：(clean)。git diff --check 退出码 0。提交信息以 UTF-8 字节存于 Git（Windows 控制台按 GBK 渲染会显示乱码，git log 原始字节已核验为正确 UTF-8）。未 push、未 merge/rebase/reset/clean；.cache 未入库。
+- 42459ce 提交前 git status --short 全部为本任务相关文件（不含 .cache，无 
+esults/ 改动），git diff --check 退出码 0；提交后状态见 .cache/combat-state-001/git_after_commit.txt。
+- 56492dd（第二轮修正）仅含 3 个文件：docs/QWEN_COMBAT_STATE_001_交付报告.md、scripts/agent_wow_combat_state_machine.py、scripts/test_combat_state_machine.py；提交前 git diff --check 退出码 0；提交后 git status --short 为空，完整输出见 .cache/combat-state-001/git_after_round3_commit.txt。
+
+提交信息以 UTF-8 字节存储于 Git；Windows 控制台按 GBK 渲染显示乱码，git log 原始字节已核对为正确 UTF-8。未 push，未 merge/rebase/reset/clean，.cache 未入库。
 
 ## 9. 主控验收发现的问题与修正（两轮）
 
@@ -210,4 +198,4 @@ Ran 283 tests in 38.242s
 OK (skipped=11)
 ```
 
-- 规格探针 S1–S7 全部有对应测试并通过：S1/S3=`test_clean_run_spanning_dwell_confirms`/`test_clean_run_can_confirm_after_its_own_span`；S2/S4/S5=`test_dwell_restarts_after_health_drop/unknown_health/unknown_in_combat`；S6/S7=`test_precheck_unknown_combat_advises_start_attack`/`test_precheck_start_attack_is_reachable`。基线 225 项既有测试断言零删改（`git diff --name-only 0793a0c -- scripts/` 仅含本任务文件）。
+- 修正提交：56492dd（仅报告+状态机+单测 3 文件，见第 8 节）。规格探针 S1–S7 全部有对应测试并通过：S1/S3=`test_clean_run_spanning_dwell_confirms`/`test_clean_run_can_confirm_after_its_own_span`；S2/S4/S5=`test_dwell_restarts_after_health_drop/unknown_health/unknown_in_combat`；S6/S7=`test_precheck_unknown_combat_advises_start_attack`/`test_precheck_start_attack_is_reachable`。基线 225 项既有测试断言零删改（`git diff --name-only 0793a0c -- scripts/` 仅含本任务文件）。
