@@ -79,6 +79,25 @@ class ExitRecoveryTests(unittest.TestCase):
         self.assertIsNotNone(result['reason'])
         self.assertEqual(set(backend.requests), {'observe'})
 
+    def test_resolve_stops_at_the_health_floor(self):
+        # Waiting for the server to clear combat must never be what kills the
+        # character: below the floor the wait aborts and says so.
+        backend = FakeBackend([Observation(20, in_combat=True)])
+        result = resolve_combat_before_exit(backend, budget_seconds=30,
+                                            min_health=25, sleep=sleeper,
+                                            clock=Clock())
+        self.assertFalse(result['combat_cleared'])
+        self.assertIn('health floor', result['reason'])
+        self.assertEqual(set(backend.requests), {'observe'})
+
+    def test_resolve_does_not_abort_above_the_health_floor(self):
+        backend = FakeBackend([Observation(71, in_combat=True),
+                               Observation(71, in_combat=False)])
+        result = resolve_combat_before_exit(backend, budget_seconds=30,
+                                            min_health=25, sleep=sleeper,
+                                            clock=Clock())
+        self.assertTrue(result['combat_cleared'])
+
     def test_close_session_logs_out_when_already_out_of_combat(self):
         backend = FakeBackend([Observation(108, in_combat=False)])
         report = {}

@@ -22,12 +22,18 @@ def living(observation):
 
 
 def resolve_combat_before_exit(backend, *, budget_seconds=60, poll_interval=0.5,
-                                sleep=time.sleep, clock=time.monotonic):
+                                min_health=25, sleep=time.sleep,
+                                clock=time.monotonic):
     """Wait out of combat without re-engaging.
 
     Only observation requests are sent. No attack, no loot, no movement: a
     recovery branch must not start a second fight while the first one is
     unresolved.
+
+    ``min_health`` is a safety floor, not a target: waiting for the server to
+    clear combat must never be the thing that kills the character. Measured
+    aggro lapse is 1-3 s, so a floor well above zero aborts the wait early
+    instead of watching the character die while standing still.
     """
     started = clock()
     samples = []
@@ -37,7 +43,8 @@ def resolve_combat_before_exit(backend, *, budget_seconds=60, poll_interval=0.5,
     if observation.in_combat is not True:
         return {'combat_cleared': True, 'samples': samples,
                 'elapsed_s': round(clock() - started, 3),
-                'final': observation, 'requests': 'observation only'}
+                'final': observation, 'requests': 'observation only',
+                'reason': None}
     while clock() - started < budget_seconds:
         sleep(poll_interval)
         observation = backend.observe()
@@ -45,6 +52,13 @@ def resolve_combat_before_exit(backend, *, budget_seconds=60, poll_interval=0.5,
                         'in_combat': observation.in_combat})
         if observation.in_combat is not True:
             break
+        if observation.health is not None and observation.health <= min_health:
+            # Standing still until the aggro lapses must not be what kills the
+            # character. Stop waiting and report the danger explicitly.
+            return {'combat_cleared': False, 'samples': samples,
+                    'elapsed_s': round(clock() - started, 3),
+                    'final': observation, 'requests': 'observation only',
+                    'reason': 'health floor reached while still in combat'}
     cleared = observation.in_combat is not True
     return {'combat_cleared': cleared, 'samples': samples,
             'elapsed_s': round(clock() - started, 3),
@@ -53,7 +67,7 @@ def resolve_combat_before_exit(backend, *, budget_seconds=60, poll_interval=0.5,
 
 
 def close_session(backend, *, report, budget_seconds=60, poll_interval=0.5,
-                  sleep=time.sleep, clock=time.monotonic):
+                  min_health=25, sleep=time.sleep, clock=time.monotonic):
     """Close the session, resolving an unresolved in-combat state first.
 
     The character is never left in combat for the session teardown to decide:
@@ -67,7 +81,7 @@ def close_session(backend, *, report, budget_seconds=60, poll_interval=0.5,
     if living(observation) and observation.in_combat is True:
         recovery = resolve_combat_before_exit(
             backend, budget_seconds=budget_seconds, poll_interval=poll_interval,
-            sleep=sleep, clock=clock)
+            min_health=min_health, sleep=sleep, clock=clock)
         result['combat_recovery'] = {
             'combat_cleared': recovery['combat_cleared'],
             'elapsed_s': recovery['elapsed_s'],
