@@ -15,6 +15,7 @@ from agent_wow_session import PureNetworkBackend, root
 from agent_wow_task_boundary import movement_boundary, verify_target
 from agent_wow_position import confirm_relogin
 from agent_wow_batch import classify
+from agent_wow_exit_recovery import close_session
 
 
 def parse_options(argv=None):
@@ -205,13 +206,10 @@ def main(argv=None):
             except Exception as exc:  # noqa: BLE001
                 report.setdefault('final_observation_error', f'{type(exc).__name__}: {exc}')
             try:
-                observation = backend.observe()
-                report['final_observation'] = observation.to_dict()
-                if alive(observation):
-                    report['finalize'] = backend.execute(Action('logout', 'logout', {}, timeout=45))
-                else:
-                    report['finalize'] = {'status': 'unresolved', 'reason': 'not alive and out of combat',
-                                          'ghost': observation.ghost}
+                # Never leave a living character in combat for the session
+                # teardown to decide: an in-combat character whose logout is
+                # refused is killed by the server after the client is gone.
+                close_session(backend, report=report)
             except Exception as exc:  # noqa: BLE001
                 report['finalize'] = {'error': f'{type(exc).__name__}: {exc}'}
         backend.result['status'] = 'PASS' if report['run']['status'] == 'success' else 'INCOMPLETE'
@@ -219,13 +217,10 @@ def main(argv=None):
         report['error'] = f'{type(exc).__name__}: {exc}'
         if backend.session_id:
             try:
-                observation = backend.observe()
-                report['final_observation'] = observation.to_dict()
-                if alive(observation):
-                    report['finalize'] = backend.execute(Action('logout', 'logout', timeout=45))
-                else:
-                    report['finalize'] = {'status': 'unresolved', 'reason': 'not alive and out of combat',
-                                          'ghost': observation.ghost}
+                # Same rule on the failure path: resolve an unresolved combat
+                # state before closing, never abandon a living in-combat
+                # character to the server.
+                close_session(backend, report=report)
             except Exception as close_exc:  # noqa: BLE001
                 report['finalize'] = {'error': f'{type(close_exc).__name__}: {close_exc}'}
     finally:
