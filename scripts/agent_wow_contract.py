@@ -89,6 +89,7 @@ class TaskExecutor:
         self.completed = []
         self.attempted = []
         self._checkpoint_rejected = None
+        self._checkpoint_loaded = False
         self._load_checkpoint()
 
     def _load_checkpoint(self):
@@ -110,6 +111,7 @@ class TaskExecutor:
         self.completed = list(completed)
         self.records = list(records)
         self.attempted = list(attempted)
+        self._checkpoint_loaded = True
 
     def _write_checkpoint(self, status):
         if not self.checkpoint_path:
@@ -140,6 +142,11 @@ class TaskExecutor:
         results = []
         started = time.monotonic()
         status = SUCCESS
+        if resume and not self._checkpoint_loaded:
+            detail = self._checkpoint_rejected or 'resume checkpoint missing'
+            return {'run_id': self.run_id, 'status': UNKNOWN,
+                    'results': [Result('checkpoint', 'checkpoint', UNKNOWN, detail).to_dict()],
+                    'records': list(self.records), 'completed': list(self.completed)}
         if self._checkpoint_rejected:
             self._record({'action_id': 'checkpoint', 'kind': 'checkpoint', 'status': SKIPPED,
                           'detail': self._checkpoint_rejected, 'elapsed_ms': 0, 'evidence': {}})

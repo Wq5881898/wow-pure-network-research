@@ -177,6 +177,27 @@ class TaskExecutorTests(unittest.TestCase):
         self.assertEqual(backend.calls, ['a', 'b'])
         self.assertEqual(json.loads(self.checkpoint.read_text())['run_id'], 'run')
 
+    def test_resume_rejects_invalid_checkpoint_without_overwrite_or_dispatch(self):
+        original = {'schema': 1, 'run_id': 'other', 'completed': [],
+                    'attempted': ['a'], 'records': []}
+        self.checkpoint.write_text(json.dumps(original), encoding='utf-8')
+        backend = FakeBackend()
+        report = self.executor(backend).run(
+            [Action('a', 'noop', {}, side_effecting=True,
+                    expectation=lambda b, a, e: False)], resume=True)
+        self.assertEqual(report['status'], 'unknown')
+        self.assertEqual(backend.calls, [])
+        self.assertEqual(json.loads(self.checkpoint.read_text(encoding='utf-8')), original)
+
+    def test_resume_without_checkpoint_does_not_dispatch(self):
+        backend = FakeBackend()
+        report = self.executor(backend).run(
+            [Action('a', 'noop', {}, side_effecting=True,
+                    expectation=lambda b, a, e: False)], resume=True)
+        self.assertEqual(report['status'], 'unknown')
+        self.assertEqual(backend.calls, [])
+        self.assertFalse(self.checkpoint.exists())
+
     def test_paused_checkpoint_is_persisted(self):
         backend = FakeBackend()
         report = self.executor(backend, action_budget=0).run(plan())
