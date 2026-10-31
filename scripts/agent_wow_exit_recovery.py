@@ -22,18 +22,26 @@ def living(observation):
 
 
 def resolve_combat_before_exit(backend, *, budget_seconds=60, poll_interval=0.5,
-                                min_health=25, sleep=time.sleep,
-                                clock=time.monotonic):
-    """Wait out of combat without re-engaging.
+                                min_health=25, passive_seconds=6.0,
+                                sleep=time.sleep, clock=time.monotonic):
+    """Leave an unresolved combat without re-engaging.
 
-    Only observation requests are sent. No attack, no loot, no movement: a
-    recovery branch must not start a second fight while the first one is
-    unresolved.
+    Measured on 2026-11-01 (esc003): stopping the character's own attack does
+    NOT end a hostile that keeps hitting. in_combat stayed True for the whole
+    45 s wait while HP fell 108 -> 39. The 1-3 s "aggro lapse" seen in the
+    archives only happened after the mob had already stopped hitting.
 
-    ``min_health`` is a safety floor, not a target: waiting for the server to
-    clear combat must never be the thing that kills the character. Measured
-    aggro lapse is 1-3 s, so a floor well above zero aborts the wait early
-    instead of watching the character die while standing still.
+    So the escape has two stages:
+      1. passive observation for a short window, which covers the case where
+         the mob has stopped hitting (killed it, or it desisted);
+      2. otherwise leave the hostile's reach by reversing the outbound route
+         that was actually submitted to get here (docs/51). This is the only
+         geometrically justified escape: the server never broadcasts the
+         mover's own position, so "did I get out of reach" cannot be
+         confirmed in-session (docs/88).
+
+    Only observation requests are sent while waiting. The retreat is a single
+    movement request; no attack, no loot.
     """
     started = clock()
     samples = []
@@ -44,7 +52,39 @@ def resolve_combat_before_exit(backend, *, budget_seconds=60, poll_interval=0.5,
         return {'combat_cleared': True, 'samples': samples,
                 'elapsed_s': round(clock() - started, 3),
                 'final': observation, 'requests': 'observation only',
-                'reason': None}
+                'reason': None, 'retreat': None}
+
+    # Stage 1: passive wait (the mob may have stopped hitting already).
+    deadline = started + passive_seconds
+    while clock() < deadline:
+        sleep(poll_interval)
+        observation = backend.observe()
+        samples.append({'health': observation.health, 'ghost': observation.ghost,
+                        'in_combat': observation.in_combat})
+        if observation.in_combat is not True:
+            return {'combat_cleared': True, 'samples': samples,
+                    'elapsed_s': round(clock() - started, 3),
+                    'final': observation, 'requests': 'observation only',
+                    'reason': None, 'retreat': None}
+        if observation.health is not None and observation.health <= min_health:
+            return {'combat_cleared': False, 'samples': samples,
+                    'elapsed_s': round(clock() - started, 3),
+                    'final': observation, 'requests': 'observation only',
+                    'reason': 'health floor reached while still in combat',
+                    'retreat': None}
+
+    # Stage 2: leave the hostile's reach along the reversed outbound route.
+    retreat = _retreat_out_of_reach(backend, observation)
+    if retreat is not None:
+        samples.extend(retreat.get('samples', []))
+        observation = retreat.get('final', observation)
+    if observation.in_combat is not True:
+        return {'combat_cleared': True, 'samples': samples,
+                'elapsed_s': round(clock() - started, 3),
+                'final': observation, 'requests': 'observation + one retreat',
+                'reason': None, 'retreat': retreat}
+
+    # Still in combat: keep observing, but never below the health floor.
     while clock() - started < budget_seconds:
         sleep(poll_interval)
         observation = backend.observe()
@@ -53,17 +93,42 @@ def resolve_combat_before_exit(backend, *, budget_seconds=60, poll_interval=0.5,
         if observation.in_combat is not True:
             break
         if observation.health is not None and observation.health <= min_health:
-            # Standing still until the aggro lapses must not be what kills the
-            # character. Stop waiting and report the danger explicitly.
             return {'combat_cleared': False, 'samples': samples,
                     'elapsed_s': round(clock() - started, 3),
-                    'final': observation, 'requests': 'observation only',
-                    'reason': 'health floor reached while still in combat'}
+                    'final': observation,
+                    'requests': 'observation + one retreat',
+                    'reason': 'health floor reached while still in combat',
+                    'retreat': retreat}
     cleared = observation.in_combat is not True
     return {'combat_cleared': cleared, 'samples': samples,
             'elapsed_s': round(clock() - started, 3),
-            'final': observation, 'requests': 'observation only',
-            'reason': None if cleared else 'combat did not clear within budget'}
+            'final': observation,
+            'requests': 'observation + one retreat',
+            'reason': None if cleared else 'combat did not clear within budget',
+            'retreat': retreat}
+
+
+def _retreat_out_of_reach(backend, observation):
+    """Reverse the outbound route once, to leave the hostile's reach.
+
+    Returns None when no route is known: without a submitted route there is no
+    geometrically justified escape, and inventing a straight line is exactly
+    the shortcut docs/51 rejects.
+    """
+    route = getattr(backend, 'outbound_route', None) or []
+    origin = getattr(backend, 'outbound_origin', None)
+    if not route or not origin:
+        return None
+    try:
+        from agent_wow_escape_control import retreat
+        result, state = retreat(backend.rpc, backend.drain, route, origin,
+                                wait_seconds=12)
+    except Exception as exc:  # noqa: BLE001 - a failed retreat must not abort the exit
+        return {'outcome': 'retreat_failed', 'error': f'{type(exc).__name__}: {exc}',
+                'samples': [], 'final': observation}
+    result['final'] = state['self']
+    return result
+
 
 
 def close_session(backend, *, report, budget_seconds=60, poll_interval=0.5,
@@ -88,6 +153,7 @@ def close_session(backend, *, report, budget_seconds=60, poll_interval=0.5,
             'sample_count': len(recovery['samples']),
             'requests': recovery['requests'],
             'reason': recovery.get('reason'),
+            'retreat_outcome': (recovery.get('retreat') or {}).get('outcome'),
         }
         observation = recovery['final']
     if not living(observation):

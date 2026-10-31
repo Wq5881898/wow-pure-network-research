@@ -29,6 +29,9 @@ class FakeBackend:
         self.requests = []
         self.logout_result = (logout_result if logout_result is not None
                               else {'status': 'closed', 'reply': {'result': {'status': 'closed'}}})
+        # No outbound route by default: without one there is no justified escape.
+        self.outbound_route = []
+        self.outbound_origin = None
 
     def observe(self):
         self.requests.append('observe')
@@ -39,6 +42,14 @@ class FakeBackend:
     def execute(self, action):
         self.requests.append('execute:%s' % action.kind)
         return self.logout_result
+
+    def rpc(self, method, params):
+        self.requests.append('rpc:%s' % method)
+        return {'result': {}}
+
+    def drain(self):
+        self.requests.append('drain')
+        return {'self': self.observations[-1]}
 
 
 class Clock:
@@ -97,6 +108,52 @@ class ExitRecoveryTests(unittest.TestCase):
                                             min_health=25, sleep=sleeper,
                                             clock=Clock())
         self.assertTrue(result['combat_cleared'])
+
+    def test_passive_stage_clears_when_the_mob_stopped_hitting(self):
+        backend = FakeBackend([Observation(71, in_combat=True),
+                               Observation(71, in_combat=False)])
+        result = resolve_combat_before_exit(backend, budget_seconds=30,
+                                            passive_seconds=3, sleep=sleeper,
+                                            clock=Clock())
+        self.assertTrue(result['combat_cleared'])
+        self.assertEqual(result['requests'], 'observation only')
+        self.assertNotIn('rpc:bridge.stop_attack', backend.requests)
+
+    def test_persistent_hostile_triggers_the_reverse_route_retreat(self):
+        # The measured failure mode (esc003): the mob keeps hitting, so the
+        # passive stage cannot end the combat and a retreat is required.
+        backend = FakeBackend([Observation(71, in_combat=True)])
+        backend.outbound_route = [{'x': 0.0, 'y': 0.0, 'z': 0.0},
+                                  {'x': 3.0, 'y': 0.0, 'z': 0.0}]
+        backend.outbound_origin = [0.0, 0.0, 0.0]
+        result = resolve_combat_before_exit(backend, budget_seconds=30,
+                                            passive_seconds=2, sleep=sleeper,
+                                            clock=Clock())
+        self.assertIn('rpc:bridge.stop_attack', backend.requests,
+                      'a persistent hostile must trigger the retreat branch')
+        self.assertIn('rpc:bridge.follow_path', backend.requests,
+                      'the retreat must use the reversed outbound route')
+        self.assertIsNotNone(result['retreat'])
+
+    def test_no_retreat_without_a_known_route(self):
+        # Without a submitted route there is no justified escape; inventing a
+        # straight line is the shortcut docs/51 rejects.
+        backend = FakeBackend([Observation(71, in_combat=True)])
+        result = resolve_combat_before_exit(backend, budget_seconds=30,
+                                            passive_seconds=2, sleep=sleeper,
+                                            clock=Clock())
+        self.assertIsNone(result['retreat'])
+        self.assertNotIn('rpc:bridge.follow_path', backend.requests)
+
+    def test_never_sends_an_attack_while_escaping(self):
+        backend = FakeBackend([Observation(71, in_combat=True)])
+        backend.outbound_route = [{'x': 0.0, 'y': 0.0, 'z': 0.0}]
+        backend.outbound_origin = [0.0, 0.0, 0.0]
+        resolve_combat_before_exit(backend, budget_seconds=30,
+                                   passive_seconds=2, sleep=sleeper,
+                                   clock=Clock())
+        self.assertNotIn('rpc:bridge.start_attack', backend.requests)
+        self.assertNotIn('rpc:bridge.face', backend.requests)
 
     def test_close_session_logs_out_when_already_out_of_combat(self):
         backend = FakeBackend([Observation(108, in_combat=False)])

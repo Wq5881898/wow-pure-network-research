@@ -115,6 +115,11 @@ class PureNetworkBackend:
         self.observed_position = None
         self.session_start_position = None
         self.approach_confirmation = None
+        # The route actually submitted to reach the target, kept so the escape
+        # branch can reverse it (docs/118: passive waiting does not end a
+        # hostile that keeps hitting).
+        self.outbound_route = []
+        self.outbound_origin = None
         self.position_context = PositionContext()
         self.start_position = None
         self.retreat_points = []
@@ -393,6 +398,11 @@ class PureNetworkBackend:
                 return {'error': f'attempt {attempt} nav failed: {exc}', 'replies': replies,
                         'submitted_position': current, 'attempts': attempts,
                         'side_effect_applied': bool(replies)}
+            # Keep the outbound route: reversing it is the only geometrically
+            # justified way to leave a hostile's reach (docs/51), and the
+            # escape branch needs it.
+            self.outbound_route = [{'x': p['x'], 'y': p['y'], 'z': p['z']} for p in points]
+            self.outbound_origin = list(current)
             before_sequence = movement_sequence(self.state, self.self_guid)
             sent, failure = self._send_path(points)
             replies.extend(sent)
