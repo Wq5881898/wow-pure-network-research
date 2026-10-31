@@ -9,6 +9,8 @@ Rules enforced here:
   rewritten after each action.
 """
 import json
+import os
+import tempfile
 import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
@@ -117,10 +119,23 @@ class TaskExecutor:
         if not self.checkpoint_path:
             return
         self.checkpoint_path.parent.mkdir(parents=True, exist_ok=True)
-        self.checkpoint_path.write_text(json.dumps({
+        payload = json.dumps({
             'schema': 1, 'run_id': self.run_id, 'status': status,
             'completed': self.completed, 'attempted': self.attempted,
-            'records': self.records}, indent=2) + '\n')
+            'records': self.records}, indent=2) + '\n'
+        temporary = None
+        try:
+            with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8',
+                    dir=self.checkpoint_path.parent,
+                    prefix=self.checkpoint_path.name + '.', suffix='.tmp', delete=False) as handle:
+                temporary = Path(handle.name)
+                handle.write(payload)
+                handle.flush()
+                os.fsync(handle.fileno())
+            os.replace(temporary, self.checkpoint_path)
+        finally:
+            if temporary is not None and temporary.exists():
+                temporary.unlink()
 
     def _record(self, record):
         self.records.append(record)

@@ -2,6 +2,7 @@ import json
 import tempfile
 import time
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 from agent_wow_contract import Action, Observation, TaskExecutor
@@ -197,6 +198,40 @@ class TaskExecutorTests(unittest.TestCase):
         self.assertEqual(report['status'], 'unknown')
         self.assertEqual(backend.calls, [])
         self.assertFalse(self.checkpoint.exists())
+
+    def test_checkpoint_flush_failure_preserves_old_bytes_and_blocks_dispatch(self):
+        original = b'{"schema":1,"run_id":"run","completed":[],"attempted":[],"records":[]}'
+        self.checkpoint.write_bytes(original)
+        backend = FakeBackend()
+        executor = self.executor(backend)
+        with patch('agent_wow_contract.os.fsync', side_effect=OSError('flush failed')):
+            with self.assertRaisesRegex(OSError, 'flush failed'):
+                executor.run([Action('a', 'noop', side_effecting=True)])
+        self.assertEqual(backend.calls, [])
+        self.assertEqual(self.checkpoint.read_bytes(), original)
+        self.assertEqual(list(self.folder.glob('checkpoint.json.*.tmp')), [])
+
+    def test_checkpoint_replace_failure_preserves_old_bytes_and_blocks_dispatch(self):
+        original = b'{"schema":1,"run_id":"run","completed":[],"attempted":[],"records":[]}'
+        self.checkpoint.write_bytes(original)
+        backend = FakeBackend()
+        executor = self.executor(backend)
+        with patch('agent_wow_contract.os.replace', side_effect=OSError('replace failed')):
+            with self.assertRaisesRegex(OSError, 'replace failed'):
+                executor.run([Action('a', 'noop', side_effecting=True)])
+        self.assertEqual(backend.calls, [])
+        self.assertEqual(self.checkpoint.read_bytes(), original)
+
+    def test_checkpoint_records_attempt_before_backend_dispatch(self):
+        checkpoint = self.checkpoint
+        class CheckingBackend(FakeBackend):
+            def execute(self, action, timeout=None):
+                if action.id not in json.loads(checkpoint.read_text(encoding='utf-8'))['attempted']:
+                    raise AssertionError('dispatch preceded durable attempt record')
+                return super().execute(action, timeout)
+        report = self.executor(CheckingBackend()).run(
+            [Action('a', 'noop', side_effecting=True, expectation=lambda b, a, e: True)])
+        self.assertEqual(report['status'], 'success')
 
     def test_paused_checkpoint_is_persisted(self):
         backend = FakeBackend()
