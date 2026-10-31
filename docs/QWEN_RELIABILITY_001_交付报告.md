@@ -1,5 +1,8 @@
 # QWEN-RELIABILITY-001 交付报告
 
+> **主控验收补注（2026-10-31）**：主控独立复核Windows全量225项通过（11项WSL专属跳过）、WSL全量225项通过无跳过；真实双进程竞争、故障注入矩阵、计划绑定与语义校验均复现有效。合入提交86c5066。
+> 两处需注意：报告第3节称resume确认写`success_verified`记录，实际代码写的是`skipped_verified`，`success_verified`仅出现在常量表未被使用；历史schema 1检查点（如agent_wow_task_quest792_long02_unit1.checkpoint.json，含已派发未确认的approach）现在一律拒绝续跑，只能用只读对账工具处理。这是刻意选择的保守策略，但意味着旧run无法自动恢复，需要人工核对。
+
 - 克隆路径：`C:\Users\qrz\AppData\Local\Temp\opencode\pn-qwen-reliability-001`
 - 分支：`worker/reliability-001`
 - 基线：`83332172b8f6563408d63b5dd328f74e231211e4`（任务书文档提交，包含任务书声明的基线 `7c243a0`，`git merge-base --is-ancestor` 验证通过）
