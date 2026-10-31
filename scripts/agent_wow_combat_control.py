@@ -2,6 +2,29 @@
 import math
 import time
 
+from agent_wow_combat_state_machine import (
+    CombatSMConfig, CombatStateMachine, ObservationView,
+    distance_confirmed_for)
+
+
+def advisory_decision(me, target, distance, position_source, now,
+                      machine=None, config=None,
+                      escape_path_planned=False, start_sent=False):
+    """Advisory consult of the recovery state machine (observation only).
+
+    This never dispatches, rejects or reorders anything: it returns the
+    machine's decision for the given observation so callers can record it in
+    their evidence. Enforcement is a later, separate decision.
+    """
+    machine = machine or CombatStateMachine(
+        config or CombatSMConfig(),
+        target_guid=target.get('guid') if target else None,
+        escape_path_planned=escape_path_planned, start_sent=start_sent)
+    observation = ObservationView.from_mapping(
+        me, now, target=target, distance=distance,
+        distance_confirmed=distance_confirmed_for(position_source))
+    return machine, machine.step(observation)
+
 
 def estimated_position(obj, now_ms):
     motion=obj.get('server_motion')
@@ -23,8 +46,12 @@ def estimated_position(obj, now_ms):
     return points[-1], 'linear endpoint estimate'
 
 
-def fight(rpc, drain, target_guid, self_position, now_ms, budget=18):
+def fight(rpc, drain, target_guid, self_position, now_ms, budget=18,
+          advisory=False, config=None, escape_path_planned=False):
     rows=[];start=time.monotonic();deadline=start+budget;sent=False;outcome='budget_exhausted';last_angle=None
+    advisor=CombatStateMachine(config or CombatSMConfig(),
+                               target_guid=target_guid,
+                               escape_path_planned=escape_path_planned) if advisory else None
     observed=drain()
     try:
         while time.monotonic()<deadline:
@@ -39,6 +66,14 @@ def fight(rpc, drain, target_guid, self_position, now_ms, budget=18):
             angle=math.atan2(tp[1]-self_position[1],tp[0]-self_position[0])
             row={'elapsed_ms':round((time.monotonic()-start)*1000),'self_health':me['health'],'in_combat':me['in_combat'],'target_health':target['health'],'target_position_estimate':tp,'position_source':source,'distance_estimate':distance}
             rows.append(row)
+            if advisor is not None:
+                # Advisory only: recorded, never enforced this round.
+                step=advisor.step(ObservationView.from_mapping(
+                    me, time.monotonic(), target=target, distance=distance,
+                    distance_confirmed=distance_confirmed_for(source)))
+                row['advisory_state']=step.state
+                row['advisory_decision']=step.decision
+                row['advisory_reasons']=list(step.reasons)
             if sent and distance > 5:
                 # A fleeing target must not drag an unverified pursuit into
                 # nearby packs. Stop this attempt; no automatic restart.
@@ -58,4 +93,7 @@ def fight(rpc, drain, target_guid, self_position, now_ms, budget=18):
     finally:
         stop=rpc('bridge.stop_attack',{})
     observed=drain()
-    return {'outcome':outcome,'start_sent_once':sent,'observations':rows,'stop':stop},observed
+    phase={'outcome':outcome,'start_sent_once':sent,'observations':rows,'stop':stop}
+    if advisor is not None:
+        phase['advisory_final_state']=advisor.state_name()
+    return phase,observed

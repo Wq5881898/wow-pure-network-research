@@ -309,6 +309,10 @@ def summarize(obj):
     if obj.get("type_id") in (3, 4):
         for key, index in {"health": 0x18, "max_health": 0x20, "level": 0x36, "bytes0": 0x17}.items():
             out[key] = f.get(str(index), 0)
+        # Same precedent as stack_transmitted/unit_flags_transmitted: a field
+        # the server never sent reads as creation zero, which is not a
+        # transmitted zero value.
+        out["health_transmitted"] = "24" in f
         out["powers"] = [f.get(str(0x19+i), 0) for i in range(7)]
         out["max_powers"] = [f.get(str(0x21+i), 0) for i in range(7)]
         out["unit_flags"] = f.get("59", 0)

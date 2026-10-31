@@ -42,6 +42,7 @@ class Observation:
     map_id: int = 0
     position: list = field(default_factory=list)
     health: int = 0
+    health_transmitted: bool = True
     max_health: int = 0
     ghost: bool = False
     in_combat: bool = False
