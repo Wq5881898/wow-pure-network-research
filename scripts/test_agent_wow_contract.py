@@ -95,6 +95,39 @@ class TaskExecutorTests(unittest.TestCase):
         self.assertEqual(report['status'], 'unknown')
         self.assertIn('effect state unknown', report['results'][-1]['detail'])
 
+    def test_backend_exception_after_dispatch_is_unknown_not_rejected(self):
+        class FaultBackend(FakeBackend):
+            def execute(self, action, timeout=None):
+                raise OSError('reply lost after request')
+
+        report = self.executor(FaultBackend()).run(
+            [Action('a', 'noop', {}, side_effecting=True,
+                    expectation=lambda b, a, e: True)])
+        self.assertEqual(report['status'], 'unknown')
+        self.assertIn('OSError', report['results'][-1]['evidence']['error'])
+
+    def test_explicit_no_dispatch_fails_even_with_generic_error(self):
+        backend = FakeBackend(effects={'a': {'error': 'request refused before sending',
+                                            'side_effect_applied': False}})
+        report = self.executor(backend).run(
+            [Action('a', 'noop', {}, side_effecting=True,
+                    expectation=lambda b, a, e: False)])
+        self.assertEqual(report['status'], 'failure')
+        self.assertIn('no side effect applied', report['results'][-1]['detail'])
+
+    def test_postaction_observation_failure_blocks_success(self):
+        class LostObservation(FakeBackend):
+            def observe(self):
+                if self.observations >= 1:
+                    raise OSError('poll lost')
+                return super().observe()
+
+        report = self.executor(LostObservation()).run(
+            [Action('a', 'noop', {}, side_effecting=True,
+                    expectation=lambda b, a, e: True)])
+        self.assertEqual(report['status'], 'unknown')
+        self.assertIn('observation_error', report['results'][-1]['evidence'])
+
     def test_budget_pauses_before_execution(self):
         backend = FakeBackend()
         executor = self.executor(backend, budget_seconds=0)

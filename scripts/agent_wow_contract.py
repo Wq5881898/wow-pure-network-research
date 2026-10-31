@@ -217,17 +217,24 @@ class TaskExecutor:
             if evidence.get('timeout') or evidence.get('executor_deadline_exceeded'):
                 outcome = UNKNOWN if action.side_effecting else TIMEOUT
                 detail = 'backend timed out; effect state unknown'
-            elif evidence.get('error'):
+            elif evidence.get('side_effect_applied') is False:
+                # Explicit non-dispatch takes precedence over a generic backend
+                # error, but only the backend can prove this negative claim.
                 outcome = FAILURE
+                detail = 'backend reports no side effect applied'
+            elif evidence.get('observation_error'):
+                outcome = UNKNOWN if action.side_effecting else FAILURE
+                detail = 'post-action observation unavailable; effect state unknown'
+            elif evidence.get('error'):
+                # A backend exception after dispatch says nothing about whether
+                # the side effect reached the server. Only an explicit negative
+                # dispatch acknowledgement proves it was not sent.
+                outcome = (UNKNOWN if action.side_effecting
+                           and evidence.get('side_effect_applied') is not False else FAILURE)
                 detail = str(evidence['error'])
             elif self._check(action.expectation, before, after, evidence):
                 outcome = SUCCESS
                 detail = 'postcondition observed'
-            elif evidence.get('side_effect_applied') is False:
-                # The backend states that no request reached the game, so the
-                # effect is absent rather than unconfirmed.
-                outcome = FAILURE
-                detail = 'backend reports no side effect applied'
             elif action.side_effecting:
                 outcome = UNKNOWN
                 detail = 'request applied but postcondition not observed'
