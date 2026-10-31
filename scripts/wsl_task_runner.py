@@ -37,6 +37,9 @@ def parse_options(argv=None):
     parser.add_argument('--verify-movement-from', type=Path,
                         help='Verify a closed movement-only boundary in a fresh session; no combat')
     parser.add_argument('--boundary-max-age-seconds', type=float, default=1800)
+    parser.add_argument('--advisory-record', action='store_true',
+                        help='Record the combat recovery state machine decisions into the '
+                             'existing evidence without enforcing them')
     options = parser.parse_args(argv)
     if options.objective_total < 1 or (options.quest_id is not None and options.quest_id < 1):
         parser.error('objective total and quest ID must be positive')
@@ -136,7 +139,8 @@ def main(argv=None):
         return actions[:3] if options.movement_only else actions
 
     plan = build_plan()
-    backend = PureNetworkBackend(options.run_id)
+        backend = PureNetworkBackend(options.run_id, advisory=options.advisory_record)
+
     report = {'run_id': options.run_id, 'objective': objective, 'plan': [a.to_dict() for a in plan]}
     started = time.monotonic()
     try:

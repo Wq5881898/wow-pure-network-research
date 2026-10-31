@@ -96,9 +96,14 @@ class LiveSession:
 class PureNetworkBackend:
     """Contract backend over the pure-network bridge."""
 
-    def __init__(self, run_id, self_guid='9'):
+    def __init__(self, run_id, self_guid='9', advisory=False):
         self.run_id = run_id
         self.self_guid = self_guid
+        # Advisory records the combat recovery state machine's decisions into
+        # the existing evidence without changing dispatch order, outcome
+        # strings or start_sent_once semantics. It is opt-in and never
+        # enforces a decision.
+        self.advisory = bool(advisory)
         self.packets = []
         self.cursor = 0
         self.session_id = None
@@ -424,7 +429,8 @@ class PureNetworkBackend:
             return {'error': 'no target selected'}
         reference = self.current_position or self.observed_position or self.start_position
         phase, _observed = fight(self.rpc, self.drain, self.target['guid'], list(reference)[:3],
-                                 self.stream_now, budget=params.get('budget', 35))
+                                 self.stream_now, budget=params.get('budget', 35),
+                                 advisory=self.advisory)
         return {'outcome': phase['outcome'], 'phase': phase,
                 'side_effect_applied': bool(phase.get('start_sent_once')),
                 'reference_position': list(reference)[:3]}
@@ -552,7 +558,8 @@ class PureNetworkBackend:
         state = self.drain()
         if state['self']['in_combat'] is not True:
             return {'phases': [], 'safe_to_logout': True}
-        outcome, _state = settle(self.rpc, self.drain, self.current_position or self.start_position, self.stream_now)
+        outcome, _state = settle(self.rpc, self.drain, self.current_position or self.start_position,
+                                 self.stream_now, advisory=self.advisory)
         return {'phases': outcome['phases'], 'safe_to_logout': outcome['safe_to_logout']}
 
     def _do_logout(self, params, timeout):
