@@ -139,7 +139,7 @@ def main(argv=None):
         return actions[:3] if options.movement_only else actions
 
     plan = build_plan()
-        backend = PureNetworkBackend(options.run_id, advisory=options.advisory_record)
+    backend = PureNetworkBackend(options.run_id, advisory=options.advisory_record)
 
     report = {'run_id': options.run_id, 'objective': objective, 'plan': [a.to_dict() for a in plan]}
     started = time.monotonic()
