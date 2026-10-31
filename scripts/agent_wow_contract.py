@@ -157,7 +157,8 @@ class TaskExecutor:
                 break
             if resume and action.id in self.completed:
                 current = self.observe()
-                confirmed = self._check(action.expectation, current, current, {})
+                confirmed = (action.expectation is not None
+                             and self._check(action.expectation, current, current, {}))
                 if confirmed:
                     self._record({'action_id': action.id, 'kind': action.kind,
                                   'status': SKIPPED, 'detail': 'checkpoint says done and postcondition holds',
@@ -167,7 +168,8 @@ class TaskExecutor:
                 # The previous run dispatched this side effect but could not
                 # confirm it. Read the state; never resend on assumption.
                 current = self.observe()
-                confirmed = self._check(action.expectation, current, current, {})
+                confirmed = (action.expectation is not None
+                             and self._check(action.expectation, current, current, {}))
                 if confirmed:
                     self._record({'action_id': action.id, 'kind': action.kind, 'status': SKIPPED,
                                   'detail': 'previous side effect now confirmed by state',

@@ -156,6 +156,17 @@ class TaskExecutorTests(unittest.TestCase):
         self.assertEqual(backend.calls, [])
         self.assertIn('refusing to resend', report['results'][-1]['detail'])
 
+    def test_resume_no_expectation_must_not_skip_unknown_side_effect(self):
+        backend = FakeBackend(timeouts={'a'})
+        action = Action('a', 'noop', {}, side_effecting=True)
+        self.assertEqual(self.executor(backend).run([action])['status'], 'unknown')
+        backend.timeouts.clear()
+        backend.calls.clear()
+        report = self.executor(backend).run([action], resume=True)
+        self.assertEqual(report['status'], 'unknown')
+        self.assertEqual(backend.calls, [])
+        self.assertNotIn('skipped_verified', [r['status'] for r in report['records']])
+
     def test_checkpoint_with_wrong_run_id_is_rejected(self):
         self.checkpoint.write_text(json.dumps({'schema': 1, 'run_id': 'other',
                                                 'completed': ['a'], 'attempted': [], 'records': []}))
