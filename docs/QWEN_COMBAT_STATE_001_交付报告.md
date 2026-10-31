@@ -71,8 +71,10 @@
 | `python scripts/replay_combat_state_machine.py --help` | 0 | usage 正常 | `replay_help_final.txt` |
 | `python scripts/replay_combat_state_machine.py .cache/combat-state-001/replay_final.json` | 0 | 5 存档时间线 JSON | `replay_final_run.log` + `replay_final.json` |
 | `python -m unittest test_combat_state_machine_replay -v`（cwd=scripts, PYTHONPATH=scripts） | 0 | **Ran 8, OK**（关键断言逐条 ok） | `assertion_run40_long01.txt` |
-| `python -m unittest discover -s scripts -p "test_combat_state_machine*.py" -v`（最终） | 0 | **Ran 46, OK**（38 单测 + 8 回放） | `final_sm_tests.txt` |
-| `python -m unittest discover -s scripts -p "test_*.py"`（最终全量） | 0 | **Ran 271, failures=0, errors=0, skipped=11**（=基线 225 + 新增 46；11 个跳过是 WSL 专属，与基线一致，未为 Windows 全绿删测试） | `final_full_tests.txt` |
+| `python -m unittest discover -s scripts -p "test_combat_state_machine*.py" -v`（第二轮复验） | 0 | Ran 56, FAILED failures=4（干净段起点被反复重置，见第 9 节） | `round2_*` |
+| `python -m unittest discover -s scripts -p "test_combat_state_machine*.py" -v`（第三轮最终） | 0 | **Ran 58, OK**（48 单测 + 8 回放，全绿） | `round3_sm_tests.txt`（历史：`final_sm_tests.txt` Ran 46） |
+| `python -m unittest discover -s scripts -p "test_*.py"`（第二轮复验） | 0 | Ran 281, FAILED failures=4, skipped=11（同一 dwell 缺陷，见第 9 节） | `round2_full_tests.txt` |
+| `python -m unittest discover -s scripts -p "test_*.py"`（第三轮最终全量） | 0 | **Ran 283, failures=0, errors=0, skipped=11**（=基线 225 + 新增 58；11 个跳过是 WSL 专属，与基线一致，未为 Windows 全绿删测试） | `round3_full_tests.txt`（历史：`final_full_tests.txt` Ran 271） |
 | `git diff --check` | 0 | 无空白错误 | 见第 8 节 |
 
 中途真实失败（非最终态，均已定位修复并留日志）：`sm_unit_run1/run2.txt` 记录了 5 项→1 项失败过程。最后 1 项失败的真实原因是我的测试把 `steps[2]` 写成对"drive 返回列表"的错位索引（断言本身方向正确），修正测试取样方式而非削弱断言；`final_sm_tests.txt` 第一次运行的 4 个 ERROR 是新增测试漏 import `patch` 与 advisory 记录时序（行入列前未记全字段），均为测试/接入代码缺陷，修复后全过。既有测试的断言一条未删、未改。
@@ -91,11 +93,11 @@
 5 seq128 target_out_of_range/stop_attack [target_distance_unconfirmed] hp=95 thp=5 d=15.414(未确认)
 6 seq129 unresolved/abort_unit [budget_exhausted]
 ```
-时间线索引与包序号单调；退出步之后无任何 `start_attack`（本时间线全程未出现 start_attack 决策——战斗由既有 fight() 派发，状态机在回放中是咨询者）。HP/目标血量与 docs/76 记录一致。
+时间线索引与包序号单调；退出状态（target_out_of_range）出现之后不再出现 `start_attack`（修正项 3 使 start_attack 成为可达决策后，本时间线仍全程未出现该决策——战斗由既有 fight() 派发，状态机在回放中是咨询者，断言因此非空转）。HP/目标血量与 docs/76 记录一致。
 
 **run40**（health 字段从未下发、max_health=70 已下发——事实 4 的回归守卫）：
 ```
-0 seq16 disengaging/hold_and_observe [out_of_combat_not_yet_confirmed, health_unknown] hp=0(未下发) max=70
+0 seq16 precheck/none [health_unknown] hp=0(未下发) max=70
 1 seq47 unresolved/abort_unit [budget_exhausted]
 ```
 全程无 `dead`，health 归为未知。
@@ -136,7 +138,7 @@ OK
 3. `fight()` `health<50 且不在战斗 → preconditions_not_met`：比例化后 3 级需 <54（更严），1 级 <35（更松）。
 4. `fight()` `sent and distance>5 → target_left_melee`：强制接入后该距离恒为不可确认（战斗不广播自身位置），outcome 语义应变为 `target_distance_unconfirmed` 停手而非断言目标逃走。
 5. `fight()` 低血后被动 `time.sleep+drain` 继续循环：低血 latch 后状态机不再给 `continue_attack`，循环应停手观察，杜绝 2026-10-29 复盘中"低血仍长采样"。
-6. `settle()` `in_combat is True` 期间再次调用 `fight()`（可再派 `start_attack`）：latch 的 `low_health_exit/target_out_of_range` 会否决再次 `start_attack`。
+6. `settle()` `in_combat is True` 期间再次调用 `fight()`（可再派 `start_attack`）：latch 的 `low_health_exit/target_out_of_range` 会否决再次 `start_attack`；且第三轮起 `start_attack` 只在该采样**确认 `in_combat is False`** 时给出（`in_combat=None` 不授权动作，与 `effect_gate.attempt_gate`/`wsl_task_runner.alive` 同纪律），强制接入时 `settle()` 的再派发还须先满足该确认条件。
 7. `settle()` `health_budget` 被动等待环：改为按状态机恢复分支（hold_and_observe/request_escape），且未知 health 不得当作 >0 放行。
 8. `settle()` `safe_to_logout = 单次采样 in_combat is False`（现 :52）：改为 `disengaged_confirmed`（连续 N 次+停留+health 未降且已知>0）才可登出。
 9. `finalize.py` `health<=0` 判死、`in_combat is False` 单次登出依据：同样受 A/脱战确认规则改写（本轮未改该文件，属强制接入轮）。
@@ -180,3 +182,32 @@ OK
 `
 
 提交后 git status --short：(clean)。git diff --check 退出码 0。提交信息以 UTF-8 字节存于 Git（Windows 控制台按 GBK 渲染会显示乱码，git log 原始字节已核验为正确 UTF-8）。未 push、未 merge/rebase/reset/clean；.cache 未入库。
+
+## 9. 主控验收发现的问题与修正（两轮）
+
+### 第一轮：4 个问题
+
+1. 确认窗口被污染后最短停留不重新计时：污染样本只清 streak、窗口起点沿用旧值，被污染的时段被计入 dwell。修正：清零 streak 的样本同时重开干净段。
+2. 直接构造 `ObservationView(health=0, health_transmitted=False)` 被判 dead：判定核心未看传输标志。修正：`_classify_self()` 与 `_health_gate()` 直接检查 `health_transmitted`，未下发一律按未知，绝不判 dead/self_dead/低血/危急；`from_mapping()` 规范化保留。实测：`test_direct_view_untransmitted_zero_is_not_dead`、`test_direct_view_transmitted_zero_is_dead`、`test_direct_view_untransmitted_low_is_not_low_health` 通过（`round3_sm_tests.txt`）。
+3. `start_attack` 不可达导致 latch 断言空转。修正：precheck 门控产出 `start_attack`（给出一次后 latch，低血 latch 后永不再给）。实测：`test_precheck_start_attack_is_reachable`、`test_low_exit_latch_never_emits_start_attack` 通过。
+4. long01 报告措辞随修正项 3 更新为"退出状态出现之后不再出现 start_attack"（见第 4 节修订）。
+
+### 第二轮：主控复验发现的新缺陷（4 个 FAIL，同一根因）
+
+- **现象**：`test_combat_state_machine*.py` Ran 56 FAILED failures=4（全量 Ran 281 FAILED failures=4, skipped=11）。干净序列 t=9.0/10.0/11.2（跨 2.2s，无污染）停在 `disengaging`，本应确认却没有确认；`test_confirmation_needs_streak_and_minimum_dwell`（基线轮用例）FAIL。
+- **根因**：第一轮修复把窗口起点 `_disengage_started_at` 交给 `_advance()` 对**每个** `in_combat is False` 采样重置，于是 `sampled_at - 起点` 恒为 0，`min_disengage_seconds` 永不满足——脱战永远无法确认。
+- **修正（第三轮）**：删除 `_advance()` 的起点重置；新增 `_clean_run_started_at` 由干净段独占维护：streak 0→1 时锚定为该采样时刻；任何清零 streak 的事件（health 下降/health 未知/in_combat 未知/health<=0）置 None；确认判据为 `streak>=confirmations 且 _clean_run_started_at 非 None 且 (sampled_at-_clean_run_started_at)>=min_disengage_seconds`。
+- **start_attack 补充纪律**：`in_combat` 为未知(None) 时不得建议 start_attack（S6）；只有确认 `in_combat is False` 才建议（S7）。
+- **修正后实测**（`.cache/combat-state-001/round3_sm_tests.txt`、`round3_full_tests.txt`）：
+
+```
+Ran 58 tests in 1.123s
+OK
+```
+
+```
+Ran 283 tests in 38.242s
+OK (skipped=11)
+```
+
+- 规格探针 S1–S7 全部有对应测试并通过：S1/S3=`test_clean_run_spanning_dwell_confirms`/`test_clean_run_can_confirm_after_its_own_span`；S2/S4/S5=`test_dwell_restarts_after_health_drop/unknown_health/unknown_in_combat`；S6/S7=`test_precheck_unknown_combat_advises_start_attack`/`test_precheck_start_attack_is_reachable`。基线 225 项既有测试断言零删改（`git diff --name-only 0793a0c -- scripts/` 仅含本任务文件）。

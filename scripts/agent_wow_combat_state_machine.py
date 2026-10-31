@@ -182,7 +182,10 @@ class CombatStateMachine:
         self._state = PRECHECK
         self._reasons = ()
         self._out_of_combat_streak = 0
-        self._disengage_started_at = None
+        # Start of the current unbroken clean (counted) sample run; the
+        # minimum dwell must be covered by this run alone. None means no
+        # clean run is currently open.
+        self._clean_run_started_at = None
         self._last_known_health = None
         self._finished = False
         self._finish_reason = None
@@ -232,12 +235,24 @@ class CombatStateMachine:
         if self._state in (LOW_HEALTH_EXIT, TARGET_OUT_OF_RANGE):
             # Latched: no later observation re-enters combat or restarts.
             return self._latched(observation)
+        if self._state == PRECHECK and observation.in_combat is not True:
+            # Precheck is a gate, not a disengagement window: it advises
+            # start_attack (or withholds it) without consuming any
+            # confirmation budget. Confirmation rules begin once combat
+            # was actually observed or an attack was dispatched.
+            return self._precheck(
+                observation, opening=(observation.in_combat is False))
         return self._advance(observation)
 
     # --- internals -----------------------------------------------------------
     def _classify_self(self, observation):
         if observation.ghost:
             return REASON_SELF_GHOST
+        # Self-respect the transmission flag: an untransmitted health is
+        # unknown here even when a caller constructs the view directly with
+        # health=0 (run40 regression guard at the decision-core level).
+        if not observation.health_transmitted:
+            return None
         if observation.health is not None and observation.health <= 0:
             return REASON_SELF_DEAD
         return None
@@ -262,11 +277,13 @@ class CombatStateMachine:
 
     def _health_gate(self, observation):
         """Health checks shared by engaging and in_combat. None = pass."""
-        if observation.health is None:
+        if (not observation.health_transmitted
+                or observation.health is None
+                or observation.max_health <= 0):
+            # Unknown is decided by the flag first, never by a raw zero:
+            # untransmitted health is not death and not low health.
             return REASON_HEALTH_UNKNOWN
-        ratio = self.health_ratio(observation)
-        if ratio is None:
-            return REASON_HEALTH_UNKNOWN
+        ratio = observation.health / observation.max_health
         if ratio < self.config.critical_health_ratio:
             return REASON_HEALTH_RATIO_BELOW_CRITICAL
         if ratio < self.config.low_health_ratio:
@@ -305,12 +322,58 @@ class CombatStateMachine:
         self._start_sent = True
         return StepResult(self._state, DECISION_STOP_ATTACK, self._reasons)
 
+    def _precheck(self, observation, opening=False):
+        """Precheck: advise starting the attack once preconditions are known.
+
+        start_attack is emitted exactly once (latched by _start_sent) and
+        only on a sample that confirms the unit is NOT in combat: unknown
+        combat never authorizes an action (same discipline as
+        agent_wow_effect_gate.attempt_gate, which rejects None). The machine
+        stays in PRECHECK with no dispatch side effect; the actual bridge
+        dispatch is the caller's decision. Once advised (or already
+        dispatched by an older controller), unknown-combat samples are
+        uninformative and stay in precheck: a pending start could already
+        have entered combat, so they must not open a recovery window. A
+        confirmed non-combat sample, however, opens the window immediately:
+        the fight ended before anything was confirmed.
+        """
+        if self._engaged:
+            if opening:
+                return self._observe_disengage(observation)
+            return StepResult(PRECHECK, DECISION_NONE,
+                              (REASON_OUT_OF_COMBAT_NOT_YET_CONFIRMED,))
+        if observation.in_combat is not False:
+            # Unknown combat: no action is authorized before a confirmed
+            # non-combat sample (S6).
+            return StepResult(PRECHECK, DECISION_NONE,
+                              (REASON_OUT_OF_COMBAT_NOT_YET_CONFIRMED,))
+        health_reason = self._health_gate(observation)
+        if health_reason == REASON_HEALTH_UNKNOWN:
+            return StepResult(PRECHECK, DECISION_NONE,
+                              (REASON_HEALTH_UNKNOWN,))
+        if health_reason is not None:
+            # A known-ratio low before any combat is a precheck failure, not
+            # a combat exit: never advise starting into a known low budget.
+            return self._observe_disengage(observation)
+        target_reason = self._target_gate(observation)
+        if target_reason is not None:
+            # Missing/dead/over-range target: no start advice; the confirmed
+            # non-combat sample opens the recovery window instead.
+            return self._observe_disengage(observation)
+        self._start_sent = True
+        # An advised start is pending: unknown-combat samples must not
+        # re-advise it, and a later confirmed non-combat sample opens the
+        # recovery window (a dispatched start could already have entered
+        # combat). Precheck itself never consumes any confirmation budget.
+        self._engaged = True
+        return StepResult(PRECHECK, DECISION_START_ATTACK, ())
+
     def _advance(self, observation):
         if observation.in_combat is True:
             self._engaged = True
             self._state = IN_COMBAT
             self._out_of_combat_streak = 0
-            self._disengage_started_at = None
+            self._clean_run_started_at = None
             health_reason = self._health_gate(observation)
             if health_reason in (REASON_HEALTH_RATIO_BELOW_LOW,
                                  REASON_HEALTH_RATIO_BELOW_CRITICAL):
@@ -327,17 +390,16 @@ class CombatStateMachine:
             return StepResult(self._state, DECISION_CONTINUE_ATTACK, ())
 
         if observation.in_combat is False:
-            if self._state in (PRECHECK, ENGAGING):
-                # Not started (or dispatched but unconfirmed) and not in
-                # combat: a precheck pass, or a fight that ended before any
-                # confirmation. Confirmation rules still apply; the window
-                # starts at this sample, so the first confirmation is
-                # possible no earlier than the next.
-                self._disengage_started_at = observation.sampled_at
+            if self._state == PRECHECK:
+                # Precheck keeps its own gate bookkeeping: the engaged flag
+                # alone distinguishes "start advised/dispatched" from "never
+                # started", and the window opens on the engaged path.
+                return self._precheck(observation, opening=True)
             return self._observe_disengage(observation)
 
         # in_combat unknown: never counts toward any confirmation.
         self._out_of_combat_streak = 0
+        self._clean_run_started_at = None
         if self._state == PRECHECK and self._engaged:
             # An attack was dispatched but combat is not yet confirmed.
             return StepResult(ENGAGING, DECISION_HOLD_AND_OBSERVE,
@@ -366,32 +428,42 @@ class CombatStateMachine:
         # it resets the streak and never counts toward confirmation.
         health_unknown_now = False
         self._state = DISENGAGING
-        if self._disengage_started_at is None:
-            self._disengage_started_at = observation.sampled_at
         if observation.in_combat is not False:
-            # Unknown in-combat resets the streak and never counts.
+            # Unknown in-combat ends the clean run: no clean run is open
+            # until a later clean sample restarts one.
             self._out_of_combat_streak = 0
-        elif observation.health is None:
-            # Unknown health resets the streak and never counts.
+            self._clean_run_started_at = None
+        elif not observation.health_transmitted or observation.health is None:
+            # Unknown health ends the clean run and never counts.
             self._out_of_combat_streak = 0
+            self._clean_run_started_at = None
             health_unknown_now = True
         elif observation.health <= 0:
             # A transmitted zero seen here is death, decided next classify;
-            # for this step it merely does not count.
+            # for this step it merely ends the clean run.
             self._out_of_combat_streak = 0
+            self._clean_run_started_at = None
             health_unknown_now = False
         elif (self._last_known_health is not None
                 and observation.health < self._last_known_health):
-            # Health fell during the window: the window is invalid.
+            # Health fell during the window: the clean run is invalid and
+            # ends here; the minimum dwell must be covered by the current
+            # clean run only.
             self._out_of_combat_streak = 0
+            self._clean_run_started_at = None
             self._note_health(observation)
             health_unknown_now = False
         else:
             self._note_health(observation)
             self._out_of_combat_streak += 1
             health_unknown_now = False
+            if self._out_of_combat_streak == 1:
+                # The first clean sample of a run anchors its dwell clock;
+                # it cannot confirm by itself.
+                self._clean_run_started_at = observation.sampled_at
         if (self._out_of_combat_streak >= self.config.out_of_combat_confirmations
-                and (observation.sampled_at - self._disengage_started_at)
+                and self._clean_run_started_at is not None
+                and (observation.sampled_at - self._clean_run_started_at)
                 >= self.config.min_disengage_seconds):
             return self._finish(observation, REASON_OUT_OF_COMBAT_CONFIRMED)
         reasons = [REASON_OUT_OF_COMBAT_NOT_YET_CONFIRMED]
@@ -405,7 +477,9 @@ class CombatStateMachine:
             # Target killed: leave via the normal confirmed path so logout
             # safety still requires confirmed out-of-combat samples.
             self._state = DISENGAGING
-            self._disengage_started_at = observation.sampled_at
+            # The post-kill window starts with the next counted clean
+            # sample's clean-run anchor, not this sample.
+            self._clean_run_started_at = None
             self._out_of_combat_streak = 0
             return StepResult(self._state, DECISION_STOP_ATTACK, (reason,))
         if reason == REASON_TARGET_MISSING:

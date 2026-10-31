@@ -202,7 +202,7 @@ class TargetRangeTests(unittest.TestCase):
 
 class DisengagementTests(unittest.TestCase):
     def test_single_sample_never_confirms(self):
-        sm = CombatStateMachine()
+        sm = CombatStateMachine(start_sent=True)
         step = sm.step(obs(in_combat=False))
         self.assertEqual(step.state, DISENGAGING)
         self.assertEqual(step.decision, DECISION_HOLD_AND_OBSERVE)
@@ -319,21 +319,50 @@ class DeathGhostTests(unittest.TestCase):
 
 class StartAndEngageTests(unittest.TestCase):
     def test_engaging_waits_then_confirms_combat(self):
-        # An attack dispatched during precheck engages immediately; an
-        # unconfirmed combat flag then holds until a sample confirms it.
+        # An attack dispatched during precheck engages on the first
+        # confirmed in-combat sample; an unconfirmed combat flag is
+        # uninformative and holds in precheck (fix-3 semantics).
         sm = CombatStateMachine(start_sent=True)
         step = sm.step(obs(in_combat=None))
-        self.assertEqual(step.state, ENGAGING)
-        self.assertEqual(step.decision, DECISION_HOLD_AND_OBSERVE)
+        self.assertEqual(step.state, PRECHECK)
+        self.assertNotEqual(step.decision, DECISION_START_ATTACK)
         step = sm.step(obs(in_combat=True))
         self.assertEqual(step.state, IN_COMBAT)
         self.assertEqual(step.decision, DECISION_CONTINUE_ATTACK)
 
-    def test_precheck_unknown_combat_takes_no_action(self):
+    def test_precheck_unknown_combat_advises_start_attack(self):
+        # Second-round spec: unknown combat never authorizes an action (S6);
+        # only a confirmed non-combat sample may advise start_attack (S7).
         sm = CombatStateMachine()
         step = sm.step(obs(in_combat=None))
         self.assertEqual(step.state, PRECHECK)
-        self.assertEqual(step.decision, DECISION_NONE)
+        self.assertNotEqual(step.decision, DECISION_START_ATTACK)
+        second = sm.step(obs(in_combat=False))
+        self.assertEqual(second.state, PRECHECK)
+        self.assertEqual(second.decision, DECISION_START_ATTACK)
+        third = sm.step(obs(in_combat=False))
+        self.assertNotEqual(third.decision, DECISION_START_ATTACK)
+
+    def test_advisory_start_attack_opens_recovery_on_next_noncombat_sample(self):
+        # A pending advisory start could already have entered combat, so a
+        # later non-combat sample is handled as recovery, not re-advising.
+        sm = CombatStateMachine()
+        first = sm.step(obs(now=0.0, in_combat=False))
+        self.assertEqual(first.decision, DECISION_START_ATTACK)
+        second = sm.step(obs(now=1.0, in_combat=False))
+        self.assertEqual(second.state, DISENGAGING)
+        self.assertNotEqual(second.decision, DECISION_START_ATTACK)
+
+    def test_advisory_start_attack_unknown_combat_stays_precheck(self):
+        # A pending advisory start with an uninformative combat flag must
+        # not open a recovery window: it stays precheck, never disengaging.
+        sm = CombatStateMachine()
+        first = sm.step(obs(now=0.0, in_combat=False))
+        self.assertEqual(first.decision, DECISION_START_ATTACK)
+        second = sm.step(obs(now=1.0, in_combat=None))
+        self.assertEqual(second.state, PRECHECK)
+        self.assertNotEqual(second.state, DISENGAGING)
+        self.assertNotEqual(second.decision, DECISION_START_ATTACK)
 
     def test_health_unknown_in_combat_holds(self):
         sm = CombatStateMachine()
@@ -519,6 +548,157 @@ class AdvisoryIntegrationTests(unittest.TestCase):
                           if 'phase' in item])
         self.assertIn('advisory_final_state', advised)
         self.assertTrue(any('advisory_pre_phase' in item for item in advised['phases']))
+
+
+class ControllerAcceptanceFixTests(unittest.TestCase):
+    """Tests demanded by the controller acceptance round (fixes 1-3)."""
+
+    def test_dwell_restarts_after_health_drop(self):
+        # Fix 1: a contaminated window must not confirm via three clean
+        # samples that only span 0.2s; the dwell must be covered by the
+        # current clean run alone.
+        cfg = CombatSMConfig(out_of_combat_confirmations=3,
+                             min_disengage_seconds=2.0)
+        # start_sent: the unit is recovering from a dispatched fight, so the
+        # first non-combat sample opens the window (precheck with no start
+        # never does).
+        sm = CombatStateMachine(cfg, start_sent=True)
+        drive(sm, [obs(now=1.0, health=100, in_combat=False)])
+        drive(sm, [obs(now=2.0, health=92, in_combat=False)])
+        steps = drive(sm, [obs(now=9.0, health=92, in_combat=False),
+                           obs(now=9.1, health=92, in_combat=False),
+                           obs(now=9.2, health=92, in_combat=False)])
+        self.assertEqual(steps[2].state, DISENGAGING)
+        self.assertNotEqual(sm.state, DISENGAGED_CONFIRMED)
+        # Only once the clean run itself spans the dwell can it confirm.
+        final = sm.step(obs(now=11.2, health=92, in_combat=False))
+        self.assertEqual(final.state, DISENGAGED_CONFIRMED)
+
+    def test_dwell_restarts_after_unknown_health(self):
+        cfg = CombatSMConfig(out_of_combat_confirmations=3,
+                             min_disengage_seconds=2.0)
+        # start_sent: the unit is recovering from a dispatched fight, so the
+        # first non-combat sample opens the window (precheck with no start
+        # never does).
+        sm = CombatStateMachine(cfg, start_sent=True)
+        drive(sm, [obs(now=1.0, health=100, in_combat=False)])
+        drive(sm, [obs(now=2.0, health=100, in_combat=False, transmitted=False)])
+        steps = drive(sm, [obs(now=9.0, health=100, in_combat=False),
+                           obs(now=9.1, health=100, in_combat=False),
+                           obs(now=9.2, health=100, in_combat=False)])
+        self.assertEqual(steps[2].state, DISENGAGING)
+        self.assertNotEqual(sm.state, DISENGAGED_CONFIRMED)
+        final = sm.step(obs(now=11.2, health=100, in_combat=False))
+        self.assertEqual(final.state, DISENGAGED_CONFIRMED)
+
+    def test_dwell_restarts_after_unknown_in_combat(self):
+        cfg = CombatSMConfig(out_of_combat_confirmations=3,
+                             min_disengage_seconds=2.0)
+        # start_sent: the unit is recovering from a dispatched fight, so the
+        # first non-combat sample opens the window (precheck with no start
+        # never does).
+        sm = CombatStateMachine(cfg, start_sent=True)
+        drive(sm, [obs(now=1.0, health=100, in_combat=False)])
+        drive(sm, [obs(now=2.0, health=100, in_combat=None)])
+        steps = drive(sm, [obs(now=9.0, health=100, in_combat=False),
+                           obs(now=9.1, health=100, in_combat=False),
+                           obs(now=9.2, health=100, in_combat=False)])
+        self.assertEqual(steps[2].state, DISENGAGING)
+        self.assertNotEqual(sm.state, DISENGAGED_CONFIRMED)
+        final = sm.step(obs(now=11.2, health=100, in_combat=False))
+        self.assertEqual(final.state, DISENGAGED_CONFIRMED)
+
+    def test_clean_run_spanning_dwell_confirms(self):
+        # Spec S1: a completely clean run spanning the dwell must confirm;
+        # guards against a fix that can never confirm anything.
+        cfg = CombatSMConfig(out_of_combat_confirmations=3,
+                             min_disengage_seconds=2.0)
+        sm = CombatStateMachine(cfg, start_sent=True)
+        drive(sm, [obs(now=0.0, health=100, in_combat=False)])
+        steps = drive(sm, [obs(now=9.0, health=100, in_combat=False),
+                           obs(now=10.0, health=100, in_combat=False),
+                           obs(now=11.2, health=100, in_combat=False)])
+        self.assertEqual(steps[2].state, DISENGAGED_CONFIRMED)
+
+    def test_clean_run_can_confirm_after_its_own_span(self):
+        # Spec S3: after a contamination reset, once the new clean run
+        # itself spans the dwell, confirmation is allowed again.
+        cfg = CombatSMConfig(out_of_combat_confirmations=3,
+                             min_disengage_seconds=2.0)
+        sm = CombatStateMachine(cfg, start_sent=True)
+        drive(sm, [obs(now=1.0, health=100, in_combat=False),
+                   obs(now=2.0, health=92, in_combat=False)])
+        drive(sm, [obs(now=9.0, health=92, in_combat=False),
+                   obs(now=9.1, health=92, in_combat=False),
+                   obs(now=9.2, health=92, in_combat=False)])
+        self.assertNotEqual(sm.state, DISENGAGED_CONFIRMED)
+        final = sm.step(obs(now=11.2, health=92, in_combat=False))
+        self.assertEqual(final.state, DISENGAGED_CONFIRMED)
+
+    def test_direct_view_untransmitted_zero_is_not_dead(self):
+        # Fix 2: the decision core itself must respect health_transmitted,
+        # even for a directly constructed view (no caller normalization).
+        view = ObservationView(sampled_at=0.0, health=0, max_health=70,
+                               health_transmitted=False, in_combat=True,
+                               target_present=True, target_health=50)
+        sm = CombatStateMachine()
+        step = sm.step(view)
+        self.assertNotEqual(step.state, DEAD)
+        self.assertEqual(step.state, IN_COMBAT)
+        self.assertIn(REASON_HEALTH_UNKNOWN, step.reasons)
+        self.assertNotIn(REASON_SELF_DEAD, step.reasons)
+
+    def test_direct_view_transmitted_zero_is_dead(self):
+        view = ObservationView(sampled_at=0.0, health=0, max_health=70,
+                               health_transmitted=True, in_combat=True,
+                               target_present=True, target_health=50)
+        sm = CombatStateMachine()
+        step = sm.step(view)
+        self.assertEqual(step.state, DEAD)
+        self.assertEqual(step.reasons, (REASON_SELF_DEAD,))
+
+    def test_direct_view_untransmitted_low_is_not_low_health(self):
+        # Untransmitted raw 10 with a 70 baseline must not read as the low
+        # ratio; only the transmitted flag can ground any ratio decision.
+        view = ObservationView(sampled_at=0.0, health=10, max_health=70,
+                               health_transmitted=False, in_combat=True,
+                               target_present=True, target_health=50)
+        sm = CombatStateMachine()
+        step = sm.step(view)
+        self.assertNotEqual(step.state, LOW_HEALTH_EXIT)
+        self.assertNotIn(REASON_HEALTH_RATIO_BELOW_LOW, step.reasons)
+        self.assertNotIn(REASON_HEALTH_RATIO_BELOW_CRITICAL, step.reasons)
+
+    def test_precheck_start_attack_is_reachable(self):
+        # Fix 3 + second-round spec (S7): the decision is reachable on a
+        # confirmed non-combat sample, so the low-exit latch assertion
+        # below is not vacuous.
+        sm = CombatStateMachine()
+        step = sm.step(obs(in_combat=False, health=100, target_present=True,
+                           distance=2.0))
+        self.assertEqual(step.state, PRECHECK)
+        self.assertEqual(step.decision, DECISION_START_ATTACK)
+
+    def test_low_exit_latch_never_emits_start_attack(self):
+        # First prove reachability in the same setup, then prove the latch.
+        reachable = CombatStateMachine()
+        first = reachable.step(obs(in_combat=False, health=100))
+        self.assertEqual(first.decision, DECISION_START_ATTACK)
+        sm = CombatStateMachine()
+        drive(sm, [obs(now=0.0, in_combat=False, health=100)])
+        drive(sm, [obs(now=1.0, in_combat=True, health=10)])
+        self.assertEqual(sm.state, LOW_HEALTH_EXIT)
+        followups = [obs(now=2.0, in_combat=False, health=108),
+                     obs(now=3.0, in_combat=None, health=108),
+                     obs(now=4.0, in_combat=False, health=108,
+                         target_present=False),
+                     obs(now=5.0, in_combat=False, health=108),
+                     obs(now=6.0, in_combat=None, health=None,
+                         transmitted=False)]
+        for o in followups:
+            step = sm.step(o)
+            self.assertEqual(step.state, LOW_HEALTH_EXIT)
+            self.assertNotEqual(step.decision, DECISION_START_ATTACK)
 
 
 if __name__ == '__main__':
