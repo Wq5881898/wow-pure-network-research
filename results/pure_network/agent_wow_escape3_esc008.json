@@ -1,0 +1,57 @@
+{
+  "run_id": "esc008",
+  "scope": "production exit path against a persistent hostile",
+  "status": "unknown",
+  "initial_self": {
+    "health": 108,
+    "max_health": 108,
+    "ghost": false,
+    "in_combat": false,
+    "position": [
+      -708.9583129882812,
+      -4348.79443359375,
+      49.04478073120117
+    ]
+  },
+  "target": {
+    "guid": "17379391014434961375",
+    "entry": 3124,
+    "level": 3,
+    "health": 71,
+    "distance": 5.23
+  },
+  "start_attack": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {}
+  },
+  "combat_engaged": true,
+  "hp_before_exit": 83,
+  "finalize": {
+    "initial_self": {
+      "health": 83,
+      "ghost": false,
+      "in_combat": true
+    },
+    "combat_recovery": {
+      "combat_cleared": true,
+      "elapsed_s": 8.823,
+      "sample_count": 18,
+      "requests": "observation + one retreat",
+      "reason": null,
+      "retreat_outcome": null
+    },
+    "status": "resolved",
+    "logout": {
+      "status": "closed",
+      "reply": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "result": {
+          "status": "closed"
+        }
+      }
+    }
+  },
+  "error": "URLError: <urlopen error [Errno 111] Connection refused>"
+}
