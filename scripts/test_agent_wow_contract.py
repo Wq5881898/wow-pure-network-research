@@ -5,6 +5,7 @@ import unittest
 from unittest.mock import patch
 from pathlib import Path
 
+from agent_wow_checkpoint import plan_identity
 from agent_wow_contract import Action, Observation, TaskExecutor
 
 
@@ -169,7 +170,10 @@ class TaskExecutorTests(unittest.TestCase):
         self.assertNotIn('skipped_verified', [r['status'] for r in report['records']])
 
     def test_checkpoint_with_wrong_run_id_is_rejected(self):
-        self.checkpoint.write_text(json.dumps({'schema': 1, 'run_id': 'other',
+        self.checkpoint.write_text(json.dumps({'schema': 2, 'run_id': 'other',
+                                                'status': 'unknown', 'plan_digest': 'deadbeef',
+                                                'plan': [{'id': 'a', 'kind': 'noop', 'params': {},
+                                                          'side_effecting': False, 'timeout': 15.0}],
                                                 'completed': ['a'], 'attempted': [], 'records': []}))
         backend = FakeBackend(effects={'a': {}, 'b': {}})
         report = self.executor(backend).run(plan(expectation_a=lambda b, a, e: True,
@@ -179,8 +183,11 @@ class TaskExecutorTests(unittest.TestCase):
         self.assertEqual(json.loads(self.checkpoint.read_text())['run_id'], 'other')
 
     def test_resume_rejects_invalid_checkpoint_without_overwrite_or_dispatch(self):
-        original = {'schema': 1, 'run_id': 'other', 'completed': [],
-                    'attempted': ['a'], 'records': []}
+        original = {'schema': 2, 'run_id': 'other', 'status': 'unknown',
+                    'plan_digest': 'deadbeef',
+                    'plan': [{'id': 'a', 'kind': 'noop', 'params': {},
+                              'side_effecting': True, 'timeout': 15.0}],
+                    'completed': [], 'attempted': ['a'], 'records': []}
         self.checkpoint.write_text(json.dumps(original), encoding='utf-8')
         backend = FakeBackend()
         report = self.executor(backend).run(
@@ -213,7 +220,14 @@ class TaskExecutorTests(unittest.TestCase):
         self.assertEqual(self.checkpoint.read_bytes(), original)
 
     def test_checkpoint_flush_failure_preserves_old_bytes_and_blocks_dispatch(self):
-        original = b'{"schema":1,"run_id":"run","completed":[],"attempted":[],"records":[]}'
+        # A full schema-2 checkpoint with a dispatched-but-unconfirmed side
+        # effect: if the next durable save fails, the old bytes (which still
+        # record the attempt) must survive and nothing may be dispatched.
+        original = json.dumps({'schema': 2, 'run_id': 'run', 'status': 'unknown',
+                               'plan_digest': plan_identity([Action('a', 'noop', {}, side_effecting=True)]),
+                               'plan': [{'id': 'a', 'kind': 'noop', 'params': {},
+                                         'side_effecting': True, 'timeout': 15.0}],
+                               'completed': [], 'attempted': ['a'], 'records': []}).encode('utf-8')
         self.checkpoint.write_bytes(original)
         backend = FakeBackend()
         executor = self.executor(backend)
@@ -223,9 +237,19 @@ class TaskExecutorTests(unittest.TestCase):
         self.assertEqual(backend.calls, [])
         self.assertEqual(self.checkpoint.read_bytes(), original)
         self.assertEqual(list(self.folder.glob('checkpoint.json.*.tmp')), [])
+        # The preserved disk evidence keeps an explicit resume from resending.
+        report = self.executor(FakeBackend()).run(
+            [Action('a', 'noop', side_effecting=True)], resume=True)
+        self.assertEqual(report['status'], 'unknown')
+        self.assertEqual(backend.calls, [])
+        self.assertIn('refusing to resend', report['results'][-1]['detail'])
 
     def test_checkpoint_replace_failure_preserves_old_bytes_and_blocks_dispatch(self):
-        original = b'{"schema":1,"run_id":"run","completed":[],"attempted":[],"records":[]}'
+        original = json.dumps({'schema': 2, 'run_id': 'run', 'status': 'unknown',
+                               'plan_digest': plan_identity([Action('a', 'noop', {}, side_effecting=True)]),
+                               'plan': [{'id': 'a', 'kind': 'noop', 'params': {},
+                                         'side_effecting': True, 'timeout': 15.0}],
+                               'completed': [], 'attempted': ['a'], 'records': []}).encode('utf-8')
         self.checkpoint.write_bytes(original)
         backend = FakeBackend()
         executor = self.executor(backend)
@@ -234,6 +258,13 @@ class TaskExecutorTests(unittest.TestCase):
                 executor.run([Action('a', 'noop', side_effecting=True)], resume=True)
         self.assertEqual(backend.calls, [])
         self.assertEqual(self.checkpoint.read_bytes(), original)
+        # The preserved disk evidence keeps an explicit resume from resending.
+        backend2 = FakeBackend()
+        report = self.executor(backend2).run(
+            [Action('a', 'noop', side_effecting=True)], resume=True)
+        self.assertEqual(report['status'], 'unknown')
+        self.assertEqual(backend2.calls, [])
+        self.assertIn('refusing to resend', report['results'][-1]['detail'])
 
     def test_checkpoint_records_attempt_before_backend_dispatch(self):
         checkpoint = self.checkpoint

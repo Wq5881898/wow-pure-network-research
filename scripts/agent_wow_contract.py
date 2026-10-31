@@ -7,6 +7,10 @@ Rules enforced here:
   resumed run refuses to resend it; it re-reads state instead.
 - Every action is recorded as one structured JSON line and the checkpoint is
   rewritten after each action.
+- A checkpoint-bound run takes a cooperative per-checkpoint lock before any
+  dispatch decision, re-reads the durable checkpoint under the lock (never a
+  construction-time cache), and validates plan identity plus record/status
+  semantics; anything untrusted blocks without dispatch or overwrite.
 """
 import json
 import os
@@ -15,7 +19,12 @@ import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
+from agent_wow_checkpoint import (
+    SCHEMA_VERSION, CheckpointLock, CheckpointRejected, plan_identity,
+    read_checkpoint)
+
 SUCCESS = 'success'
+VERIFIED = 'success_verified'
 FAILURE = 'failure'
 TIMEOUT = 'timeout'
 UNKNOWN = 'unknown'
@@ -90,38 +99,67 @@ class TaskExecutor:
         self.records = []
         self.completed = []
         self.attempted = []
+        self.completed_verified = set()
+        self.plan_digest = None
+        self._plan_entries = []
         self._checkpoint_rejected = None
         self._checkpoint_loaded = False
-        self._checkpoint_present = bool(self.checkpoint_path and self.checkpoint_path.exists())
-        self._load_checkpoint()
+        self._lock = (CheckpointLock(self.checkpoint_path, run_id)
+                      if self.checkpoint_path else None)
+
+    def _adopt_checkpoint(self, data, loaded=True):
+        self.completed = list(data['completed'])
+        self.attempted = list(data['attempted'])
+        self.records = list(data['records'])
+        self.completed_verified = {
+            record['action_id'] for record in self.records
+            if record.get('status') == SUCCESS and 'action_id' in record}
+        self._checkpoint_loaded = loaded
+
+    def _reject(self, detail):
+        self._checkpoint_rejected = detail
+        self._checkpoint_loaded = False
+        self.completed = []
+        self.attempted = []
+        self.records = []
+        self.completed_verified = set()
 
     def _load_checkpoint(self):
-        if not (self.checkpoint_path and self.checkpoint_path.exists()):
+        """Re-read and validate the durable checkpoint. Caller must hold the
+        lock; construction-time state is never trusted for dispatch."""
+        if not self.checkpoint_path:
+            return
+        if not self.checkpoint_path.exists():
+            # No durable checkpoint yet: fresh state, and a resume has
+            # nothing to resume from.
+            self._adopt_checkpoint({'status': None, 'completed': [],
+                                    'attempted': [], 'records': []}, loaded=False)
             return
         try:
-            data = json.loads(self.checkpoint_path.read_text(encoding='utf-8'))
-            completed = data['completed']
-            records = data['records']
-            attempted = data['attempted']
-            if (data.get('schema') != 1 or data.get('run_id') != self.run_id
-                    or not isinstance(completed, list) or not isinstance(records, list)
-                    or not isinstance(attempted, list) or not all(isinstance(x, str) for x in completed + attempted)
-                    or not all(isinstance(x, dict) for x in records)):
-                raise ValueError('checkpoint schema or run identity is invalid')
-        except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError) as exc:
-            self._checkpoint_rejected = f'{type(exc).__name__}: {exc}'
+            data = read_checkpoint(self.checkpoint_path, self.run_id,
+                                   self.plan_digest)
+        except CheckpointRejected as exc:
+            self._reject(str(exc))
             return
-        self.completed = list(completed)
-        self.records = list(records)
-        self.attempted = list(attempted)
-        self._checkpoint_loaded = True
+        if data.get('plan_digest') is None and (data.get('completed')
+                                                or data.get('attempted')
+                                                or data.get('records')):
+            # A writer that skipped plan binding must not claim durable
+            # progress: without a digest a resume cannot prove the plan is
+            # the same one that produced those records.
+            self._reject('plan identity is not bound but the checkpoint '
+                         'already records completed/attempted actions')
+            return
+        self._adopt_checkpoint(data)
 
     def _write_checkpoint(self, status):
         if not self.checkpoint_path:
             return
         self.checkpoint_path.parent.mkdir(parents=True, exist_ok=True)
         payload = json.dumps({
-            'schema': 1, 'run_id': self.run_id, 'status': status,
+            'schema': SCHEMA_VERSION, 'run_id': self.run_id, 'status': status,
+            'plan_digest': self.plan_digest,
+            'plan': list(self._plan_entries),
             'completed': self.completed, 'attempted': self.attempted,
             'records': self.records}, indent=2) + '\n'
         temporary = None
@@ -134,7 +172,7 @@ class TaskExecutor:
                 handle.flush()
                 os.fsync(handle.fileno())
             os.replace(temporary, self.checkpoint_path)
-            self._checkpoint_present = True
+            self._checkpoint_loaded = True
         finally:
             if temporary is not None and temporary.exists():
                 temporary.unlink()
@@ -155,20 +193,63 @@ class TaskExecutor:
             return True
         return bool(callable_(before, after, evidence))
 
+    def _blocked(self, detail):
+        return {'run_id': self.run_id, 'status': UNKNOWN,
+                'results': [Result('checkpoint', 'checkpoint', UNKNOWN, detail).to_dict()],
+                'records': list(self.records), 'completed': list(self.completed)}
+
     def run(self, actions, resume=False):
         results = []
         started = time.monotonic()
         status = SUCCESS
-        if not resume and self._checkpoint_present:
-            detail = 'run checkpoint already exists; explicit reconciliation/resume required'
-            return {'run_id': self.run_id, 'status': UNKNOWN,
-                    'results': [Result('checkpoint', 'checkpoint', UNKNOWN, detail).to_dict()],
-                    'records': list(self.records), 'completed': list(self.completed)}
+        try:
+            self.plan_digest = plan_identity(actions)
+        except ValueError as exc:
+            return self._blocked(f'invalid action plan: {exc}')
+        self._plan_entries = [{'id': action.id, 'kind': action.kind,
+                               'params': action.params,
+                               'side_effecting': bool(action.side_effecting),
+                               'timeout': float(action.timeout)}
+                              for action in actions]
+        if self._lock is None:
+            # Pure in-memory mode stays compatible, but it has no
+            # cross-process persistence or dedup ability.
+            if not self.checkpoint_path and resume:
+                return self._blocked(
+                    'resume requested without a checkpoint path; nothing durable to resume')
+            self._adopt_checkpoint({'status': None, 'completed': [],
+                                    'attempted': [], 'records': []})
+        else:
+            try:
+                self._lock.acquire()
+            except CheckpointRejected as exc:
+                return self._blocked(str(exc))
+            try:
+                self._load_checkpoint()
+            except OSError as exc:
+                # Durable write faults (fsync/replace) stay visible to the
+                # caller; the finally below still releases the lock.
+                self._lock.release()
+                raise
+            try:
+                return self._run_locked(actions, resume, started, results, status)
+            finally:
+                self._lock.release()
+        return self._run_locked(actions, resume, started, results, status)
+
+    def _run_locked(self, actions, resume, started, results, status):
+        durable_exists = bool(self.checkpoint_path) and self.checkpoint_path.exists()
+        if not resume and durable_exists and (self._checkpoint_loaded
+                                              or self._checkpoint_rejected):
+            # A normal run never takes over an existing run checkpoint,
+            # whether it validates or not; an untrusted file must be
+            # reconciled explicitly.
+            return self._blocked(
+                self._checkpoint_rejected
+                or 'run checkpoint already exists; explicit reconciliation/resume required')
         if resume and not self._checkpoint_loaded:
-            detail = self._checkpoint_rejected or 'resume checkpoint missing'
-            return {'run_id': self.run_id, 'status': UNKNOWN,
-                    'results': [Result('checkpoint', 'checkpoint', UNKNOWN, detail).to_dict()],
-                    'records': list(self.records), 'completed': list(self.completed)}
+            return self._blocked(
+                self._checkpoint_rejected or 'resume checkpoint missing')
         if self._checkpoint_rejected:
             self._record({'action_id': 'checkpoint', 'kind': 'checkpoint', 'status': SKIPPED,
                           'detail': self._checkpoint_rejected, 'elapsed_ms': 0, 'evidence': {}})
@@ -192,7 +273,20 @@ class TaskExecutor:
                     self._record({'action_id': action.id, 'kind': action.kind,
                                   'status': SKIPPED, 'detail': 'checkpoint says done and postcondition holds',
                                   'elapsed_ms': 0, 'evidence': {}})
+                    if action.id not in self.completed_verified:
+                        self.completed_verified.add(action.id)
+                        self._write_checkpoint(status)
                     continue
+                # The durable record says done but the postcondition no
+                # longer holds: never silently re-dispatch a (possibly
+                # side-effecting) completed action; stop for reconciliation.
+                detail = 'completed action postcondition no longer holds; reconcile required'
+                self._record({'action_id': action.id, 'kind': action.kind, 'status': UNKNOWN,
+                              'detail': detail, 'elapsed_ms': 0, 'evidence': {}})
+                results.append(Result(action.id, action.kind, UNKNOWN, detail))
+                status = UNKNOWN
+                self._write_checkpoint(status)
+                break
             if resume and action.side_effecting and action.id in self.attempted:
                 # The previous run dispatched this side effect but could not
                 # confirm it. Read the state; never resend on assumption.
@@ -200,9 +294,12 @@ class TaskExecutor:
                 confirmed = (action.expectation is not None
                              and self._check(action.expectation, current, current, {}))
                 if confirmed:
-                    self._record({'action_id': action.id, 'kind': action.kind, 'status': SKIPPED,
-                                  'detail': 'previous side effect now confirmed by state',
+                    self._record({'action_id': action.id, 'kind': action.kind,
+                                  'status': SKIPPED, 'detail': 'previous side effect now confirmed by state',
                                   'elapsed_ms': 0, 'evidence': {}})
+                    if action.id not in self.completed_verified:
+                        self.completed_verified.add(action.id)
+                        self._write_checkpoint(status)
                     continue
                 detail = 'previous side effect not confirmed; refusing to resend'
                 self._record({'action_id': action.id, 'kind': action.kind, 'status': UNKNOWN,
@@ -227,7 +324,13 @@ class TaskExecutor:
             if action.side_effecting:
                 # Record the dispatch before it happens so a crash or a lost
                 # reply still leaves evidence that a side effect may exist.
-                self.attempted.append(action.id)
+                if action.id not in self.attempted:
+                    self.attempted.append(action.id)
+                self._write_checkpoint(status)
+            else:
+                # Persist the run checkpoint at least once before the first
+                # dispatch so a peer that starts later sees this run exists
+                # instead of racing into a double first-start.
                 self._write_checkpoint(status)
             try:
                 evidence = self.backend.execute(action, timeout=effective_timeout) or {}
@@ -279,6 +382,7 @@ class TaskExecutor:
             results.append(Result(action.id, action.kind, outcome, detail, elapsed, evidence))
             if outcome == SUCCESS:
                 self.completed.append(action.id)
+                self.completed_verified.add(action.id)
             else:
                 status = outcome
                 self._write_checkpoint(status)
