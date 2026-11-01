@@ -8,7 +8,7 @@ from agent_wow_combat_state_machine import (
 
 
 def settle(rpc,drain,position,now_ms,budget=100,advisory=False,config=None,
-           escape_path_planned=False):
+           escape_path_planned=False,enforce=False):
     history=[];deadline=time.monotonic()+budget
     advisor=CombatStateMachine(config or CombatSMConfig(),
                                escape_path_planned=escape_path_planned) if advisory else None
@@ -30,7 +30,8 @@ def settle(rpc,drain,position,now_ms,budget=100,advisory=False,config=None,
                                                   'decision':step.decision,'reasons':list(step.reasons)}})
         # One explicit defensive phase; controller archives zero-damage and misses.
         phase,state=fight(rpc,drain,enemy['guid'],position,now_ms,budget=min(35,max(1,deadline-time.monotonic())),
-                          advisory=advisory,config=config,escape_path_planned=escape_path_planned)
+                          advisory=advisory,config=config,escape_path_planned=escape_path_planned,
+                          enforce=enforce)
         history.append({'target':enemy['guid'],'phase':phase})
         if phase['outcome']=='health_budget':
             # Do not drop the connection. Stop further offense and observe the

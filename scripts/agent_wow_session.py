@@ -1,4 +1,4 @@
-"""Shared pure-network session bootstrap and a contract-shaped backend.
+﻿"""Shared pure-network session bootstrap and a contract-shaped backend.
 
 The bootstrap is the same code path the read-only bridge probe uses, so both
 entry points exercise the same module build, relay and login sequence.
@@ -96,7 +96,7 @@ class LiveSession:
 class PureNetworkBackend:
     """Contract backend over the pure-network bridge."""
 
-    def __init__(self, run_id, self_guid='9', advisory=False):
+    def __init__(self, run_id, self_guid='9', advisory=False, enforce=False):
         self.run_id = run_id
         self.self_guid = self_guid
         # Advisory records the combat recovery state machine's decisions into
@@ -104,6 +104,10 @@ class PureNetworkBackend:
         # strings or start_sent_once semantics. It is opt-in and never
         # enforces a decision.
         self.advisory = bool(advisory)
+        # Enforcement: the combat recovery state machine may veto further
+        # dispatch. It is off by default and separate from the advisory
+        # recording, because it changes what the game is asked to do.
+        self.enforce = bool(enforce)
         self.packets = []
         self.cursor = 0
         self.session_id = None
@@ -595,7 +599,7 @@ class PureNetworkBackend:
         route = self.escape_route(refresh=True)
         phase, _observed = fight(self.rpc, self.drain, self.target['guid'], list(reference)[:3],
                                  self.stream_now, budget=params.get('budget', 35),
-                                 advisory=self.advisory,
+                                 advisory=self.advisory, enforce=self.enforce,
                                  escape_path_planned=bool(route))
         return {'outcome': phase['outcome'], 'phase': phase,
                 'side_effect_applied': bool(phase.get('start_sent_once')),
@@ -763,7 +767,8 @@ class PureNetworkBackend:
         if state['self']['in_combat'] is not True:
             return {'phases': [], 'safe_to_logout': True}
         outcome, _state = settle(self.rpc, self.drain, self.current_position or self.start_position,
-                                 self.stream_now, advisory=self.advisory)
+                                 self.stream_now, advisory=self.advisory,
+                                 enforce=self.enforce)
         return {'phases': outcome['phases'], 'safe_to_logout': outcome['safe_to_logout']}
 
     def _do_logout(self, params, timeout):

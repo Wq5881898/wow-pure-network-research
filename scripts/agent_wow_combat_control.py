@@ -4,7 +4,22 @@ import time
 
 from agent_wow_combat_state_machine import (
     CombatSMConfig, CombatStateMachine, ObservationView,
-    distance_confirmed_for)
+    DECISION_ABORT_UNIT, DECISION_REQUEST_ESCAPE, DECISION_STOP_ATTACK,
+    LOW_HEALTH_EXIT, TARGET_OUT_OF_RANGE, distance_confirmed_for)
+
+# The decisions that mean "no further dispatch". The machine is the authority
+# when enforcement is on; the fight ends and the recovery branch takes over.
+VETO_DECISIONS = (DECISION_STOP_ATTACK, DECISION_REQUEST_ESCAPE,
+                   DECISION_ABORT_UNIT)
+
+# How an enforced veto is reported. These are the outcomes the rest of the
+# project already understands, so the contract is not widened:
+#   health_budget   - the character stopped fighting because it was hurt
+#                     (the supervisor already holds defensively on it)
+#   target_left_melee - the character stopped chasing a target that left
+#   budget_exhausted - the machine gave up on the unit
+ENFORCED_OUTCOME = {LOW_HEALTH_EXIT: 'health_budget',
+                    TARGET_OUT_OF_RANGE: 'target_left_melee'}
 
 
 def advisory_decision(me, target, distance, position_source, now,
@@ -47,11 +62,12 @@ def estimated_position(obj, now_ms):
 
 
 def fight(rpc, drain, target_guid, self_position, now_ms, budget=18,
-          advisory=False, config=None, escape_path_planned=False):
+          advisory=False, config=None, escape_path_planned=False, enforce=False):
     rows=[];start=time.monotonic();deadline=start+budget;sent=False;outcome='budget_exhausted';last_angle=None
     advisor=CombatStateMachine(config or CombatSMConfig(),
                                target_guid=target_guid,
                                escape_path_planned=escape_path_planned) if advisory else None
+    enforced=None
     observed=drain()
     try:
         while time.monotonic()<deadline:
@@ -70,10 +86,20 @@ def fight(rpc, drain, target_guid, self_position, now_ms, budget=18,
                 # Advisory only: recorded, never enforced this round.
                 step=advisor.step(ObservationView.from_mapping(
                     me, time.monotonic(), target=target, distance=distance,
-                    distance_confirmed=distance_confirmed_for(source)))
+                    distance_confirmed=distance_confirmed_for(source),
+                    target_max_health=target.get('max_health')))
                 row['advisory_state']=step.state
                 row['advisory_decision']=step.decision
                 row['advisory_reasons']=list(step.reasons)
+                if enforce and step.decision in VETO_DECISIONS:
+                    # The machine vetoes further dispatch. The fight ends here
+                    # and the recovery branch takes over; the attack that was
+                    # already sent is stopped by the finally below.
+                    row['enforced']=True
+                    enforced={'decision':step.decision,'state':step.state,
+                              'reasons':list(step.reasons)}
+                    outcome=ENFORCED_OUTCOME.get(step.state,'budget_exhausted')
+                    break
             if sent and distance > 5:
                 # A fleeing target must not drag an unverified pursuit into
                 # nearby packs. Stop this attempt; no automatic restart.
@@ -96,4 +122,6 @@ def fight(rpc, drain, target_guid, self_position, now_ms, budget=18,
     phase={'outcome':outcome,'start_sent_once':sent,'observations':rows,'stop':stop}
     if advisor is not None:
         phase['advisory_final_state']=advisor.state_name()
+    if enforced is not None:
+        phase['enforced']=enforced
     return phase,observed
