@@ -91,9 +91,28 @@ class CorpseRunTests(unittest.TestCase):
     def test_a_character_that_is_not_a_ghost_is_refused(self):
         backend = FakeBackend(self_objects=[Observation(health=108, ghost=False)])
         report = {}
-        result = run_corpse_run(backend, report=report, query_timeout=0.1, walk_timeout=0.1, reclaim_timeout=0.1)
+        result = run_corpse_run(backend, report=report, query_timeout=0.1,
+                                walk_timeout=0.1, reclaim_timeout=0.1)
         self.assertEqual(result['status'], 'not_a_ghost')
         self.assertNotIn('rpc:bridge.query_corpse', backend.requests)
+
+    def test_a_dead_character_is_released_before_the_corpse_is_queried(self):
+        # The server only makes the character a ghost after the release, and
+        # the corpse query needs the ghost. Skipping the release is why the
+        # first in-session death reported no corpse at all.
+        backend = FakeBackend(
+            events=[{'kind': 'corpse', 'corpse': {'found': True, 'map': 0,
+                                                  'position_xyz': [10.0, 0.0, 0.0]}}],
+            corpse=[10.0, 0.0, 0.0],
+            self_objects=[Observation(health=0, ghost=False),
+                          Observation(health=1, ghost=True),
+                          Observation(health=54, ghost=False)])
+        report = {}
+        result = run_corpse_run(backend, report=report, query_timeout=0.1,
+                                walk_timeout=0.1, reclaim_timeout=0.1)
+        self.assertIn('rpc:bridge.release_spirit', backend.requests)
+        self.assertEqual(result['status'], 'reclaimed')
+
 
     def test_a_missing_corpse_is_reported_not_faked(self):
         backend = FakeBackend(events=[], self_objects=[Observation()])
@@ -112,6 +131,23 @@ class CorpseRunTests(unittest.TestCase):
     def test_an_unwalkable_destination_is_reported_not_substituted(self):
         backend = FakeBackend(corpse=None)
         self.assertIsNone(plan_route(backend, [0.0, 0.0, 0.0], [1.0, 2.0, 3.0]))
+
+    def test_a_stale_bridge_position_is_detected_before_walking(self):
+        # A release teleports the ghost to the graveyard without telling the
+        # bridge, so the bridge still validates the path against the place
+        # the character fell at and rejects the first segment (revive02).
+        backend = FakeBackend(
+            events=[{'kind': 'corpse', 'corpse': {'found': True, 'map': 0,
+                                                  'position_xyz': [10.0, 0.0, 0.0]}}],
+            corpse=[10.0, 0.0, 0.0],
+            self_objects=[Observation(health=1, ghost=True)])
+        backend.submitted_position = [-700.0, -4340.0, 48.0]
+        report = {}
+        result = run_corpse_run(backend, report=report, query_timeout=0.1,
+                                walk_timeout=0.1, reclaim_timeout=0.1)
+        self.assertEqual(result['status'], 'bridge_position_stale')
+        self.assertGreater(result['bridge_position_drift'], 10.0)
+        self.assertNotIn('rpc:bridge.reclaim_corpse', backend.requests)
 
     def test_the_full_run_queries_walks_and_reclaims(self):
         backend = FakeBackend(

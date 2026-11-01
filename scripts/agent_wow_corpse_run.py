@@ -70,23 +70,62 @@ def plan_route(backend, start, destination):
 
 def run_corpse_run(backend, *, report, move_away_to=None, poll_interval=0.4,
                    query_timeout=15.0, walk_timeout=60.0, reclaim_timeout=20.0,
-                   sleep=time.sleep, clock=time.monotonic):
+                   release_timeout=20.0, sleep=time.sleep, clock=time.monotonic):
     """Reclaim the corpse: query it, walk to it, reclaim it, then move away.
 
-    The character must already be a ghost. The session must stay open: the
-    corpse query is a request/answer inside the session, and a session torn
-    down with the character dead leaves the corpse unreachably reported.
+    The character must be a ghost. A character that has just died is still
+    awaiting the release prompt: the server only turns it into a ghost after
+    the release (CMSG_RELEASE_SPIRIT, 0x15A), so the release is issued here
+    when the character is dead but not yet a ghost.
+
+    The session must stay open: the corpse query is a request/answer inside
+    the session, and a session torn down with the character dead leaves the
+    corpse unreachably reported.
     """
     result = {'status': 'unknown'}
     state = backend.drain()
     me = state['self']
+    if not me.get('ghost') and (me.get('health') or 0) == 0:
+        # Dead but not released yet: the ghost does not exist until the
+        # release is sent, and the corpse query needs the ghost.
+        result['release_spirit'] = backend.rpc('bridge.release_spirit', {})
+        deadline = clock() + release_timeout
+        while clock() < deadline:
+            sleep(poll_interval)
+            state = backend.drain()
+            me = state['self']
+            if me.get('ghost'):
+                break
     ghost = list((me.get('movement') or {}).get('position_xyzo') or [])[:3]
     result['ghost_position'] = ghost
+    result['ghost_released'] = bool(me.get('ghost'))
     if not me.get('ghost'):
         result['status'] = 'not_a_ghost'
         result['reason'] = 'the character is not a ghost; there is no corpse to run to'
         report['corpse_run'] = result
         return result
+
+    # The bridge validates every path against the position it tracked, and
+    # it only learns a new position when it walks or at login. A release
+    # teleports the ghost to the graveyard without telling the bridge, so
+    # the bridge still believes the character is where it fell. The first
+    # path segment would then be measured from the wrong place and rejected
+    # ("segment exceeds 15 yards"), which is what happened on 2026-11-01
+    # (revive02). The corpse run therefore has to run in a session that
+    # starts with the character already a ghost.
+    tracked = list(getattr(backend, 'submitted_position', None) or [])[:3]
+    if tracked:
+        result['bridge_tracked_position'] = tracked
+        drift = math.dist(ghost, tracked)
+        result['bridge_position_drift'] = round(drift, 3)
+        if drift > 10.0:
+            result['status'] = 'bridge_position_stale'
+            result['reason'] = (
+                'the bridge tracked position is %.1f yards from the ghost; log out '
+                'and log in again so the bridge starts from the ghost position'
+                % drift)
+            report['corpse_run'] = result
+            return result
 
     # The corpse object carries the player's own guid, so it is identified by
     # guid and never by a guessed value.
