@@ -169,7 +169,7 @@ ENDINGS = (ENDING_ESCAPE, ENDING_FINISH_TARGET, ENDING_FIGHT)
 
 def choose_combat_ending(*, self_health=None, self_max_health=0,
                           target_health=None, target_max_health=None,
-                          escape_route_available=False,
+                          escape_route_available=False, target_reachable=True,
                           health_floor_ratio=0.25, finish_ratio=0.35,
                           healthy_ratio=0.5):
     """How an unresolved combat should be ended: flee, kill the target, or fight on.
@@ -189,6 +189,12 @@ def choose_combat_ending(*, self_health=None, self_max_health=0,
         esc020: the target was at 22 of 71 HP and the character at 91 of 108,
         and escaping cost 60 damage and did not clear the combat; one hit
         would have ended it.
+      - a target that has BROKEN CONTACT cannot be killed from where the
+        character stands. On 2026-11-01 (huntD) the roaming caster backed
+        out of melee range, the rule still asked for the kill, the fight
+        refused to start ("preconditions_not_met") and the character died
+        standing there. So the kill is only offered when the target can
+        actually be reached.
       - below the health floor the character does not open a new fight.
     """
     ratio = (self_health / self_max_health) if (self_health is not None
@@ -201,7 +207,8 @@ def choose_combat_ending(*, self_health=None, self_max_health=0,
     if at_floor:
         # Too hurt to open a new fight; get out instead.
         return ENDING_ESCAPE
-    if (target_health and target_max_health
+    if (target_reachable
+            and target_health and target_max_health
             and target_health / target_max_health <= finish_ratio
             and ratio is not None and ratio >= healthy_ratio):
         return ENDING_FINISH_TARGET
@@ -357,26 +364,25 @@ class CombatStateMachine:
             reasons = base + (REASON_HEALTH_UNKNOWN,)
         else:
             reasons = base
-        if self._state == LOW_HEALTH_EXIT:
-            # The fight is over and the character must get out. How it gets
-            # out is decided by the shared ending rule, so the state machine
-            # cannot recommend the one thing that is fatal: idling while a
-            # hostile keeps hitting (esc003, esc010, esc013, esc014).
-            ending = choose_combat_ending(
-                self_health=observation.health,
-                self_max_health=observation.max_health,
-                target_health=observation.target_health,
-                target_max_health=observation.target_max_health,
-                escape_route_available=self.escape_path_planned)
-            if ending == ENDING_ESCAPE:
-                decision = DECISION_REQUEST_ESCAPE
-            else:
-                decision = DECISION_CONTINUE_ATTACK
-            return StepResult(self._state, decision, reasons)
-        if self.escape_path_planned:
+        # The fight is over and the character must get out. How it gets out
+        # is decided by the shared ending rule, so the state machine cannot
+        # recommend the one thing that is fatal: idling while a hostile keeps
+        # hitting (esc003, esc010, esc013, esc014).
+        #
+        # A target that is out of range has broken contact, so the kill
+        # ending is not executable from where the character stands
+        # (2026-11-01 huntD).
+        ending = choose_combat_ending(
+            self_health=observation.health,
+            self_max_health=observation.max_health,
+            target_health=observation.target_health,
+            target_max_health=observation.target_max_health,
+            escape_route_available=self.escape_path_planned,
+            target_reachable=(self._state != TARGET_OUT_OF_RANGE))
+        if ending == ENDING_ESCAPE:
             decision = DECISION_REQUEST_ESCAPE
         else:
-            decision = DECISION_HOLD_AND_OBSERVE
+            decision = DECISION_CONTINUE_ATTACK
         return StepResult(self._state, decision, reasons)
 
     def _health_gate(self, observation):

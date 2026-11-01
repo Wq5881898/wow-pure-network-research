@@ -649,6 +649,11 @@ class PureNetworkBackend:
                     'side_effect_applied': False,
                     'approach': closed,
                     'reference_position': list(reference)[:3]}
+        # The reference is read AFTER the walk: the fight measures the
+        # distance to the target from here, and a reference captured before
+        # the walk still points at the old position, which put the target
+        # "out of reach" and stopped the fight (2026-11-01 huntG).
+        reference = self.submitted_position or self.current_position or self.observed_position or self.start_position
         phase, _observed = fight(self.rpc, self.drain, self.target['guid'], list(reference)[:3],
                                  self.stream_now, budget=params.get('budget', 35),
                                  advisory=self.advisory, enforce=self.enforce,

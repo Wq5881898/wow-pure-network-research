@@ -58,6 +58,27 @@ class EndingRuleTests(unittest.TestCase):
             ENDING_ESCAPE)
 
 
+    def test_an_unreachable_target_cannot_be_killed(self):
+        # huntD (2026-11-01): the target had broken contact, the fight
+        # controller refused to start, and the character died standing there.
+        # The kill ending must not be offered when the target cannot be
+        # reached from where the character stands.
+        self.assertEqual(
+            choose_combat_ending(self_health=91, self_max_health=108,
+                                  target_health=22, target_max_health=71,
+                                  escape_route_available=True,
+                                  target_reachable=False),
+            ENDING_ESCAPE)
+
+    def test_a_reachable_nearly_dead_target_is_still_killed(self):
+        self.assertEqual(
+            choose_combat_ending(self_health=91, self_max_health=108,
+                                  target_health=22, target_max_health=71,
+                                  escape_route_available=True,
+                                  target_reachable=True),
+            ENDING_FINISH_TARGET)
+
+
 class StateMachineUsesTheSharedRuleTests(unittest.TestCase):
     def _machine(self, escape_path_planned):
         return CombatStateMachine(escape_path_planned=escape_path_planned)

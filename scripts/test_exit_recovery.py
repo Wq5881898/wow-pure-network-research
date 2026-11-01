@@ -40,7 +40,13 @@ class FakeBackend:
         # Models route B: once the character has walked the reversed route out
         # of the hostile's reach, the server clears the combat flag.
         self.retreat_clears_combat = retreat_clears_combat
-        self.target = {'guid': 'mob-1', 'entry': 3124, 'health': 71, 'level': 3}
+        self.target = {'guid': 'mob-1', 'entry': 3124, 'health': 71, 'level': 3,
+                       'movement': {'position_xyzo': [0.0, 0.0, 0.0]}}
+        # The target's reachability decides whether the kill ending is
+        # executable: a target that has broken contact cannot be fought from
+        # where the character stands (2026-11-01 huntD).
+        self.target_reachable = True
+
         self.current_position = [0.0, 0.0, 0.0]
         self.observed_position = [0.0, 0.0, 0.0]
         # Models route A: the target dies once the character attacks again.
@@ -407,6 +413,35 @@ class ExitRecoveryTests(unittest.TestCase):
                                             clock=Clock())
         self.assertEqual(result['ending'], 'fight')
         self.assertIn('rpc:bridge.start_attack', backend.requests)
+
+    def test_an_unreachable_target_is_not_killed_but_escaped_from(self):
+        # huntD (2026-11-01): the target had broken contact, so the fight
+        # controller refused to start ("preconditions_not_met"). Asking for
+        # the kill then left the character standing in combat until it died.
+        backend = FakeBackend([Observation(91, in_combat=True,
+                                           target_health=22, target_max_health=71)])
+        backend.target['movement'] = {'position_xyzo': [500.0, 500.0, 0.0]}
+        backend.outbound_route = [{'x': 0.0, 'y': 0.0, 'z': 0.0}]
+        backend.outbound_origin = [0.0, 0.0, 0.0]
+        result = resolve_combat_before_exit(backend, budget_seconds=30,
+                                            passive_seconds=2, sleep=sleeper,
+                                            finish_budget_seconds=0.3, clock=Clock())
+        self.assertEqual(result['ending'], 'escape')
+        self.assertNotIn('finish_target', result['actions'])
+        self.assertIn('retreat', result['actions'])
+
+    def test_the_kill_fallback_walks_to_the_target_first(self):
+        # The kill ending is only executable when the character can reach the
+        # target, so the fallback closes the distance before fighting.
+        backend = FakeBackend([Observation(91, in_combat=True,
+                                           target_health=22, target_max_health=71)])
+        closed = {}
+        backend._close_distance = lambda params: closed.setdefault('called', True) and None
+        result = resolve_combat_before_exit(backend, budget_seconds=30,
+                                            passive_seconds=2, sleep=sleeper,
+                                            finish_budget_seconds=0.3, clock=Clock())
+        self.assertTrue(closed.get('called'),
+                        'the kill attempt must close the distance first')
 
     def test_never_sends_an_attack_while_escaping(self):
 

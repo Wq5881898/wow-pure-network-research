@@ -30,7 +30,8 @@ cleared the flag.
 import math
 import time
 
-from agent_wow_combat_state_machine import ENDING_FIGHT, ENDING_FINISH_TARGET
+from agent_wow_combat_state_machine import (ENDING_ESCAPE, ENDING_FIGHT,
+                                            ENDING_FINISH_TARGET)
 
 
 def living(observation):
@@ -173,7 +174,8 @@ def resolve_combat_before_exit(backend, *, budget_seconds=60, poll_interval=0.5,
     # with no route, standing still guarantees death, so fighting wins.
     route = _plan_escape_route(backend)
     retreat = None
-    ending = _combat_ending(observation, route, min_health=min_health)
+    ending = _combat_ending(observation, route, min_health=min_health,
+                             target_reachable=_target_reachable(backend))
     if ending in (ENDING_FINISH_TARGET, ENDING_FIGHT):
         fallback = _finish_the_target(backend, observation, started=started,
                                       budget_seconds=budget_seconds,
@@ -190,7 +192,15 @@ def resolve_combat_before_exit(backend, *, budget_seconds=60, poll_interval=0.5,
                                                        final=observation),
                     'reason': None, 'retreat': None,
                     'fallback': fallback, 'ending': ending}
+        if fallback.get('outcome') == 'preconditions_not_met':
+            # The kill ending was not executable after all: the target broke
+            # contact and could not be reached. Falling back to the escape is
+            # the only ending left (2026-11-01 huntD: standing there while
+            # the hostile kept hitting is what killed the character).
+            ending = ENDING_ESCAPE
     else:
+        ending = ENDING_ESCAPE
+    if ending == ENDING_ESCAPE:
         retreat = _perform_retreat(backend, observation, route, sleep=sleep, clock=clock)
         if retreat is not None:
             actions.append('retreat')
@@ -251,6 +261,17 @@ def _finish_the_target(backend, observation, *, started, budget_seconds=60,
     budget = max(0.0, min(finish_budget_seconds, remaining))
     if budget <= 0:
         return {'outcome': 'no_budget_left', 'samples': [], 'final': observation}
+    # A target that has broken contact cannot be fought from where the
+    # character stands: the fight controller refuses to start beyond reach
+    # (2026-11-01 huntD, where this exact situation killed the character).
+    # Close the distance first, the same way the fight action does.
+    closed = None
+    closer = getattr(backend, '_close_distance', None)
+    if closer is not None:
+        try:
+            closed = closer({})
+        except Exception as exc:  # noqa: BLE001 - a failed walk is not fatal here
+            closed = {'error': f'{type(exc).__name__}: {exc}'}
     try:
         from agent_wow_combat_control import fight
         # The bridge's submitted position is the authoritative one: the
@@ -268,6 +289,7 @@ def _finish_the_target(backend, observation, *, started, budget_seconds=60,
     me = observed.get('self') or {}
     final = _as_observation(backend, observation, observed)
     return {'outcome': phase.get('outcome'), 'samples': [], 'final': final,
+            'closed': closed,
             'fight_rows': len(phase.get('observations') or []),
             'start_sent_once': phase.get('start_sent_once'),
             'final_health': me.get('health')}
@@ -281,7 +303,7 @@ def _stop_attack(backend):
         return {'error': f'{type(exc).__name__}: {exc}'}
 
 
-def _combat_ending(observation, route, min_health=25):
+def _combat_ending(observation, route, min_health=25, target_reachable=True):
     """How this unresolved combat should end: flee, kill the target, or fight on.
 
     The rule is shared with the combat recovery state machine
@@ -298,7 +320,31 @@ def _combat_ending(observation, route, min_health=25):
         target_health=context.get('target_health'),
         target_max_health=context.get('target_max_health'),
         escape_route_available=bool(route),
+        target_reachable=target_reachable,
         health_floor_ratio=(min_health / max_health if max_health else 0.25))
+
+
+def _target_reachable(backend, max_range=5.0):
+    """True when the tracked target is in melee range right now.
+
+    A target that has broken contact cannot be killed from where the
+    character stands: the fight controller refuses to start beyond reach
+    (huntD, 2026-11-01), so the kill ending is not executable.
+    """
+    target = getattr(backend, 'target', None)
+    if not target:
+        return False
+    try:
+        from agent_wow_combat_control import estimated_position
+        position = estimated_position(target, backend.stream_now())[0]
+    except Exception:  # noqa: BLE001
+        return False
+    here = list((getattr(backend, 'submitted_position', None)
+                 or getattr(backend, 'current_position', None)
+                 or getattr(backend, 'observed_position', None) or [])[:3])
+    if not here:
+        return False
+    return math.dist(here, list(position)[:3]) <= max_range
 
 
 def _perform_retreat(backend, observation, route, sleep=time.sleep, clock=time.monotonic):
