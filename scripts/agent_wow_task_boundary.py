@@ -37,8 +37,12 @@ def movement_boundary(report, max_age_seconds=None, now=None):
     if not (final.get('health', 0) > 0 and final.get('ghost') is False
             and final.get('in_combat') is False):
         raise ValueError('living out-of-combat boundary required')
-    logout = report.get('finalize', {})
-    if logout.get('status') != 'closed':
+    logout = report.get('finalize') or {}
+    # The logout's own status is the proof that the boundary session ended
+    # cleanly. The finalize record carries it under 'logout' (the close
+    # report) and older runs carried it directly as 'status'.
+    logout_status = (logout.get('logout') or {}).get('status') or logout.get('status')
+    if logout_status != 'closed':
         raise ValueError('confirmed boundary logout required')
     evidence = approach['evidence']
     replies = evidence.get('replies', [])
