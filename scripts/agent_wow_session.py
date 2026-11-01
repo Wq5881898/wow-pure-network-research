@@ -592,6 +592,21 @@ class PureNetworkBackend:
                 'approach_confirmation': self.approach_confirmation,
                 'side_effect_applied': bool(replies)}
 
+    def _reapproach(self):
+        """Walk to the target again after it stepped out of melee range.
+
+        A roaming caster (entry 3101) steps back as the character closes, so
+        the fight can never finish if the character stays where it is. The
+        walk is bounded by the fight's own budget and by the number of
+        attempts, and the reference moves with the character.
+        """
+        closed = self._close_distance({})
+        if closed.get('error') or closed.get('skipped') == 'already within reach':
+            return {'moved': False, 'detail': closed}
+        reference = list((self.submitted_position or self.current_position
+                          or self.observed_position or [])[:3])
+        return {'moved': True, 'reference': reference, 'detail': closed}
+
     def _close_distance(self, params):
         """Walk to the target when it is not in melee range.
 
@@ -658,7 +673,8 @@ class PureNetworkBackend:
                                  self.stream_now, budget=params.get('budget', 35),
                                  advisory=self.advisory, enforce=self.enforce,
                                  config=self.combat_config,
-                                 escape_path_planned=bool(route))
+                                 escape_path_planned=bool(route),
+                                 reapproach=self._reapproach)
         return {'outcome': phase['outcome'], 'phase': phase,
                 'side_effect_applied': bool(phase.get('start_sent_once')),
                 'approach': closed,

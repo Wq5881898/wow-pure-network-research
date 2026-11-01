@@ -62,12 +62,15 @@ def estimated_position(obj, now_ms):
 
 
 def fight(rpc, drain, target_guid, self_position, now_ms, budget=18,
-          advisory=False, config=None, escape_path_planned=False, enforce=False):
+          advisory=False, config=None, escape_path_planned=False, enforce=False,
+          reapproach=None, max_reapproaches=3, kite_radius=15.0):
     rows=[];start=time.monotonic();deadline=start+budget;sent=False;outcome='budget_exhausted';last_angle=None
     advisor=CombatStateMachine(config or CombatSMConfig(),
                                target_guid=target_guid,
                                escape_path_planned=escape_path_planned) if advisory else None
     enforced=None
+    reapproaches=0
+    last_target_position=None
     observed=drain()
     try:
         while time.monotonic()<deadline:
@@ -79,6 +82,8 @@ def fight(rpc, drain, target_guid, self_position, now_ms, budget=18,
             if target['health']==0:outcome='target_dead';break
             tp,source=estimated_position(target,now_ms())
             distance=math.dist(self_position[:3],tp)
+            if last_target_position is None:
+                last_target_position = list(tp[:3])
             angle=math.atan2(tp[1]-self_position[1],tp[0]-self_position[0])
             row={'elapsed_ms':round((time.monotonic()-start)*1000),'self_health':me['health'],'in_combat':me['in_combat'],'target_health':target['health'],'target_position_estimate':tp,'position_source':source,'distance_estimate':distance}
             rows.append(row)
@@ -101,9 +106,29 @@ def fight(rpc, drain, target_guid, self_position, now_ms, budget=18,
                     outcome=ENFORCED_OUTCOME.get(step.state,'budget_exhausted')
                     break
             if sent and distance > 5:
-                # A fleeing target must not drag an unverified pursuit into
-                # nearby packs. Stop this attempt; no automatic restart.
-                outcome='target_left_melee';break
+                # The target left melee range. A target that is still nearby
+                # is KITING (a roaming caster stepping back), and it can be
+                # fought by walking to it again. A target that has gone
+                # further away has LEFT, and chasing it would drag the
+                # character into unknown ground - so that is not chased.
+                moved = math.dist(tp[:3], last_target_position[:3]) if last_target_position else 0.0
+                if (reapproach is not None and reapproaches < max_reapproaches
+                        and moved <= kite_radius):
+                    reapproaches += 1
+                    result = reapproach()
+                    if result and result.get('moved'):
+                        # The reference moves with the character: the distance
+                        # is measured from where the character is now.
+                        reference = result.get('reference') or reference
+                        self_position = reference
+                        last_target_position = list(tp[:3])
+                        row['reapproach'] = {'attempt': reapproaches,
+                                             'target_moved': round(moved, 2)}
+                        time.sleep(.2)
+                        observed = drain()
+                        continue
+                outcome = 'target_left_melee'
+                break
             # Face continues while the game executes the attack timer.
             if last_angle is None or abs((angle-last_angle+math.pi)%(2*math.pi)-math.pi)>.12:
                 row['face']=rpc('bridge.face',{'angle':angle})
