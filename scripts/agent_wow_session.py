@@ -602,6 +602,43 @@ class PureNetworkBackend:
                 'escape_path_planned': bool(route),
                 'reference_position': list(reference)[:3]}
 
+    def _do_recover_combat(self, params, timeout):
+        """Resolve an unresolved combat as an explicit, recorded action.
+
+        The recovery is a branch of its own, not a step that happens to sit
+        after the fight in a plan: a fight that ends with the combat
+        unresolved stops the plan, and the recovery still has to run. It is
+        dispatched here so the evidence shows it as an executed action.
+
+        The decision follows the shared ending rule (agent_wow_combat_state_
+        machine.choose_combat_ending): stop the character's own attack, then
+        kill a nearly dead target or leave the hostile's reach - and never
+        idle while a hostile keeps hitting (2026-11-01 esc008, esc010,
+        esc013, esc014).
+        """
+        from agent_wow_exit_recovery import resolve_combat_before_exit
+        observation = self.observe()
+        if observation.in_combat is not True:
+            # Nothing to recover. The absence of a side effect here is not a
+            # failed dispatch: the action had no work to do. Claiming
+            # "no side effect applied" would read as a failure.
+            return {'combat_cleared': True, 'reason': 'not_in_combat',
+                    'ending': None}
+        recovery = resolve_combat_before_exit(
+            self, budget_seconds=params.get('budget', 60),
+            poll_interval=params.get('poll_interval', 0.5),
+            min_health=params.get('min_health', 25))
+        return {'combat_cleared': recovery['combat_cleared'],
+                'ending': recovery.get('ending'),
+                'cleared_reason': recovery.get('cleared_reason'),
+                'requests': recovery.get('requests'),
+                'actions': recovery.get('actions'),
+                'reason': recovery.get('reason'),
+                'retreat_outcome': (recovery.get('retreat') or {}).get('outcome'),
+                'fallback_outcome': (recovery.get('fallback') or {}).get('outcome'),
+                'elapsed_s': recovery.get('elapsed_s'),
+                'side_effect_applied': True}
+
     def _do_loot(self, params, timeout):
         if self.target is None:
             return {'error': 'no target selected'}

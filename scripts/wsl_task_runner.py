@@ -92,6 +92,36 @@ def _supervise_until_safe(backend, report, *, budget_seconds=180, poll_interval=
             'reason': 'still in combat after the supervision budget'}
 
 
+def run_recovery_branch(backend, run_id, root):
+    """Run the recovery branch as its own executed unit.
+
+    It is a separate executor with its own checkpoint, because the main
+    plan's checkpoint belongs to the main plan: the recovery never
+    re-dispatches the fight, so it cannot violate the rule that a side
+    effect whose effect is unknown is never resent.
+
+    The branch is the recovery itself. The logout stays in the existing
+    finalize path: a logout closes the session, so the post-action
+    observation is unavailable and the executor cannot confirm it - that is
+    a property of the logout, not of the recovery.
+    """
+    from agent_wow_contract import Action, TaskExecutor
+    plan = [Action('recover_combat', 'recover_combat', {'budget': 60},
+                   timeout=90, side_effecting=True,
+                   expectation=lambda before, after, evidence:
+                       evidence.get('combat_cleared') is True)]
+    executor = TaskExecutor(
+        backend, f'{run_id}_recovery',
+        log_path=root / f'results/pure_network/agent_wow_task_{run_id}_recovery.actions.jsonl',
+        checkpoint_path=root / f'results/pure_network/agent_wow_task_{run_id}_recovery.checkpoint.json',
+        budget_seconds=120, action_budget=4)
+    outcome = executor.run(plan)
+    return {'status': outcome.get('status'),
+            'records': outcome.get('records', []),
+            'scope': 'independent recovery branch; never re-dispatches the fight'}
+
+
+
 def main(argv=None):
     options = parse_options(argv)
     from agent_wow_objective import progress, increased
@@ -234,6 +264,16 @@ def main(argv=None):
                 report['final_observation'] = backend.observe().to_dict()
             except Exception as exc:  # noqa: BLE001
                 report.setdefault('final_observation_error', f'{type(exc).__name__}: {exc}')
+            # The recovery is a branch of its own, dispatched as an executed
+            # action so the evidence shows it ran. It used to be an implicit
+            # part of the teardown, and it used to be a plan step that sat
+            # after the fight - which never ran, because a fight that ends
+            # with the combat unresolved stops the plan.
+            report['recovery_branch'] = run_recovery_branch(
+                backend, options.run_id, root)
+            records = (report.get('run') or {}).get('records')
+            if records is not None:
+                records.extend(report['recovery_branch'].get('records', []))
             try:
                 # Never leave a living character in combat for the session
                 # teardown to decide: an in-combat character whose logout is
