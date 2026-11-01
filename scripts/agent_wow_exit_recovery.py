@@ -291,14 +291,14 @@ def _combat_ending(observation, route, min_health=25):
     """
     from agent_wow_combat_state_machine import choose_combat_ending
     context = getattr(observation, 'context', None) or {}
+    max_health = getattr(observation, 'max_health', 0) or 0
     return choose_combat_ending(
-        self_health=observation.health,
-        self_max_health=observation.max_health,
+        self_health=getattr(observation, 'health', None),
+        self_max_health=max_health,
         target_health=context.get('target_health'),
         target_max_health=context.get('target_max_health'),
         escape_route_available=bool(route),
-        health_floor_ratio=(min_health / observation.max_health
-                            if observation.max_health else 0.25))
+        health_floor_ratio=(min_health / max_health if max_health else 0.25))
 
 
 def _perform_retreat(backend, observation, route, sleep=time.sleep, clock=time.monotonic):
