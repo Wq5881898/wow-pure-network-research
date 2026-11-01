@@ -45,6 +45,14 @@ def parse_options(argv=None):
                         help='Let the combat recovery state machine veto further dispatch: '
                              'a low-health or out-of-range exit stops the attack and the '
                              'recovery branch takes over')
+    parser.add_argument('--low-health-ratio', type=float, default=None,
+                        help='Override the combat recovery state machine low-health ratio '
+                             '(default 0.5 of max_health). The default is unreachable '
+                             'against the local mobs, which die before the character is '
+                             'hurt enough to reach it')
+    parser.add_argument('--critical-health-ratio', type=float, default=None,
+                        help='Override the combat recovery state machine critical ratio '
+                             '(default 0.25 of max_health)')
     options = parser.parse_args(argv)
     if options.objective_total < 1 or (options.quest_id is not None and options.quest_id < 1):
         parser.error('objective total and quest ID must be positive')
@@ -126,6 +134,25 @@ def run_recovery_branch(backend, run_id, root):
 
 
 
+def _combat_config(options):
+    """The combat recovery state machine's thresholds for this run.
+
+    None means the defaults are used. The ratios are a fraction of the
+    character's own max_health, so they scale with the character's level
+    instead of drifting with an absolute blood value.
+    """
+    from agent_wow_combat_state_machine import CombatSMConfig
+    if options.low_health_ratio is None and options.critical_health_ratio is None:
+        return None
+    defaults = CombatSMConfig()
+    return CombatSMConfig(
+        low_health_ratio=(defaults.low_health_ratio if options.low_health_ratio is None
+                          else options.low_health_ratio),
+        critical_health_ratio=(defaults.critical_health_ratio
+                               if options.critical_health_ratio is None
+                               else options.critical_health_ratio))
+
+
 def main(argv=None):
     options = parse_options(argv)
     from agent_wow_objective import progress, increased
@@ -204,7 +231,8 @@ def main(argv=None):
 
     plan = build_plan()
     backend = PureNetworkBackend(options.run_id, advisory=options.advisory_record,
-                                 enforce=options.enforce_state_machine)
+                                 enforce=options.enforce_state_machine,
+                                 combat_config=_combat_config(options))
 
     report = {'run_id': options.run_id, 'objective': objective, 'plan': [a.to_dict() for a in plan]}
     started = time.monotonic()

@@ -96,7 +96,8 @@ class LiveSession:
 class PureNetworkBackend:
     """Contract backend over the pure-network bridge."""
 
-    def __init__(self, run_id, self_guid='9', advisory=False, enforce=False):
+    def __init__(self, run_id, self_guid='9', advisory=False, enforce=False,
+                 combat_config=None):
         self.run_id = run_id
         self.self_guid = self_guid
         # Advisory records the combat recovery state machine's decisions into
@@ -108,6 +109,9 @@ class PureNetworkBackend:
         # dispatch. It is off by default and separate from the advisory
         # recording, because it changes what the game is asked to do.
         self.enforce = bool(enforce)
+        # The combat recovery state machine's thresholds. Configurable per run
+        # because the default ratio is unreachable against the local mobs.
+        self.combat_config = combat_config
         self.packets = []
         self.cursor = 0
         self.session_id = None
@@ -600,6 +604,7 @@ class PureNetworkBackend:
         phase, _observed = fight(self.rpc, self.drain, self.target['guid'], list(reference)[:3],
                                  self.stream_now, budget=params.get('budget', 35),
                                  advisory=self.advisory, enforce=self.enforce,
+                                 config=self.combat_config,
                                  escape_path_planned=bool(route))
         return {'outcome': phase['outcome'], 'phase': phase,
                 'side_effect_applied': bool(phase.get('start_sent_once')),
@@ -768,7 +773,7 @@ class PureNetworkBackend:
             return {'phases': [], 'safe_to_logout': True}
         outcome, _state = settle(self.rpc, self.drain, self.current_position or self.start_position,
                                  self.stream_now, advisory=self.advisory,
-                                 enforce=self.enforce)
+                                 enforce=self.enforce, config=self.combat_config)
         return {'phases': outcome['phases'], 'safe_to_logout': outcome['safe_to_logout']}
 
     def _do_logout(self, params, timeout):
