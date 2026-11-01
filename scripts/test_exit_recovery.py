@@ -1,4 +1,4 @@
-"""Regression guards for the 2026-11-01 combat death.
+﻿"""Regression guards for the 2026-11-01 combat death.
 
 The defect: a bounded unit fought a mob that fled at low health. The fight
 action ended while the character was still flagged in combat, the executor
@@ -36,10 +36,21 @@ class FakeBackend:
         # Models route B: once the character has walked the reversed route out
         # of the hostile's reach, the server clears the combat flag.
         self.retreat_clears_combat = retreat_clears_combat
+        self.target = {'guid': 'mob-1', 'entry': 3124, 'health': 71, 'level': 3}
+        self.current_position = [0.0, 0.0, 0.0]
+        self.observed_position = [0.0, 0.0, 0.0]
+        # Models route A: the target dies once the character attacks again.
+        self.target_dies = False
+
+    def stream_now(self):
+        return 1000.0
 
     def _current(self):
-        """The effective state, with the route B effect applied."""
+        """The effective state, with the route A/B effects applied."""
         latest = self.observations[-1]
+        if self.target_dies and 'rpc:bridge.start_attack' in self.requests:
+            return Observation(latest.health, ghost=latest.ghost, in_combat=False,
+                               target_health=0)
         if (self.retreat_clears_combat
                 and 'rpc:bridge.follow_path' in self.requests
                 and latest.in_combat):
@@ -66,8 +77,23 @@ class FakeBackend:
         # The production drain() returns the raw world state, whose 'self' is
         # a dict keyed by field name (not an attribute-bearing object).
         latest = self._current()
+        in_combat = latest.in_combat
+        target_health = latest.context.get('target_health')
+        if target_health is None:
+            target_health = 71
+        if self.target_dies and 'rpc:bridge.start_attack' in self.requests:
+            # The target dies and the server clears the combat flag with it.
+            target_health = 0
+            in_combat = False
+        elif self.retreat_clears_combat and 'rpc:bridge.follow_path' in self.requests:
+            in_combat = False
         return {'self': {'health': latest.health, 'ghost': latest.ghost,
-                         'in_combat': latest.in_combat}}
+                         'in_combat': in_combat},
+                'visible_objects': [{'guid': self.target['guid'],
+                                     'entry': self.target['entry'],
+                                     'health': target_health,
+                                     'level': self.target['level'],
+                                     'movement': {'position_xyzo': [0.0, 0.0, 0.0, 0.0]}}]}
 
 
 class Clock:
@@ -94,7 +120,7 @@ class ExitRecoveryTests(unittest.TestCase):
                                Observation(71, in_combat=True),
                                Observation(71, in_combat=False)])
         result = resolve_combat_before_exit(backend, budget_seconds=10,
-                                            sleep=sleeper, clock=Clock())
+                                            sleep=sleeper, finish_budget_seconds=0.3, clock=Clock())
         self.assertTrue(result['combat_cleared'])
         self.assertEqual(result['final'].in_combat, False)
         self.assertNotIn('rpc:bridge.start_attack', backend.requests)
@@ -108,7 +134,7 @@ class ExitRecoveryTests(unittest.TestCase):
         backend = FakeBackend([Observation(71, in_combat=True),
                                Observation(71, in_combat=False)])
         result = resolve_combat_before_exit(backend, budget_seconds=10,
-                                            sleep=sleeper, clock=Clock())
+                                            sleep=sleeper, finish_budget_seconds=0.3, clock=Clock())
         self.assertIn('rpc:bridge.stop_attack', backend.requests)
         self.assertEqual(backend.requests.index('rpc:bridge.stop_attack'), 1,
                          'the stop must precede the first observation')
@@ -117,7 +143,7 @@ class ExitRecoveryTests(unittest.TestCase):
     def test_resolve_reports_uncleared_combat_without_acting(self):
         backend = FakeBackend([Observation(71, in_combat=True)])
         result = resolve_combat_before_exit(backend, budget_seconds=3,
-                                            sleep=sleeper, clock=Clock())
+                                            sleep=sleeper, finish_budget_seconds=0.3, clock=Clock())
         self.assertFalse(result['combat_cleared'])
         self.assertIsNotNone(result['reason'])
         self.assertNotIn('rpc:bridge.start_attack', backend.requests)
@@ -127,7 +153,7 @@ class ExitRecoveryTests(unittest.TestCase):
         # character: below the floor the wait aborts and says so.
         backend = FakeBackend([Observation(20, in_combat=True)])
         result = resolve_combat_before_exit(backend, budget_seconds=30,
-                                            min_health=25, sleep=sleeper,
+                                            min_health=25, sleep=sleeper, finish_budget_seconds=0.3,
                                             clock=Clock())
         self.assertFalse(result['combat_cleared'])
         self.assertIn('health floor', result['reason'])
@@ -137,7 +163,7 @@ class ExitRecoveryTests(unittest.TestCase):
         backend = FakeBackend([Observation(71, in_combat=True),
                                Observation(71, in_combat=False)])
         result = resolve_combat_before_exit(backend, budget_seconds=30,
-                                            min_health=25, sleep=sleeper,
+                                            min_health=25, sleep=sleeper, finish_budget_seconds=0.3,
                                             clock=Clock())
         self.assertTrue(result['combat_cleared'])
 
@@ -145,7 +171,7 @@ class ExitRecoveryTests(unittest.TestCase):
         backend = FakeBackend([Observation(71, in_combat=True),
                                Observation(71, in_combat=False)])
         result = resolve_combat_before_exit(backend, budget_seconds=30,
-                                            passive_seconds=3, sleep=sleeper,
+                                            passive_seconds=3, sleep=sleeper, finish_budget_seconds=0.3,
                                             clock=Clock())
         self.assertTrue(result['combat_cleared'])
         self.assertEqual(result['cleared_reason'], 'server_cleared')
@@ -157,7 +183,7 @@ class ExitRecoveryTests(unittest.TestCase):
         backend = FakeBackend([Observation(71, in_combat=True),
                                Observation(71, in_combat=False, target_health=0)])
         result = resolve_combat_before_exit(backend, budget_seconds=30,
-                                            passive_seconds=3, sleep=sleeper,
+                                            passive_seconds=3, sleep=sleeper, finish_budget_seconds=0.3,
                                             clock=Clock())
         self.assertTrue(result['combat_cleared'])
         self.assertEqual(result['cleared_reason'], 'target_died')
@@ -169,7 +195,7 @@ class ExitRecoveryTests(unittest.TestCase):
                                   {'x': 3.0, 'y': 0.0, 'z': 0.0}]
         backend.outbound_origin = [0.0, 0.0, 0.0]
         result = resolve_combat_before_exit(backend, budget_seconds=30,
-                                            passive_seconds=2, sleep=sleeper,
+                                            passive_seconds=2, sleep=sleeper, finish_budget_seconds=0.3,
                                             clock=Clock())
         self.assertIn('rpc:bridge.follow_path', backend.requests)
         self.assertTrue(result['combat_cleared'])
@@ -185,7 +211,7 @@ class ExitRecoveryTests(unittest.TestCase):
         backend.outbound_route = [{'x': 0.0, 'y': 0.0, 'z': 0.0}]
         backend.outbound_origin = [0.0, 0.0, 0.0]
         result = resolve_combat_before_exit(backend, budget_seconds=30,
-                                            passive_seconds=2, sleep=sleeper,
+                                            passive_seconds=2, sleep=sleeper, finish_budget_seconds=0.3,
                                             clock=Clock())
         self.assertTrue(result['combat_cleared'])
         self.assertFalse(result['final'].in_combat)
@@ -198,7 +224,7 @@ class ExitRecoveryTests(unittest.TestCase):
                                   {'x': 3.0, 'y': 0.0, 'z': 0.0}]
         backend.outbound_origin = [0.0, 0.0, 0.0]
         result = resolve_combat_before_exit(backend, budget_seconds=30,
-                                            passive_seconds=2, sleep=sleeper,
+                                            passive_seconds=2, sleep=sleeper, finish_budget_seconds=0.3,
                                             clock=Clock())
         self.assertIn('rpc:bridge.stop_attack', backend.requests,
                       'a persistent hostile must trigger the retreat branch')
@@ -206,12 +232,35 @@ class ExitRecoveryTests(unittest.TestCase):
                       'the retreat must use the reversed outbound route')
         self.assertIsNotNone(result['retreat'])
 
+    def test_without_an_escape_route_the_character_fights_instead_of_idling(self):
+        # esc010/esc013/esc014 all ended with the character standing still
+        # while a hostile kept hitting. With no route available, fighting is
+        # strictly better: same damage, but it can end the combat.
+        backend = FakeBackend([Observation(83, in_combat=True)])
+        backend.target_dies = True
+        result = resolve_combat_before_exit(backend, budget_seconds=30,
+                                            passive_seconds=2, sleep=sleeper, finish_budget_seconds=0.3,
+                                            clock=Clock())
+        self.assertIn('rpc:bridge.start_attack', backend.requests,
+                      'without a route the character must fight, not idle')
+        self.assertIn('finish_target', result['actions'])
+        self.assertEqual(result['fallback']['outcome'], 'target_dead')
+        self.assertEqual(result['cleared_reason'], 'target_died')
+
+    def test_the_fight_fallback_is_reported_as_a_kill_not_an_escape(self):
+        backend = FakeBackend([Observation(83, in_combat=True)])
+        backend.target_dies = True
+        result = resolve_combat_before_exit(backend, budget_seconds=30,
+                                            passive_seconds=2, sleep=sleeper, finish_budget_seconds=0.3,
+                                            clock=Clock())
+        self.assertNotEqual(result.get('cleared_reason'), 'left_reach')
+
     def test_no_retreat_without_a_known_route(self):
         # Without a submitted route there is no justified escape; inventing a
         # straight line is the shortcut docs/51 rejects.
         backend = FakeBackend([Observation(71, in_combat=True)])
         result = resolve_combat_before_exit(backend, budget_seconds=30,
-                                            passive_seconds=2, sleep=sleeper,
+                                            passive_seconds=2, sleep=sleeper, finish_budget_seconds=0.3,
                                             clock=Clock())
         self.assertIsNone(result['retreat'])
         self.assertNotIn('rpc:bridge.follow_path', backend.requests)
@@ -232,7 +281,7 @@ class ExitRecoveryTests(unittest.TestCase):
                                   {'x': 0.0, 'y': 6.0, 'z': 0.0}]
         backend.outbound_origin = [0.0, 0.0, 0.0]
         result = resolve_combat_before_exit(backend, budget_seconds=30,
-                                            passive_seconds=2, sleep=sleeper,
+                                            passive_seconds=2, sleep=sleeper, finish_budget_seconds=0.3,
                                             clock=Clock())
         self.assertEqual(result['retreat']['route']['source'],
                          'navmesh route planned away from the hostile')
@@ -251,7 +300,7 @@ class ExitRecoveryTests(unittest.TestCase):
                                   {'x': 0.0, 'y': 6.0, 'z': 0.0}]
         backend.outbound_origin = [0.0, 0.0, 0.0]
         result = resolve_combat_before_exit(backend, budget_seconds=30,
-                                            passive_seconds=2, sleep=sleeper,
+                                            passive_seconds=2, sleep=sleeper, finish_budget_seconds=0.3,
                                             clock=Clock())
         self.assertEqual(result['retreat']['route']['source'],
                          'reversed submitted outbound route')
@@ -267,7 +316,7 @@ class ExitRecoveryTests(unittest.TestCase):
         backend.outbound_route = [{'x': 0.0, 'y': 0.0, 'z': 0.0}]
         backend.outbound_origin = [0.0, 0.0, 0.0]
         result = resolve_combat_before_exit(backend, budget_seconds=30,
-                                            passive_seconds=20, sleep=sleeper,
+                                            passive_seconds=20, sleep=sleeper, finish_budget_seconds=0.3,
                                             clock=Clock())
         self.assertIn('rpc:bridge.follow_path', backend.requests,
                       'a hostile that keeps hitting must trigger the retreat')
@@ -279,7 +328,7 @@ class ExitRecoveryTests(unittest.TestCase):
                                Observation(71, in_combat=True),
                                Observation(71, in_combat=False)])
         result = resolve_combat_before_exit(backend, budget_seconds=30,
-                                            passive_seconds=20, sleep=sleeper,
+                                            passive_seconds=20, sleep=sleeper, finish_budget_seconds=0.3,
                                             clock=Clock())
         self.assertTrue(result['combat_cleared'])
         self.assertEqual(result['cleared_reason'], 'server_cleared')
@@ -289,7 +338,7 @@ class ExitRecoveryTests(unittest.TestCase):
         backend.outbound_route = [{'x': 0.0, 'y': 0.0, 'z': 0.0}]
         backend.outbound_origin = [0.0, 0.0, 0.0]
         resolve_combat_before_exit(backend, budget_seconds=30,
-                                   passive_seconds=2, sleep=sleeper,
+                                   passive_seconds=2, sleep=sleeper, finish_budget_seconds=0.3,
                                    clock=Clock())
         self.assertNotIn('rpc:bridge.start_attack', backend.requests)
         self.assertNotIn('rpc:bridge.face', backend.requests)
@@ -297,7 +346,7 @@ class ExitRecoveryTests(unittest.TestCase):
     def test_close_session_logs_out_when_already_out_of_combat(self):
         backend = FakeBackend([Observation(108, in_combat=False)])
         report = {}
-        close_session(backend, report=report, sleep=sleeper, clock=Clock())
+        close_session(backend, report=report, sleep=sleeper, finish_budget_seconds=0.3, clock=Clock())
         self.assertEqual(report['finalize']['logout']['status'], 'closed')
         self.assertNotIn('combat_recovery', report['finalize'])
 
@@ -308,7 +357,7 @@ class ExitRecoveryTests(unittest.TestCase):
                                Observation(71, in_combat=True),
                                Observation(71, in_combat=False)])
         report = {}
-        close_session(backend, report=report, sleep=sleeper, clock=Clock())
+        close_session(backend, report=report, sleep=sleeper, finish_budget_seconds=0.3, clock=Clock())
         self.assertTrue(report['finalize']['combat_recovery']['combat_cleared'])
         self.assertEqual(report['finalize']['logout']['status'], 'closed')
         self.assertIn('execute:logout', backend.requests)
@@ -319,7 +368,7 @@ class ExitRecoveryTests(unittest.TestCase):
     def test_close_session_does_not_log_out_a_dead_character(self):
         backend = FakeBackend([Observation(0, in_combat=True)])
         report = {}
-        close_session(backend, report=report, sleep=sleeper, clock=Clock())
+        close_session(backend, report=report, sleep=sleeper, finish_budget_seconds=0.3, clock=Clock())
         self.assertEqual(report['finalize']['status'], 'unresolved')
         self.assertNotIn('execute:logout', backend.requests)
 
@@ -327,7 +376,7 @@ class ExitRecoveryTests(unittest.TestCase):
         backend = FakeBackend([Observation(108, in_combat=False)],
                               logout_result={'status': 'error', 'error': {'message': 'in combat'}})
         report = {}
-        close_session(backend, report=report, sleep=sleeper, clock=Clock())
+        close_session(backend, report=report, sleep=sleeper, finish_budget_seconds=0.3, clock=Clock())
         self.assertNotEqual(report['finalize']['logout'].get('status'), 'closed')
         self.assertIn('logout_note', report['finalize'])
 

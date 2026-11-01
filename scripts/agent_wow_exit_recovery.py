@@ -83,6 +83,7 @@ def _request_label(actions):
 
 def resolve_combat_before_exit(backend, *, budget_seconds=60, poll_interval=0.5,
                                 min_health=25, passive_seconds=6.0,
+                                finish_budget_seconds=20.0,
                                 sleep=time.sleep, clock=time.monotonic):
     """Leave an unresolved combat without re-engaging.
 
@@ -172,6 +173,30 @@ def resolve_combat_before_exit(backend, *, budget_seconds=60, poll_interval=0.5,
                                                    final=observation),
                 'reason': None, 'retreat': retreat}
 
+    # Stage 4: no usable escape route. Standing still while a hostile keeps
+    # hitting guarantees the character's death without changing the outcome
+    # (esc010, esc013, esc014 all ended this way). Fighting is strictly
+    # better than idling: the character takes the same damage but can end
+    # the combat by killing the target, which is the server's other ending.
+    # The attempt is bounded and never starts below the health floor.
+    if retreat is None and (observation.health is None
+                            or observation.health > min_health):
+        fallback = _finish_the_target(backend, observation, started=started,
+                                      budget_seconds=budget_seconds,
+                                      finish_budget_seconds=finish_budget_seconds,
+                                      min_health=min_health, clock=clock)
+        actions.append('finish_target')
+        observation = fallback.get('final', observation)
+        if observation.in_combat is not True:
+            return {'combat_cleared': True, 'samples': samples,
+                    'elapsed_s': round(clock() - started, 3),
+                    'final': observation, 'requests': _request_label(actions),
+                    'actions': actions,
+                    'cleared_reason': _cleared_reason(samples, retreated=False,
+                                                       final=observation),
+                    'reason': None, 'retreat': retreat,
+                    'fallback': fallback}
+
     # Still in combat: keep observing, but never below the health floor.
     while clock() - started < budget_seconds:
         sleep(poll_interval)
@@ -197,6 +222,40 @@ def resolve_combat_before_exit(backend, *, budget_seconds=60, poll_interval=0.5,
                                if cleared else None),
             'reason': None if cleared else 'combat did not clear within budget',
             'retreat': retreat}
+
+
+def _finish_the_target(backend, observation, *, started, budget_seconds=60,
+                       finish_budget_seconds=20.0, min_health=25,
+                       clock=time.monotonic):
+    """Resume the fight, bounded, when no escape route is available.
+
+    Re-engaging is the last resort and it is bounded: the combat can only end
+    by killing the target, which is the server's other ending. The character
+    stops at the health floor, and the outcome is reported as a kill rather
+    than as an escape.
+    """
+    target = getattr(backend, 'target', None)
+    if not target or not target.get('guid'):
+        return {'outcome': 'no_target_to_finish', 'samples': [], 'final': observation}
+    remaining = budget_seconds - (clock() - started)
+    budget = max(0.0, min(finish_budget_seconds, remaining))
+    if budget <= 0:
+        return {'outcome': 'no_budget_left', 'samples': [], 'final': observation}
+    try:
+        from agent_wow_combat_control import fight
+        reference = list((getattr(backend, 'current_position', None)
+                          or getattr(backend, 'observed_position', None) or [])[:3])
+        phase, observed = fight(backend.rpc, backend.drain, target['guid'],
+                                reference, backend.stream_now, budget=budget)
+    except Exception as exc:  # noqa: BLE001 - a failed attempt must not abort the exit
+        return {'outcome': 'finish_failed', 'error': f'{type(exc).__name__}: {exc}',
+                'samples': [], 'final': observation}
+    me = observed.get('self') or {}
+    final = _as_observation(backend, observation, observed)
+    return {'outcome': phase.get('outcome'), 'samples': [], 'final': final,
+            'fight_rows': len(phase.get('observations') or []),
+            'start_sent_once': phase.get('start_sent_once'),
+            'final_health': me.get('health')}
 
 
 def _stop_attack(backend):
@@ -311,7 +370,8 @@ def _route_length(route):
 
 
 def close_session(backend, *, report, budget_seconds=60, poll_interval=0.5,
-                  min_health=25, sleep=time.sleep, clock=time.monotonic):
+                  min_health=25, finish_budget_seconds=20.0,
+                  sleep=time.sleep, clock=time.monotonic):
     """Close the session, resolving an unresolved in-combat state first.
 
     The character is never left in combat for the session teardown to decide:
@@ -331,7 +391,8 @@ def close_session(backend, *, report, budget_seconds=60, poll_interval=0.5,
     if living(observation) and observation.in_combat is True:
         recovery = resolve_combat_before_exit(
             backend, budget_seconds=budget_seconds, poll_interval=poll_interval,
-            min_health=min_health, sleep=sleep, clock=clock)
+            min_health=min_health, finish_budget_seconds=finish_budget_seconds,
+            sleep=sleep, clock=clock)
         result['combat_recovery'] = {
             'combat_cleared': recovery['combat_cleared'],
             'elapsed_s': recovery['elapsed_s'],
@@ -341,6 +402,7 @@ def close_session(backend, *, report, budget_seconds=60, poll_interval=0.5,
             'cleared_reason': recovery.get('cleared_reason'),
             'reason': recovery.get('reason'),
             'retreat_outcome': (recovery.get('retreat') or {}).get('outcome'),
+            'fallback_outcome': (recovery.get('fallback') or {}).get('outcome'),
         }
         observation = recovery['final']
     if not living(observation):
