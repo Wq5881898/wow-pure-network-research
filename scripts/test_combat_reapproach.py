@@ -70,16 +70,33 @@ class ReapproachTests(unittest.TestCase):
         walks = []
         phase, _ = fight(rpc, world, 'mob', [0, 0, 0], lambda: 0.0, budget=10,
                          reapproach=lambda: (walks.append(True),
-                                            {'moved': True, 'reference': [0, 0, 0]})[1])
+                                            {'moved': True, 'reference': [0, 0, 0]})[1],)
         self.assertEqual(walks, [], 'a target that left must not be chased')
         self.assertEqual(phase['outcome'], 'target_left_melee')
 
     def test_without_a_reapproach_callback_the_target_is_still_abandoned(self):
         world = World([[3, 0, 0], [9, 0, 0]], [0, 0, 0])
         rpc = FakeRpc()
-        phase, _ = fight(rpc, world, 'mob', [0, 0, 0], lambda: 0.0, budget=10)
+        phase, _ = fight(rpc, world, 'mob', [0, 0, 0], lambda: 0.0, budget=10,)
         self.assertEqual(phase['outcome'], 'target_left_melee')
+
+
+class PullTests(unittest.TestCase):
+    def test_a_distant_target_is_refused_and_not_pulled(self):
+        # The documented contract: a target that is not in melee range ends
+        # the attempt, and no automatic restart is attempted
+        # (test_flee_stops_without_restart). Pulling a distant target was
+        # tried on 2026-11-01: it broke that contract, and the escape that
+        # followed failed because the hostile followed the character, so the
+        # character died. It is deliberately not implemented.
+        world = World([[12, 0, 0], [12, 0, 0]], [0, 0, 0])
+        rpc = FakeRpc()
+        phase, _ = fight(rpc, world, 'mob', [0, 0, 0], lambda: 0.0, budget=10)
+        self.assertEqual(phase['outcome'], 'preconditions_not_met')
+        self.assertNotIn('bridge.start_attack', rpc.calls)
+
 
 
 if __name__ == '__main__':
     unittest.main()
+
