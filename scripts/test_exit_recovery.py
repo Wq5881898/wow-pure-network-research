@@ -254,6 +254,34 @@ class ExitRecoveryTests(unittest.TestCase):
         self.assertEqual(result['retreat']['route']['source'],
                          'reversed submitted outbound route')
 
+    def test_a_mob_that_keeps_hitting_ends_the_wait_immediately(self):
+        # esc003 and esc013: waiting cannot end the combat while the hostile
+        # keeps hitting, and standing still only spends the character's
+        # health. The wait must end as soon as the damage is observed.
+        backend = FakeBackend([Observation(83, in_combat=True),
+                               Observation(76, in_combat=True),
+                               Observation(70, in_combat=True)],
+                              retreat_clears_combat=True)
+        backend.outbound_route = [{'x': 0.0, 'y': 0.0, 'z': 0.0}]
+        backend.outbound_origin = [0.0, 0.0, 0.0]
+        result = resolve_combat_before_exit(backend, budget_seconds=30,
+                                            passive_seconds=20, sleep=sleeper,
+                                            clock=Clock())
+        self.assertIn('rpc:bridge.follow_path', backend.requests,
+                      'a hostile that keeps hitting must trigger the retreat')
+        self.assertLessEqual(len(result['samples']), 4,
+                             'the wait must not run the full passive window')
+
+    def test_a_stationary_mob_gets_the_full_passive_window(self):
+        backend = FakeBackend([Observation(71, in_combat=True),
+                               Observation(71, in_combat=True),
+                               Observation(71, in_combat=False)])
+        result = resolve_combat_before_exit(backend, budget_seconds=30,
+                                            passive_seconds=20, sleep=sleeper,
+                                            clock=Clock())
+        self.assertTrue(result['combat_cleared'])
+        self.assertEqual(result['cleared_reason'], 'server_cleared')
+
     def test_never_sends_an_attack_while_escaping(self):
         backend = FakeBackend([Observation(71, in_combat=True)])
         backend.outbound_route = [{'x': 0.0, 'y': 0.0, 'z': 0.0}]

@@ -127,12 +127,19 @@ def resolve_combat_before_exit(backend, *, budget_seconds=60, poll_interval=0.5,
     actions.append('stop_attack')
 
     # Stage 2: passive wait (the mob may have stopped hitting already).
-    # A character already at the health floor must not stand still and be
-    # hit, so it goes straight to the retreat.
+    #
+    # The wait is only useful while the mob has stopped hitting: measured on
+    # 2026-11-01 (esc003), a hostile that keeps hitting never lets the combat
+    # clear, so standing still only spends the character's health. The mob
+    # still hitting is directly observable: the character's own health drops
+    # between two samples. As soon as it does, the wait is abandoned and the
+    # retreat starts, instead of burning the health floor (esc013, where the
+    # character lost 43 HP standing still and died).
     deadline = started + passive_seconds
     while clock() < deadline:
         if observation.health is not None and observation.health <= min_health:
             break
+        previous_health = observation.health
         sleep(poll_interval)
         observation = backend.observe()
         samples.append(_sample(observation))
@@ -144,6 +151,10 @@ def resolve_combat_before_exit(backend, *, budget_seconds=60, poll_interval=0.5,
                     'cleared_reason': _cleared_reason(samples, retreated=False),
                     'reason': None, 'retreat': None}
         if observation.health is not None and observation.health <= min_health:
+            break
+        if (observation.health is not None and previous_health is not None
+                and observation.health < previous_health):
+            # The mob is still hitting: waiting cannot end the combat.
             break
 
     # Stage 3: leave the hostile's reach along the reversed outbound route.

@@ -370,7 +370,7 @@ class PureNetworkBackend:
                                                 f'{self.run_id}:path:{time.monotonic_ns()}', time.monotonic())
         return replies, None
 
-    def plan_escape_route(self, min_distance=40.0):
+    def plan_escape_route(self, min_distance=40.0, candidates=12):
         """Plan a navmesh route that ends well away from the tracked hostile.
 
         Measured on 2026-11-01 (esc010): reversing the outbound approach route
@@ -380,6 +380,11 @@ class PureNetworkBackend:
         hostile and snapped onto the navmesh by the same tool the approach
         uses. The navmesh keeps the walk on walkable ground instead of
         inventing a straight line (docs/51).
+
+        A single direction is not enough: on 2026-11-01 (esc013) the ground
+        directly away from the hostile dropped over a cliff, and the walk was
+        refused. The directions are therefore fanned out around the away
+        direction, and the first walkable route wins.
 
         Returns None when no route can be planned.
         """
@@ -396,24 +401,37 @@ class PureNetworkBackend:
         distance = math.dist(current[:3], hostile_position[:3])
         if distance < 1e-6:
             return None
-        # Straight away from the hostile, then out to the requested distance.
-        direction = [(current[i] - hostile_position[i]) for i in range(3)]
-        norm = math.dist(current[:3], hostile_position[:3])
-        unit = [component / norm for component in direction]
-        destination = [current[i] + unit[i] * min_distance for i in range(3)]
-        try:
-            raw = self._nav(current[:3], destination)
-            points = self._densify(raw, current)
-        except RuntimeError:
-            return None
-        if not points:
-            return None
-        return {'points': [{'x': p['x'], 'y': p['y'], 'z': p['z']} for p in points],
-                'origin': current,
-                'source': 'navmesh route planned away from the hostile',
-                'planned_distance': round(min_distance, 3),
-                'hostile_distance_at_plan': round(distance, 3),
-                'destination': [round(c, 3) for c in destination]}
+        # Straight away from the hostile is the preferred bearing; the fan
+        # around it exists because that bearing can be a cliff.
+        base = math.atan2(current[1] - hostile_position[1],
+                          current[0] - hostile_position[0])
+        errors = []
+        for index in range(candidates):
+            bearing = base + (0.0 if index == 0 else
+                              math.copysign(((index + 1) // 2) * math.radians(30), index))
+            destination = [current[0] + math.cos(bearing) * min_distance,
+                           current[1] + math.sin(bearing) * min_distance,
+                           current[2]]
+            try:
+                raw = self._nav(current[:3], destination)
+                points = self._densify(raw, current)
+            except RuntimeError as exc:
+                errors.append(str(exc))
+                continue
+            if not points:
+                continue
+            end = points[-1]
+            end_distance = math.dist([end['x'], end['y'], end['z']], hostile_position[:3])
+            return {'points': [{'x': p['x'], 'y': p['y'], 'z': p['z']} for p in points],
+                    'origin': current,
+                    'source': 'navmesh route planned away from the hostile',
+                    'planned_distance': round(min_distance, 3),
+                    'hostile_distance_at_plan': round(distance, 3),
+                    'bearing_degrees': round(math.degrees(bearing) % 360, 1),
+                    'end_distance_from_hostile': round(end_distance, 3),
+                    'destination': [round(c, 3) for c in destination],
+                    'rejected_directions': errors}
+        return None
 
     def _do_approach(self, params, timeout):
         """Approach the live target and verify every landing.
