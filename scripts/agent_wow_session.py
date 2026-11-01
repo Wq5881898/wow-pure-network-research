@@ -399,18 +399,32 @@ class PureNetworkBackend:
                                                 f'{self.run_id}:path:{time.monotonic_ns()}', time.monotonic())
         return replies, None
 
-    def escape_route(self, refresh=False):
+    def escape_route(self, refresh=False, stale_distance=8.0):
         """The escape route away from the tracked target, or None.
 
         Planned once per target and cached: the navmesh query is a
         subprocess call, and both the combat state machine and the exit
         branch must see the same answer.
+
+        The cache is dropped when the character has moved away from where the
+        route starts: the route's first waypoint has to be within the
+        bridge's segment limit of where the character actually is, or the
+        bridge rejects the whole path ("segment exceeds 15 yards"). That
+        happened on 2026-11-01 (b2_u1): the route was planned before the
+        fight moved the character, and the retreat was rejected, so the
+        character stood in combat until it died.
         """
         if self.target is None:
             return None
         guid = self.target.get('guid')
         if not refresh and self._escape_route_target == guid and self._escape_route is not None:
-            return self._escape_route
+            here = list((self.submitted_position or self.current_position
+                         or self.observed_position or [])[:3])
+            origin = self._escape_route.get('origin') or []
+            if here and len(origin) >= 3 and math.dist(here, list(origin)[:3]) > stale_distance:
+                refresh = True
+            else:
+                return self._escape_route
         try:
             route = self.plan_escape_route()
         except Exception:  # noqa: BLE001 - a failed plan means "no route"
@@ -515,7 +529,7 @@ class PureNetworkBackend:
             if live is None:
                 return {'error': 'selected target no longer alive/visible', 'replies': replies}
             self.target = live
-            current = list((self.observed_position or self.current_position)[:3])
+            current = list((self.submitted_position or self.observed_position or self.current_position)[:3])
             target_position, source = estimated_position(self.target, self.stream_now())
             distance = math.dist(current, target_position)
             if distance <= 4:

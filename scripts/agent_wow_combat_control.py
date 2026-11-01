@@ -63,7 +63,7 @@ def estimated_position(obj, now_ms):
 
 def fight(rpc, drain, target_guid, self_position, now_ms, budget=18,
           advisory=False, config=None, escape_path_planned=False, enforce=False,
-          reapproach=None, max_reapproaches=3, kite_radius=15.0):
+          reapproach=None, max_reapproaches=3, chase_radius=25.0):
     rows=[];start=time.monotonic();deadline=start+budget;sent=False;outcome='budget_exhausted';last_angle=None
     advisor=CombatStateMachine(config or CombatSMConfig(),
                                target_guid=target_guid,
@@ -108,12 +108,11 @@ def fight(rpc, drain, target_guid, self_position, now_ms, budget=18,
             if sent and distance > 5:
                 # The target left melee range. A target that is still nearby
                 # is KITING (a roaming caster stepping back), and it can be
-                # fought by walking to it again. A target that has gone
-                # further away has LEFT, and chasing it would drag the
-                # character into unknown ground - so that is not chased.
-                moved = math.dist(tp[:3], last_target_position[:3]) if last_target_position else 0.0
+                # fought by walking to it again. A target that has gone far
+                # away has LEFT, and chasing it would drag the character into
+                # unknown ground - so that is not chased.
                 if (reapproach is not None and reapproaches < max_reapproaches
-                        and moved <= kite_radius):
+                        and distance <= chase_radius):
                     reapproaches += 1
                     result = reapproach()
                     if result and result.get('moved'):
@@ -123,7 +122,7 @@ def fight(rpc, drain, target_guid, self_position, now_ms, budget=18,
                         self_position = reference
                         last_target_position = list(tp[:3])
                         row['reapproach'] = {'attempt': reapproaches,
-                                             'target_moved': round(moved, 2)}
+                                             'target_distance': round(distance, 2)}
                         time.sleep(.2)
                         observed = drain()
                         continue
