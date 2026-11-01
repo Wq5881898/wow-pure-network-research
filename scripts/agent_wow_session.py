@@ -126,6 +126,12 @@ class PureNetworkBackend:
         # hostile that keeps hitting).
         self.outbound_route = []
         self.outbound_origin = None
+        # The escape route is planned once per target and shared: the combat
+        # state machine and the exit branch must see the SAME route, or the
+        # decision the state machine records and the decision the executor
+        # carries out can drift apart.
+        self._escape_route = None
+        self._escape_route_target = None
         self.position_context = PositionContext()
         self.start_position = None
         self.retreat_points = []
@@ -385,6 +391,26 @@ class PureNetworkBackend:
                                                 f'{self.run_id}:path:{time.monotonic_ns()}', time.monotonic())
         return replies, None
 
+    def escape_route(self, refresh=False):
+        """The escape route away from the tracked target, or None.
+
+        Planned once per target and cached: the navmesh query is a
+        subprocess call, and both the combat state machine and the exit
+        branch must see the same answer.
+        """
+        if self.target is None:
+            return None
+        guid = self.target.get('guid')
+        if not refresh and self._escape_route_target == guid and self._escape_route is not None:
+            return self._escape_route
+        try:
+            route = self.plan_escape_route()
+        except Exception:  # noqa: BLE001 - a failed plan means "no route"
+            route = None
+        self._escape_route = route
+        self._escape_route_target = guid
+        return route
+
     def plan_escape_route(self, min_distance=40.0, candidates=12):
         """Plan a navmesh route that ends well away from the tracked hostile.
 
@@ -562,11 +588,18 @@ class PureNetworkBackend:
         if self.target is None:
             return {'error': 'no target selected'}
         reference = self.submitted_position or self.current_position or self.observed_position or self.start_position
+        # The escape route is planned once and shared: the state machine's
+        # request_escape decision and the exit branch's retreat have to be
+        # about the SAME route. The route is planned away from the tracked
+        # target, so the plan is refreshed when the target changes.
+        route = self.escape_route(refresh=True)
         phase, _observed = fight(self.rpc, self.drain, self.target['guid'], list(reference)[:3],
                                  self.stream_now, budget=params.get('budget', 35),
-                                 advisory=self.advisory)
+                                 advisory=self.advisory,
+                                 escape_path_planned=bool(route))
         return {'outcome': phase['outcome'], 'phase': phase,
                 'side_effect_applied': bool(phase.get('start_sent_once')),
+                'escape_path_planned': bool(route),
                 'reference_position': list(reference)[:3]}
 
     def _do_loot(self, params, timeout):

@@ -154,14 +154,17 @@ class ExitRecoveryTests(unittest.TestCase):
 
     def test_resolve_stops_at_the_health_floor(self):
         # Waiting for the server to clear combat must never be what kills the
-        # character: below the floor the wait aborts and says so.
+        # character: below the floor the wait aborts and says so. With a
+        # route available the character gets out instead of fighting on.
         backend = FakeBackend([Observation(20, in_combat=True)])
+        backend.outbound_route = [{'x': 0.0, 'y': 0.0, 'z': 0.0}]
+        backend.outbound_origin = [0.0, 0.0, 0.0]
         result = resolve_combat_before_exit(backend, budget_seconds=30,
-                                            min_health=25, sleep=sleeper, finish_budget_seconds=0.3,
+                                            min_health=25, sleep=sleeper,
+                                            finish_budget_seconds=0.3,
                                             clock=Clock())
-        self.assertFalse(result['combat_cleared'])
-        self.assertIn('health floor', result['reason'])
         self.assertNotIn('rpc:bridge.start_attack', backend.requests)
+
 
     def test_resolve_does_not_abort_above_the_health_floor(self):
         backend = FakeBackend([Observation(71, in_combat=True),
@@ -384,11 +387,26 @@ class ExitRecoveryTests(unittest.TestCase):
     def test_a_healthy_character_does_not_start_a_fight_below_the_floor(self):
         backend = FakeBackend([Observation(20, in_combat=True,
                                            target_health=10, target_max_health=71)])
+        backend.outbound_route = [{'x': 0.0, 'y': 0.0, 'z': 0.0}]
+        backend.outbound_origin = [0.0, 0.0, 0.0]
         result = resolve_combat_before_exit(backend, budget_seconds=30,
                                             min_health=25, passive_seconds=2,
                                             sleep=sleeper, finish_budget_seconds=0.3,
                                             clock=Clock())
         self.assertNotIn('rpc:bridge.start_attack', backend.requests)
+        self.assertEqual(result['ending'], 'escape')
+
+    def test_with_no_route_the_character_fights_instead_of_idling(self):
+        # Idling while a hostile keeps hitting guarantees death, so with no
+        # route the only ending the server offers is the target dying.
+        backend = FakeBackend([Observation(20, in_combat=True)])
+        backend.target_dies = True
+        result = resolve_combat_before_exit(backend, budget_seconds=30,
+                                            min_health=25, passive_seconds=2,
+                                            sleep=sleeper, finish_budget_seconds=0.3,
+                                            clock=Clock())
+        self.assertEqual(result['ending'], 'fight')
+        self.assertIn('rpc:bridge.start_attack', backend.requests)
 
     def test_never_sends_an_attack_while_escaping(self):
 

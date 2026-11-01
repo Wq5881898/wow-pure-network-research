@@ -115,18 +115,20 @@ class ObservationView:
     target_guid: object = None
     target_present: bool = False
     target_health: object = None
+    target_max_health: object = None
     distance: object = None
     distance_confirmed: bool = False
 
     @classmethod
     def from_mapping(cls, me, now, target=None, distance=None,
-                     distance_confirmed=False):
+                     distance_confirmed=False, target_max_health=None):
         """Build a view from a worldstate-style summary dict.
 
         me: a summarized self object (health/health_transmitted/max_health/
             ghost/in_combat keys). target: a summarized creature dict or None.
-        Untransmitted health normalizes to None: unknown is neither death nor
-        low health.
+        untransmitted health normalizes to None: unknown is neither death nor
+        low health. target_max_health is the creature's own maximum, so the
+        remaining fraction of the target can be judged.
         """
         transmitted = bool(me.get('health_transmitted', False))
         health = me.get('health') if transmitted else None
@@ -134,14 +136,18 @@ class ObservationView:
         if transmitted and health is not None and max_health <= 0:
             # A raw zero without a usable baseline cannot ground any ratio.
             health = None
+        if target_max_health is None and target is not None:
+            target_max_health = target.get('max_health')
         return cls(sampled_at=float(now), health=health,
                    max_health=max_health, health_transmitted=transmitted,
                    ghost=bool(me.get('ghost')), in_combat=me.get('in_combat'),
                    target_guid=target.get('guid') if target else None,
                    target_present=target is not None,
                    target_health=(target.get('health') if target else None),
+                   target_max_health=target_max_health,
                    distance=distance,
                    distance_confirmed=bool(distance_confirmed))
+
 
 
 @dataclass
@@ -153,6 +159,53 @@ class StepResult:
     def to_dict(self):
         return {'state': self.state, 'decision': self.decision,
                 'reasons': list(self.reasons)}
+
+
+ENDING_ESCAPE = 'escape'
+ENDING_FINISH_TARGET = 'finish_target'
+ENDING_FIGHT = 'fight'
+ENDINGS = (ENDING_ESCAPE, ENDING_FINISH_TARGET, ENDING_FIGHT)
+
+
+def choose_combat_ending(*, self_health=None, self_max_health=0,
+                          target_health=None, target_max_health=None,
+                          escape_route_available=False,
+                          health_floor_ratio=0.25, finish_ratio=0.35,
+                          healthy_ratio=0.5):
+    """How an unresolved combat should be ended: flee, kill the target, or fight on.
+
+    This is the single rule for both the state machine and the exit branch.
+    They must not have separate copies: the state machine records the
+    decision and the exit branch carries it out, and two copies would drift
+    and leave the executor acting on one rule while the evidence records
+    another.
+
+    The rule comes from the live measurements of 2026-11-01:
+      - idling is fatal. A hostile that keeps hitting never lets the combat
+        clear on its own (esc003: 45 s, HP 108 -> 39), so standing still
+        while being hit only spends the character's health (esc010, esc013,
+        esc014 all ended that way).
+      - a target that is nearly dead is cheaper to kill than to run from.
+        esc020: the target was at 22 of 71 HP and the character at 91 of 108,
+        and escaping cost 60 damage and did not clear the combat; one hit
+        would have ended it.
+      - below the health floor the character does not open a new fight.
+    """
+    ratio = (self_health / self_max_health) if (self_health is not None
+                                                 and self_max_health) else None
+    at_floor = ratio is not None and ratio <= health_floor_ratio
+    if not escape_route_available:
+        # With nowhere to run, the only ending the server offers is the
+        # target dying, so fighting on beats standing still.
+        return ENDING_FIGHT
+    if at_floor:
+        # Too hurt to open a new fight; get out instead.
+        return ENDING_ESCAPE
+    if (target_health and target_max_health
+            and target_health / target_max_health <= finish_ratio
+            and ratio is not None and ratio >= healthy_ratio):
+        return ENDING_FINISH_TARGET
+    return ENDING_ESCAPE
 
 
 def distance_confirmed_for(source):
@@ -304,6 +357,22 @@ class CombatStateMachine:
             reasons = base + (REASON_HEALTH_UNKNOWN,)
         else:
             reasons = base
+        if self._state == LOW_HEALTH_EXIT:
+            # The fight is over and the character must get out. How it gets
+            # out is decided by the shared ending rule, so the state machine
+            # cannot recommend the one thing that is fatal: idling while a
+            # hostile keeps hitting (esc003, esc010, esc013, esc014).
+            ending = choose_combat_ending(
+                self_health=observation.health,
+                self_max_health=observation.max_health,
+                target_health=observation.target_health,
+                target_max_health=observation.target_max_health,
+                escape_route_available=self.escape_path_planned)
+            if ending == ENDING_ESCAPE:
+                decision = DECISION_REQUEST_ESCAPE
+            else:
+                decision = DECISION_CONTINUE_ATTACK
+            return StepResult(self._state, decision, reasons)
         if self.escape_path_planned:
             decision = DECISION_REQUEST_ESCAPE
         else:

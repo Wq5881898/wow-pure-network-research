@@ -1,4 +1,4 @@
-"""Resolve the character's combat state before the session is closed.
+﻿"""Resolve the character's combat state before the session is closed.
 
 Why this exists: on 2026-11-01 a bounded task unit fought a Vile Familiar
 that fled at low health. The fight action ended with the target out of melee
@@ -29,6 +29,8 @@ cleared the flag.
 """
 import math
 import time
+
+from agent_wow_combat_state_machine import ENDING_FIGHT, ENDING_FINISH_TARGET
 
 
 def living(observation):
@@ -171,8 +173,8 @@ def resolve_combat_before_exit(backend, *, budget_seconds=60, poll_interval=0.5,
     # with no route, standing still guarantees death, so fighting wins.
     route = _plan_escape_route(backend)
     retreat = None
-    fallback = None
-    if _finish_the_target_is_better(observation, route, min_health=min_health):
+    ending = _combat_ending(observation, route, min_health=min_health)
+    if ending in (ENDING_FINISH_TARGET, ENDING_FIGHT):
         fallback = _finish_the_target(backend, observation, started=started,
                                       budget_seconds=budget_seconds,
                                       finish_budget_seconds=finish_budget_seconds,
@@ -187,7 +189,7 @@ def resolve_combat_before_exit(backend, *, budget_seconds=60, poll_interval=0.5,
                     'cleared_reason': _cleared_reason(samples, retreated=False,
                                                        final=observation),
                     'reason': None, 'retreat': None,
-                    'fallback': fallback}
+                    'fallback': fallback, 'ending': ending}
     else:
         retreat = _perform_retreat(backend, observation, route, sleep=sleep, clock=clock)
         if retreat is not None:
@@ -201,7 +203,7 @@ def resolve_combat_before_exit(backend, *, budget_seconds=60, poll_interval=0.5,
                     'actions': actions,
                     'cleared_reason': _cleared_reason(samples, retreated=True,
                                                        final=observation),
-                    'reason': None, 'retreat': retreat}
+                    'reason': None, 'retreat': retreat, 'ending': ending}
 
     # Still in combat: keep observing, but never below the health floor.
     while clock() - started < budget_seconds:
@@ -216,7 +218,7 @@ def resolve_combat_before_exit(backend, *, budget_seconds=60, poll_interval=0.5,
                     'final': observation, 'requests': _request_label(actions),
                     'actions': actions, 'cleared_reason': None,
                     'reason': 'health floor reached while still in combat',
-                    'retreat': retreat}
+                    'retreat': retreat, 'ending': ending}
     cleared = observation.in_combat is not True
     return {'combat_cleared': cleared, 'samples': samples,
             'elapsed_s': round(clock() - started, 3),
@@ -228,6 +230,7 @@ def resolve_combat_before_exit(backend, *, budget_seconds=60, poll_interval=0.5,
                                if cleared else None),
             'reason': None if cleared else 'combat did not clear within budget',
             'retreat': retreat,
+            'ending': ending,
             'fallback': fallback if retreat is None else None}
 
 
@@ -278,37 +281,24 @@ def _stop_attack(backend):
         return {'error': f'{type(exc).__name__}: {exc}'}
 
 
-def _finish_the_target_is_better(observation, route, min_health=25,
-                                 finish_ratio=0.35, healthy_ratio=0.5):
-    """Decide between killing the target and leaving its reach.
+def _combat_ending(observation, route, min_health=25):
+    """How this unresolved combat should end: flee, kill the target, or fight on.
 
-    Killing the target ends the combat for certain; escaping depends on the
-    hostile giving up. So killing wins whenever it is cheap:
-
-      - no escape route at all: standing still while a hostile keeps hitting
-        guarantees death, so fighting is strictly better (esc010, esc013,
-        esc014 all ended with the character idling until it died);
-      - the target is nearly dead and the character is healthy: one hit ends
-        the combat, while escaping means running the whole way while being
-        hit (esc020: the target was at 22 of 71 HP, the character at 91 of
-        108, and the escape took 60 damage and did not clear the combat).
-
-    Below the health floor the character does not start a new fight.
+    The rule is shared with the combat recovery state machine
+    (agent_wow_combat_state_machine.choose_combat_ending) so the decision the
+    state machine records and the decision the executor carries out can never
+    drift apart.
     """
-    if observation.health is not None and observation.health <= min_health:
-        return False
-    if not route:
-        return True
+    from agent_wow_combat_state_machine import choose_combat_ending
     context = getattr(observation, 'context', None) or {}
-    target_health = context.get('target_health')
-    target_max_health = context.get('target_max_health')
-    if not target_health or not target_max_health:
-        return False
-    if target_health / target_max_health > finish_ratio:
-        return False
-    if observation.health is None or observation.max_health <= 0:
-        return False
-    return observation.health / observation.max_health >= healthy_ratio
+    return choose_combat_ending(
+        self_health=observation.health,
+        self_max_health=observation.max_health,
+        target_health=context.get('target_health'),
+        target_max_health=context.get('target_max_health'),
+        escape_route_available=bool(route),
+        health_floor_ratio=(min_health / observation.max_health
+                            if observation.max_health else 0.25))
 
 
 def _perform_retreat(backend, observation, route, sleep=time.sleep, clock=time.monotonic):
@@ -358,9 +348,17 @@ def _plan_escape_route(backend, min_distance=40.0):
     range. The destination is placed away from the tracked hostile and then
     snapped onto the navmesh by the same tool the approach uses.
 
+    The route comes from the session's shared planner, so the combat state
+    machine and this branch see the same answer.
+
     The reversed outbound route is the fallback: it is the only route that is
     known to be walkable, and it is used when no fresh route can be planned.
     """
+    shared = getattr(backend, 'escape_route', None)
+    if shared is not None:
+        route = shared()
+        if route:
+            return route
     nav = getattr(backend, 'plan_escape_route', None)
     if nav is not None:
         try:
