@@ -244,6 +244,15 @@ class PureNetworkBackend:
         self.observed_position = me['movement']['position_xyzo'][:3]
         if self.current_position is None:
             self.current_position = list(self.observed_position)
+        # The tracked target's live health, refreshed on every observation:
+        # the target snapshot taken at select time goes stale, and a stale
+        # value cannot distinguish "the hostile died" from "the hostile is
+        # still hitting" (2026-11-01 esc008).
+        live_target_health = None
+        if self.target is not None:
+            live = next((o for o in state['visible_objects']
+                         if o['guid'] == self.target['guid']), None)
+            live_target_health = live.get('health') if live else None
         return Observation(backend='pure-network', character=self.self_guid, session_id=self.session_id or '',
                            sequence=me.get('last_seq', 0), sampled_at=time.time(),
                            map_id=state['login']['map'], position=list(self.observed_position),
@@ -253,6 +262,7 @@ class PureNetworkBackend:
                            in_combat=me['in_combat'], level=me['level'], quest_log=me['quest_log'],
                            item_totals=totals, available=tuple(sorted(state.keys())),
                            context={'target': self.target and {'guid': self.target['guid'], 'entry': self.target['entry'], 'health': self.target['health']},
+                                     'target_health': live_target_health,
                                      'position_evidence': {
                                          'source': 'last server object movement update',
                                          'movement_sequence': movement_sequence(state, self.self_guid),
