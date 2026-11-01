@@ -1,4 +1,4 @@
-﻿"""Resolve the character's combat state before the session is closed.
+"""Resolve the character's combat state before the session is closed.
 
 Why this exists: on 2026-11-01 a bounded task unit fought a Vile Familiar
 that fled at low health. The fight action ended with the target out of melee

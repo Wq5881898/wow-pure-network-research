@@ -1,4 +1,4 @@
-﻿"""Shared pure-network session bootstrap and a contract-shaped backend.
+"""Shared pure-network session bootstrap and a contract-shaped backend.
 
 The bootstrap is the same code path the read-only bridge probe uses, so both
 entry points exercise the same module build, relay and login sequence.
@@ -592,6 +592,34 @@ class PureNetworkBackend:
                 'approach_confirmation': self.approach_confirmation,
                 'side_effect_applied': bool(replies)}
 
+    def _close_distance(self, params):
+        """Walk to the target when it is not in melee range.
+
+        The combat controller only fights within reach, so a target that
+        wandered out of reach has to be approached first. The walk is
+        dispatched even though its landing cannot be confirmed in this
+        session (docs/55, docs/88): the fight's own postcondition proves
+        whether the approach worked.
+        """
+        if self.target is None:
+            return {'error': 'no target'}
+        me = self.drain()['self']
+        if me.get('in_combat') is True:
+            return {'skipped': 'already in combat'}
+        try:
+            target_position = estimated_position(self.target, self.stream_now())[0]
+        except Exception:  # noqa: BLE001
+            return {'error': 'target position unknown'}
+        here = list((self.submitted_position or self.current_position
+                     or self.observed_position or self.start_position)[:3])
+        distance = math.dist(here, target_position[:3])
+        if distance <= 5.0:
+            return {'skipped': 'already within reach', 'distance': round(distance, 2)}
+        result = self._do_approach({}, params.get('approach_timeout', 90))
+        return {'walked': True, 'distance_before': round(distance, 2),
+                'reached': result.get('reached'),
+                'reason': result.get('reason')}
+
     def _do_fight(self, params, timeout):
         if self.target is None:
             return {'error': 'no target selected'}
@@ -601,6 +629,26 @@ class PureNetworkBackend:
         # about the SAME route. The route is planned away from the tracked
         # target, so the plan is refreshed when the target changes.
         route = self.escape_route(refresh=True)
+        # A target that is not in melee range cannot be fought: the combat
+        # controller only faces and attacks within reach, and it reports
+        # 'target_left_melee' beyond that. The hunt targets (entry 3101) are
+        # roaming casters, so a fresh landing can be well out of reach even
+        # though the target is visible.
+        #
+        # The fight action therefore closes the distance itself. It does not
+        # need the movement to be confirmed: the action's own postcondition
+        # (the target died and the quest counter advanced) proves the whole
+        # thing. What the approach cannot do is be a separate plan step,
+        # because its postcondition (a confirmed landing) is unobservable in
+        # this session (docs/55, docs/88) and the plan would stop there.
+        closed = self._close_distance(params)
+        if closed.get('error'):
+            return {'outcome': 'preconditions_not_met', 'phase': {
+                        'outcome': 'preconditions_not_met', 'start_sent_once': False,
+                        'observations': [], 'stop': {}},
+                    'side_effect_applied': False,
+                    'approach': closed,
+                    'reference_position': list(reference)[:3]}
         phase, _observed = fight(self.rpc, self.drain, self.target['guid'], list(reference)[:3],
                                  self.stream_now, budget=params.get('budget', 35),
                                  advisory=self.advisory, enforce=self.enforce,
@@ -608,6 +656,7 @@ class PureNetworkBackend:
                                  escape_path_planned=bool(route))
         return {'outcome': phase['outcome'], 'phase': phase,
                 'side_effect_applied': bool(phase.get('start_sent_once')),
+                'approach': closed,
                 'escape_path_planned': bool(route),
                 'reference_position': list(reference)[:3]}
 

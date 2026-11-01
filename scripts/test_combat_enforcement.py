@@ -1,4 +1,4 @@
-﻿"""Guards for the enforced combat recovery state machine.
+"""Guards for the enforced combat recovery state machine.
 
 Enforcement is the step where the state machine stops only recording and
 starts vetoing dispatch. It is off by default, and the contract of the fight

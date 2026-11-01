@@ -1,4 +1,4 @@
-﻿"""Regression guards for the 2026-11-01 combat death.
+"""Regression guards for the 2026-11-01 combat death.
 
 The defect: a bounded unit fought a mob that fled at low health. The fight
 action ended while the character was still flagged in combat, the executor
