@@ -216,6 +216,44 @@ class ExitRecoveryTests(unittest.TestCase):
         self.assertIsNone(result['retreat'])
         self.assertNotIn('rpc:bridge.follow_path', backend.requests)
 
+    def test_a_planned_escape_route_is_preferred_over_the_short_approach(self):
+        # esc010: reversing a ~6 yard approach route left the character inside
+        # the hostile's aggro range and it was killed. A planned route that
+        # ends far away must be used instead.
+        backend = FakeBackend([Observation(71, in_combat=True)],
+                              retreat_clears_combat=True)
+        backend.plan_escape_route = lambda min_distance=40.0: {
+            'points': [{'x': 0.0, 'y': 0.0, 'z': 0.0},
+                       {'x': 0.0, 'y': 40.0, 'z': 0.0}],
+            'origin': [0.0, 0.0, 0.0],
+            'source': 'navmesh route planned away from the hostile',
+            'planned_distance': 40.0}
+        backend.outbound_route = [{'x': 0.0, 'y': 0.0, 'z': 0.0},
+                                  {'x': 0.0, 'y': 6.0, 'z': 0.0}]
+        backend.outbound_origin = [0.0, 0.0, 0.0]
+        result = resolve_combat_before_exit(backend, budget_seconds=30,
+                                            passive_seconds=2, sleep=sleeper,
+                                            clock=Clock())
+        self.assertEqual(result['retreat']['route']['source'],
+                         'navmesh route planned away from the hostile')
+        self.assertEqual(result['retreat']['route']['planned_distance'], 40.0)
+        # The submitted path must be the planned one, not the reversed approach.
+        follow = [r for r in backend.requests if r == 'rpc:bridge.follow_path']
+        self.assertEqual(len(follow), 1)
+        self.assertGreater(result['retreat']['route_length'], 30.0)
+
+    def test_the_short_approach_route_is_the_fallback(self):
+        backend = FakeBackend([Observation(71, in_combat=True)],
+                              retreat_clears_combat=True)
+        backend.outbound_route = [{'x': 0.0, 'y': 0.0, 'z': 0.0},
+                                  {'x': 0.0, 'y': 6.0, 'z': 0.0}]
+        backend.outbound_origin = [0.0, 0.0, 0.0]
+        result = resolve_combat_before_exit(backend, budget_seconds=30,
+                                            passive_seconds=2, sleep=sleeper,
+                                            clock=Clock())
+        self.assertEqual(result['retreat']['route']['source'],
+                         'reversed submitted outbound route')
+
     def test_never_sends_an_attack_while_escaping(self):
         backend = FakeBackend([Observation(71, in_combat=True)])
         backend.outbound_route = [{'x': 0.0, 'y': 0.0, 'z': 0.0}]

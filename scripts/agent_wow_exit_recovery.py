@@ -197,37 +197,81 @@ def _stop_attack(backend):
 
 
 def _retreat_out_of_reach(backend, observation, sleep=time.sleep, clock=time.monotonic):
-    """Reverse the outbound route once, to leave the hostile's reach.
+    """Leave the hostile's reach along a route that actually gets away.
 
-    Returns None when no route is known: without a submitted route there is no
-    geometrically justified escape, and inventing a straight line is exactly
-    the shortcut docs/51 rejects.
+    Measured on 2026-11-01 (esc010): reversing the outbound approach route is
+    NOT an escape. The approach had only walked about 6 yards, so the
+    reversed route left the character inside the scorpid's aggro range: the
+    hostile kept hitting for 45 s and the character died. The escape has to
+    END far from the hostile, so the route is planned with the navmesh
+    instead of replaying the approach.
+
+    The navmesh is the same geometric authority the approach uses, and the
+    destination is snapped onto it, so the walk stays on walkable ground
+    rather than inventing a straight line (docs/51).
+
+    Returns None when no route can be planned: without a route there is no
+    justified escape.
     """
-    route = getattr(backend, 'outbound_route', None) or []
-    origin = getattr(backend, 'outbound_origin', None)
-    if not route or not origin:
+    route = _plan_escape_route(backend)
+    if not route:
         return None
+    points = route['points']
+    origin = route['origin']
     # The walk out has to actually cover the route: the bridge needs about
     # 12 s per 30-yard chunk, so scale the wait with the route's real length
     # instead of using a fixed timeout that ends before the hostile's reach
     # is left behind. The length is measured on the path, not on the number
     # of waypoints: a densified route has a waypoint every few yards.
-    length = _route_length(route)
+    length = _route_length(points)
     wait_seconds = max(15.0, 12.0 * (length / 30.0))
     try:
         from agent_wow_escape_control import retreat
-        result, state = retreat(backend.rpc, backend.drain, route, origin,
-                                wait_seconds=wait_seconds, sleep=sleep, clock=clock)
+        result, state = retreat(backend.rpc, backend.drain, route['points'],
+                                route['origin'], wait_seconds=wait_seconds,
+                                sleep=sleep, clock=clock, route=route['points'])
     except Exception as exc:  # noqa: BLE001 - a failed retreat must not abort the exit
         return {'outcome': 'retreat_failed', 'error': f'{type(exc).__name__}: {exc}',
-                'samples': [], 'final': observation, 'wait_seconds': wait_seconds}
-    # The retreat helper returns the raw world-state dict for 'self'; the rest
-    # of this module works with Observation objects, so a dict here would make
-    # the caller read `.in_combat` off a dict and raise AttributeError.
+                'samples': [], 'final': observation, 'wait_seconds': wait_seconds,
+                'route': route}
+    # The retreat helper returns the raw world-state dict, whose 'self' is
+    # keyed by field name. The rest of this module works with Observation
+    # objects, so a dict here would make the caller read `.in_combat` off a
+    # dict and raise AttributeError.
     result['final'] = _as_observation(backend, observation, state)
     result['wait_seconds'] = wait_seconds
     result['route_length'] = round(length, 3)
+    result['route'] = route
     return result
+
+
+def _plan_escape_route(backend, min_distance=40.0):
+    """Plan a navmesh route that ends well away from the hostile.
+
+    The character must get out of the hostile's reach, which means distance,
+    not movement: esc010 reversed a 6-yard approach and stayed in aggro
+    range. The destination is placed away from the tracked hostile and then
+    snapped onto the navmesh by the same tool the approach uses.
+
+    The reversed outbound route is the fallback: it is the only route that is
+    known to be walkable, and it is used when no fresh route can be planned.
+    """
+    nav = getattr(backend, 'plan_escape_route', None)
+    if nav is not None:
+        try:
+            planned = nav(min_distance=min_distance)
+        except Exception:  # noqa: BLE001 - fall back to the known route
+            planned = None
+        if planned and planned.get('points'):
+            return planned
+    route = getattr(backend, 'outbound_route', None) or []
+    origin = getattr(backend, 'outbound_origin', None)
+    if not route or not origin:
+        return None
+    return {'points': list(reversed(route[:-1])) + [dict(zip(('x', 'y', 'z'), origin[:3]))],
+            'origin': list(origin[:3]),
+            'source': 'reversed submitted outbound route',
+            'planned_distance': None}
 
 
 def _as_observation(backend, previous, state):

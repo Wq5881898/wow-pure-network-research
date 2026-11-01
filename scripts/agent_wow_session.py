@@ -370,6 +370,51 @@ class PureNetworkBackend:
                                                 f'{self.run_id}:path:{time.monotonic_ns()}', time.monotonic())
         return replies, None
 
+    def plan_escape_route(self, min_distance=40.0):
+        """Plan a navmesh route that ends well away from the tracked hostile.
+
+        Measured on 2026-11-01 (esc010): reversing the outbound approach route
+        is not an escape. The approach had only walked about 6 yards, so the
+        character stayed inside the hostile's aggro range and was killed. The
+        escape needs distance, so the destination is placed away from the
+        hostile and snapped onto the navmesh by the same tool the approach
+        uses. The navmesh keeps the walk on walkable ground instead of
+        inventing a straight line (docs/51).
+
+        Returns None when no route can be planned.
+        """
+        if self.target is None:
+            return None
+        current = list((self.current_position or self.observed_position
+                        or self.state['login']['position_xyzo'])[:3])
+        if not current:
+            return None
+        try:
+            hostile_position = estimated_position(self.target, self.stream_now())[0]
+        except Exception:  # noqa: BLE001 - without the hostile, no direction
+            return None
+        distance = math.dist(current[:3], hostile_position[:3])
+        if distance < 1e-6:
+            return None
+        # Straight away from the hostile, then out to the requested distance.
+        direction = [(current[i] - hostile_position[i]) for i in range(3)]
+        norm = math.dist(current[:3], hostile_position[:3])
+        unit = [component / norm for component in direction]
+        destination = [current[i] + unit[i] * min_distance for i in range(3)]
+        try:
+            raw = self._nav(current[:3], destination)
+            points = self._densify(raw, current)
+        except RuntimeError:
+            return None
+        if not points:
+            return None
+        return {'points': [{'x': p['x'], 'y': p['y'], 'z': p['z']} for p in points],
+                'origin': current,
+                'source': 'navmesh route planned away from the hostile',
+                'planned_distance': round(min_distance, 3),
+                'hostile_distance_at_plan': round(distance, 3),
+                'destination': [round(c, 3) for c in destination]}
+
     def _do_approach(self, params, timeout):
         """Approach the live target and verify every landing.
 
