@@ -112,6 +112,12 @@ class PureNetworkBackend:
         self.state = None
         self.target = None
         self.current_position = None
+        # The bridge's own view of where the character is. The server never
+        # broadcasts the mover's own position (docs/88), so the observed
+        # position stays at the login point for the whole session. The bridge
+        # does track it and returns it as submittedPosition after every path,
+        # so that reply is the only authoritative position available.
+        self.submitted_position = None
         self.observed_position = None
         self.session_start_position = None
         self.approach_confirmation = None
@@ -195,6 +201,10 @@ class PureNetworkBackend:
             self.result['operations'].append({'cursor': self.cursor, 'last_sequence': body.get('lastSequence'), 'page_count': len(body.get('packets', []))})
             time.sleep(.25)
         self.state = self.drain()
+        # The bridge starts tracking the character at the login point; until
+        # it reports a submitted position, that is the character.
+        if self.submitted_position is None:
+            self.submitted_position = list(self.state['login']['position_xyzo'][:3])
         return self
 
     def close(self, force=False):
@@ -366,6 +376,7 @@ class PureNetworkBackend:
                 return replies, f'path rejected: {message}'
             submitted = reply.get('result', {}).get('submittedPosition')
             if submitted is not None:
+                self.submitted_position = list(submitted[:3])
                 self.position_context.submitted(submitted, self.cursor,
                                                 f'{self.run_id}:path:{time.monotonic_ns()}', time.monotonic())
         return replies, None
@@ -381,6 +392,15 @@ class PureNetworkBackend:
         uses. The navmesh keeps the walk on walkable ground instead of
         inventing a straight line (docs/51).
 
+        The route starts where the BRIDGE thinks the character is: the server
+        never broadcasts the mover's own position (docs/88), so the observed
+        position stays at the login point for the whole session. On
+        2026-11-01 (esc014) the route was planned from that stale point, its
+        first waypoint was 87 yards from the character, and the bridge
+        rejected the path ("segment exceeds 15 yards"). The bridge returns
+        its own tracked position as submittedPosition after every path, and
+        that is the anchor used here.
+
         A single direction is not enough: on 2026-11-01 (esc013) the ground
         directly away from the hostile dropped over a cliff, and the walk was
         refused. The directions are therefore fanned out around the away
@@ -390,10 +410,10 @@ class PureNetworkBackend:
         """
         if self.target is None:
             return None
-        current = list((self.current_position or self.observed_position
-                        or self.state['login']['position_xyzo'])[:3])
-        if not current:
-            return None
+        current = list((self.submitted_position or self.current_position
+                        or self.observed_position) or [])
+        if len(current) < 3:
+            current = list(self.state['login']['position_xyzo'][:3])
         try:
             hostile_position = estimated_position(self.target, self.stream_now())[0]
         except Exception:  # noqa: BLE001 - without the hostile, no direction

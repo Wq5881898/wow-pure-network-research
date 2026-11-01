@@ -237,9 +237,11 @@ class ExitRecoveryTests(unittest.TestCase):
         self.assertEqual(result['retreat']['route']['source'],
                          'navmesh route planned away from the hostile')
         self.assertEqual(result['retreat']['route']['planned_distance'], 40.0)
-        # The submitted path must be the planned one, not the reversed approach.
+        # The submitted path must be the planned one, split into the sizes the
+        # bridge accepts (at most 15 yards per segment, 50 per path).
         follow = [r for r in backend.requests if r == 'rpc:bridge.follow_path']
-        self.assertEqual(len(follow), 1)
+        self.assertGreaterEqual(len(follow), 2,
+                                'a 40 yard route must be sent in several chunks')
         self.assertGreater(result['retreat']['route_length'], 30.0)
 
     def test_the_short_approach_route_is_the_fallback(self):

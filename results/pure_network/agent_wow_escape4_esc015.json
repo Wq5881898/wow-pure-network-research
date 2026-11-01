@@ -1,0 +1,219 @@
+{
+  "run_id": "esc015",
+  "scope": "route B: reverse-route retreat with the hostile still alive",
+  "status": "unknown",
+  "initial_self": {
+    "health": 108,
+    "max_health": 108,
+    "ghost": false,
+    "in_combat": false,
+    "position": [
+      -634.635009765625,
+      -4296.02978515625,
+      40.52539825439453
+    ]
+  },
+  "target": {
+    "guid": "17379391014435043887",
+    "entry": 3124,
+    "level": 3,
+    "health": 71,
+    "distance": 87.32
+  },
+  "approach": {
+    "reached": false,
+    "position_confirmation": {
+      "confirmed": false,
+      "fresh": false,
+      "distance": 86.97500750801927,
+      "movement_sequence": 3,
+      "before_sequence": 3,
+      "last_update_position": [
+        -634.635009765625,
+        -4296.02978515625,
+        40.52539825439453
+      ],
+      "submitted_position": [
+        -706.6059,
+        -4344.3203,
+        47.79651
+      ],
+      "scope": "movement update required; polling does not refresh position"
+    },
+    "attempts": [],
+    "side_effect_applied": true,
+    "reason": "no new self movement evidence; do not replan from cached login position"
+  },
+  "route_points": 42,
+  "route_origin": [
+    -634.635009765625,
+    -4296.02978515625,
+    40.52539825439453
+  ],
+  "planned_escape_route": {
+    "points": [
+      {
+        "x": -709.2812442857143,
+        "y": -4343.960228571429,
+        "z": 47.12260428571428
+      },
+      {
+        "x": -711.9565885714286,
+        "y": -4343.600157142857,
+        "z": 46.44869857142857
+      },
+      {
+        "x": -714.6319328571428,
+        "y": -4343.240085714286,
+        "z": 45.774792857142856
+      },
+      {
+        "x": -717.3072771428572,
+        "y": -4342.880014285714,
+        "z": 45.10088714285714
+      },
+      {
+        "x": -719.9826214285714,
+        "y": -4342.519942857143,
+        "z": 44.42698142857142
+      },
+      {
+        "x": -722.6579657142858,
+        "y": -4342.159871428571,
+        "z": 43.753075714285714
+      },
+      {
+        "x": -725.33331,
+        "y": -4341.7998,
+        "z": 43.07917
+      },
+      {
+        "x": -727.06665,
+        "y": -4341.56665,
+        "z": 42.71565
+      },
+      {
+        "x": -728.79999,
+        "y": -4341.3335,
+        "z": 42.35213
+      },
+      {
+        "x": -731.199985,
+        "y": -4341.3335,
+        "z": 42.218795
+      },
+      {
+        "x": -733.59998,
+        "y": -4341.3335,
+        "z": 42.08546
+      },
+      {
+        "x": -735.4666442857142,
+        "y": -4342.857285714285,
+        "z": 43.037841428571426
+      },
+      {
+        "x": -737.3333085714286,
+        "y": -4344.381071428571,
+        "z": 43.990222857142854
+      },
+      {
+        "x": -739.1999728571428,
+        "y": -4345.904857142857,
+        "z": 44.94260428571428
+      },
+      {
+        "x": -741.0666371428572,
+        "y": -4347.428642857143,
+        "z": 45.89498571428572
+      },
+      {
+        "x": -742.9333014285714,
+        "y": -4348.952428571429,
+        "z": 46.847367142857145
+      },
+      {
+        "x": -744.7999657142858,
+        "y": -4350.476214285714,
+        "z": 47.79974857142857
+      },
+      {
+        "x": -746.66663,
+        "y": -4352.0,
+        "z": 48.75213
+      },
+      {
+        "x": -748.6247900000001,
+        "y": -4352.930420000001,
+        "z": 49.952465000000004
+      },
+      {
+        "x": -750.58295,
+        "y": -4353.86084,
+        "z": 51.1528
+      }
+    ],
+    "origin": [
+      -706.6059,
+      -4344.3203,
+      47.79651
+    ],
+    "source": "navmesh route planned away from the hostile",
+    "planned_distance": 45.0,
+    "hostile_distance_at_plan": 2.953,
+    "bearing_degrees": 192.2,
+    "end_distance_from_hostile": 46.631,
+    "destination": [
+      -750.583,
+      -4353.861,
+      47.797
+    ],
+    "rejected_directions": [
+      "route drops more than 5 yards; refusing cliff path",
+      "route drops more than 5 yards; refusing cliff path",
+      "route drops more than 5 yards; refusing cliff path"
+    ]
+  },
+  "waited_for_arrival_s": 12.0,
+  "start_attack": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {}
+  },
+  "combat_engaged": true,
+  "target_health_before_exit": 27,
+  "hp_before_exit": 89,
+  "in_combat_before_exit": true,
+  "finalize": {
+    "initial_self": {
+      "health": 89,
+      "ghost": false,
+      "in_combat": true
+    },
+    "combat_recovery": {
+      "combat_cleared": true,
+      "elapsed_s": 11.219,
+      "sample_count": 14,
+      "requests": "observation + stop_attack + one retreat",
+      "actions": [
+        "stop_attack",
+        "retreat"
+      ],
+      "cleared_reason": "left_reach",
+      "reason": null,
+      "retreat_outcome": "out_of_combat"
+    },
+    "status": "resolved",
+    "logout": {
+      "status": "closed",
+      "reply": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "result": {
+          "status": "closed"
+        }
+      }
+    }
+  },
+  "error": "URLError: <urlopen error [Errno 111] Connection refused>"
+}

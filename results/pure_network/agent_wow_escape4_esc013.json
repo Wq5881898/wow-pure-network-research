@@ -1,0 +1,77 @@
+{
+  "run_id": "esc013",
+  "scope": "route B: reverse-route retreat with the hostile still alive",
+  "status": "INCONCLUSIVE",
+  "initial_self": {
+    "health": 108,
+    "max_health": 108,
+    "ghost": false,
+    "in_combat": false,
+    "position": [
+      -710.7135620117188,
+      -4346.490234375,
+      47.77688980102539
+    ]
+  },
+  "target": {
+    "guid": "17379391014435043887",
+    "entry": 3124,
+    "level": 3,
+    "health": 71,
+    "distance": 4.31
+  },
+  "approach": {
+    "reached": true,
+    "distance": 3.518,
+    "position_source": "linear receive-time estimate",
+    "submitted_position": [
+      -710.7135620117188,
+      -4346.490234375,
+      47.77688980102539
+    ],
+    "attempts": [],
+    "side_effect_applied": false
+  },
+  "route_points": 0,
+  "route_origin": null,
+  "planned_escape_route": null,
+  "waited_for_arrival_s": 12.0,
+  "start_attack": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {}
+  },
+  "combat_engaged": true,
+  "target_health_before_exit": 12,
+  "hp_before_exit": 83,
+  "in_combat_before_exit": true,
+  "finalize": {
+    "initial_self": {
+      "health": 83,
+      "ghost": false,
+      "in_combat": true
+    },
+    "combat_recovery": {
+      "combat_cleared": false,
+      "elapsed_s": 28.609,
+      "sample_count": 56,
+      "requests": "observation + stop_attack",
+      "actions": [
+        "stop_attack"
+      ],
+      "cleared_reason": null,
+      "reason": "health floor reached while still in combat",
+      "retreat_outcome": null
+    },
+    "status": "still_in_combat",
+    "reason": "escape did not clear combat; the session must stay open and be supervised - do not log out and do not close"
+  },
+  "target_health_after_exit": 12,
+  "after_exit": {
+    "health": 40,
+    "ghost": false,
+    "in_combat": true
+  },
+  "verdict": "combat_never_cleared",
+  "close_refused_or_error": "RuntimeError: refusing to close: character is alive and still in combat"
+}

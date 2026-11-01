@@ -1,0 +1,92 @@
+{
+  "run_id": "esc010",
+  "scope": "route B: reverse-route retreat with the hostile still alive",
+  "status": "INCONCLUSIVE",
+  "initial_self": {
+    "health": 108,
+    "max_health": 108,
+    "ghost": false,
+    "in_combat": false,
+    "position": [
+      -708.9583129882812,
+      -4348.79443359375,
+      49.04478073120117
+    ]
+  },
+  "target": {
+    "guid": "17379391014435043887",
+    "entry": 3124,
+    "level": 3,
+    "health": 71,
+    "distance": 2.04
+  },
+  "approach": {
+    "reached": false,
+    "position_confirmation": {
+      "confirmed": false,
+      "fresh": false,
+      "distance": 6.0558188039751695,
+      "movement_sequence": 3,
+      "before_sequence": 3,
+      "last_update_position": [
+        -708.9583129882812,
+        -4348.79443359375,
+        49.04478073120117
+      ],
+      "submitted_position": [
+        -707.628,
+        -4343.118,
+        47.40731
+      ],
+      "scope": "movement update required; polling does not refresh position"
+    },
+    "attempts": [],
+    "side_effect_applied": true,
+    "reason": "no new self movement evidence; do not replan from cached login position"
+  },
+  "route_points": 3,
+  "route_origin": [
+    -708.9583129882812,
+    -4348.79443359375,
+    49.04478073120117
+  ],
+  "start_attack": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {}
+  },
+  "combat_engaged": true,
+  "target_health_before_exit": 48,
+  "hp_before_exit": 99,
+  "in_combat_before_exit": true,
+  "finalize": {
+    "initial_self": {
+      "health": 99,
+      "ghost": false,
+      "in_combat": true
+    },
+    "combat_recovery": {
+      "combat_cleared": false,
+      "elapsed_s": 45.387,
+      "sample_count": 107,
+      "requests": "observation + stop_attack + one retreat",
+      "actions": [
+        "stop_attack",
+        "retreat"
+      ],
+      "cleared_reason": null,
+      "reason": "combat did not clear within budget",
+      "retreat_outcome": "still_in_combat"
+    },
+    "status": "still_in_combat",
+    "reason": "escape did not clear combat; the session must stay open and be supervised - do not log out and do not close"
+  },
+  "target_health_after_exit": 48,
+  "after_exit": {
+    "health": 42,
+    "ghost": false,
+    "in_combat": true
+  },
+  "verdict": "combat_never_cleared",
+  "close_refused_or_error": "RuntimeError: refusing to close: character is alive and still in combat"
+}

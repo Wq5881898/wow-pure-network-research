@@ -1,0 +1,218 @@
+{
+  "run_id": "esc014",
+  "scope": "route B: reverse-route retreat with the hostile still alive",
+  "status": "INCONCLUSIVE",
+  "initial_self": {
+    "health": 108,
+    "max_health": 108,
+    "ghost": false,
+    "in_combat": false,
+    "position": [
+      -634.635009765625,
+      -4296.02978515625,
+      40.52539825439453
+    ]
+  },
+  "target": {
+    "guid": "17379391014435043887",
+    "entry": 3124,
+    "level": 3,
+    "health": 71,
+    "distance": 86.91
+  },
+  "approach": {
+    "reached": false,
+    "position_confirmation": {
+      "confirmed": false,
+      "fresh": false,
+      "distance": 86.94039734767257,
+      "movement_sequence": 3,
+      "before_sequence": 3,
+      "last_update_position": [
+        -634.635009765625,
+        -4296.02978515625,
+        40.52539825439453
+      ],
+      "submitted_position": [
+        -706.8717,
+        -4343.8784,
+        47.66706
+      ],
+      "scope": "movement update required; polling does not refresh position"
+    },
+    "attempts": [],
+    "side_effect_applied": true,
+    "reason": "no new self movement evidence; do not replan from cached login position"
+  },
+  "route_points": 42,
+  "route_origin": [
+    -634.635009765625,
+    -4296.02978515625,
+    40.52539825439453
+  ],
+  "planned_escape_route": {
+    "points": [
+      {
+        "x": -634.63501,
+        "y": -4296.02979,
+        "z": 40.618
+      },
+      {
+        "x": -632.51385,
+        "y": -4294.625,
+        "z": 40.75214
+      },
+      {
+        "x": -631.45795,
+        "y": -4293.92529,
+        "z": 40.8106
+      },
+      {
+        "x": -631.24994,
+        "y": -4293.7876,
+        "z": 40.48547
+      },
+      {
+        "x": -630.37622,
+        "y": -4293.20898,
+        "z": 40.48743
+      },
+      {
+        "x": -628.4102775,
+        "y": -4291.9067350000005,
+        "z": 40.4202725
+      },
+      {
+        "x": -626.4443349999999,
+        "y": -4290.60449,
+        "z": 40.353115
+      },
+      {
+        "x": -624.4783924999999,
+        "y": -4289.302245,
+        "z": 40.2859575
+      },
+      {
+        "x": -622.51245,
+        "y": -4288.0,
+        "z": 40.2188
+      },
+      {
+        "x": -620.5895399999999,
+        "y": -4286.72632,
+        "z": 39.436705
+      },
+      {
+        "x": -618.66663,
+        "y": -4285.45264,
+        "z": 38.65461
+      },
+      {
+        "x": -616.2962611111111,
+        "y": -4283.882544444445,
+        "z": 38.62405555555556
+      },
+      {
+        "x": -613.9258922222223,
+        "y": -4282.312448888889,
+        "z": 38.59350111111111
+      },
+      {
+        "x": -611.5555233333333,
+        "y": -4280.742353333334,
+        "z": 38.56294666666667
+      },
+      {
+        "x": -609.1851544444445,
+        "y": -4279.172257777778,
+        "z": 38.53239222222222
+      },
+      {
+        "x": -606.8147855555555,
+        "y": -4277.602162222222,
+        "z": 38.50183777777778
+      },
+      {
+        "x": -604.4444166666667,
+        "y": -4276.032066666667,
+        "z": 38.47128333333333
+      },
+      {
+        "x": -602.0740477777778,
+        "y": -4274.461971111112,
+        "z": 38.44072888888889
+      },
+      {
+        "x": -599.7036788888889,
+        "y": -4272.891875555556,
+        "z": 38.41017444444444
+      },
+      {
+        "x": -597.33331,
+        "y": -4271.32178,
+        "z": 38.37962
+      },
+      {
+        "x": -597.11877,
+        "y": -4271.17969,
+        "z": 38.37243
+      }
+    ],
+    "origin": [
+      -634.635009765625,
+      -4296.02978515625,
+      40.52539825439453
+    ],
+    "source": "navmesh route planned away from the hostile",
+    "planned_distance": 45.0,
+    "hostile_distance_at_plan": 86.906,
+    "bearing_degrees": 33.5,
+    "end_distance_from_hostile": 131.944,
+    "destination": [
+      -597.119,
+      -4271.18,
+      40.525
+    ],
+    "rejected_directions": []
+  },
+  "waited_for_arrival_s": 12.0,
+  "start_attack": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {}
+  },
+  "combat_engaged": true,
+  "target_health_before_exit": 10,
+  "hp_before_exit": 94,
+  "in_combat_before_exit": true,
+  "finalize": {
+    "initial_self": {
+      "health": 94,
+      "ghost": false,
+      "in_combat": true
+    },
+    "combat_recovery": {
+      "combat_cleared": false,
+      "elapsed_s": 45.383,
+      "sample_count": 88,
+      "requests": "observation + stop_attack + one retreat",
+      "actions": [
+        "stop_attack",
+        "retreat"
+      ],
+      "cleared_reason": null,
+      "reason": "combat did not clear within budget",
+      "retreat_outcome": "retreat_movement_rejected"
+    },
+    "status": "still_in_combat",
+    "reason": "escape did not clear combat; the session must stay open and be supervised - do not log out and do not close"
+  },
+  "target_health_after_exit": 10,
+  "after_exit": {
+    "health": 33,
+    "ghost": false,
+    "in_combat": true
+  },
+  "verdict": "combat_never_cleared",
+  "close_refused_or_error": "RuntimeError: refusing to close: character is alive and still in combat"
+}
