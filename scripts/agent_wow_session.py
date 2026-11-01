@@ -621,33 +621,51 @@ class PureNetworkBackend:
                           or self.observed_position or [])[:3])
         return {'moved': True, 'reference': reference, 'detail': closed}
 
-    def _close_distance(self, params):
-        """Walk to the target when it is not in melee range.
+    def _close_distance(self, params, attempts=3, max_range=5.0):
+        """Walk to the target until it is within melee range.
 
-        The combat controller only fights within reach, so a target that
-        wandered out of reach has to be approached first. The walk is
-        dispatched even though its landing cannot be confirmed in this
-        session (docs/55, docs/88): the fight's own postcondition proves
-        whether the approach worked.
+        The combat controller only fights within reach, and a roaming caster
+        keeps stepping back, so a single walk is not enough: the distance has
+        to be re-measured and the walk repeated. The attempts are bounded -
+        the same "at most three re-plans for a moving target" rule as
+        docs/43 - and the fight's own budget bounds the rest.
         """
         if self.target is None:
             return {'error': 'no target'}
         me = self.drain()['self']
         if me.get('in_combat') is True:
             return {'skipped': 'already in combat'}
+        from agent_wow_combat_control import estimated_position
+        walks = []
+        for attempt in range(attempts):
+            try:
+                target_position = estimated_position(self.target, self.stream_now())[0]
+            except Exception:  # noqa: BLE001
+                return {'error': 'target position unknown'}
+            here = list((self.submitted_position or self.current_position
+                         or self.observed_position or self.start_position)[:3])
+            if not here:
+                return {'error': 'the character position is unknown'}
+            distance = math.dist(here, list(target_position)[:3])
+            if distance <= max_range:
+                return {'skipped': 'already within reach',
+                        'distance': round(distance, 2), 'walks': walks}
+            result = self._do_approach({}, params.get('approach_timeout', 90))
+            walks.append({'attempt': attempt + 1,
+                          'distance_before': round(distance, 2),
+                          'reached': result.get('reached'),
+                          'reason': result.get('reason'),
+                          'error': result.get('error')})
+            if result.get('error'):
+                break
         try:
             target_position = estimated_position(self.target, self.stream_now())[0]
+            here = list((self.submitted_position or self.current_position
+                         or self.observed_position or self.start_position)[:3])
+            final = round(math.dist(here, list(target_position)[:3]), 2)
         except Exception:  # noqa: BLE001
-            return {'error': 'target position unknown'}
-        here = list((self.submitted_position or self.current_position
-                     or self.observed_position or self.start_position)[:3])
-        distance = math.dist(here, target_position[:3])
-        if distance <= 5.0:
-            return {'skipped': 'already within reach', 'distance': round(distance, 2)}
-        result = self._do_approach({}, params.get('approach_timeout', 90))
-        return {'walked': True, 'distance_before': round(distance, 2),
-                'reached': result.get('reached'),
-                'reason': result.get('reason')}
+            final = None
+        return {'walked': True, 'walks': walks, 'distance_after': final}
 
     def _do_fight(self, params, timeout):
         if self.target is None:

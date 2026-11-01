@@ -123,6 +123,17 @@ def main():
                 report['status'] = 'failed_at_movement'
                 break
             unit['movement'] = json.loads(boundary.read_text(encoding='utf-8'))
+            # Validate the boundary here: a movement unit that never reached
+            # an approach step (no target in view) has no boundary, and the
+            # combat unit would fail while reading it.
+            try:
+                from agent_wow_task_boundary import movement_boundary
+                movement_boundary(unit['movement'], max_age_seconds=1800)
+            except Exception as exc:  # noqa: BLE001
+                unit['failed'] = 'the movement unit produced no usable boundary: %s' % exc
+                report['units'].append(unit)
+                report['status'] = 'failed_at_movement'
+                break
 
             fight = _run(['--run-id', unit_id,
                           '--verify-movement-from', str(boundary),
