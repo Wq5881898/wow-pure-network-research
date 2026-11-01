@@ -39,6 +39,20 @@ class RecoveryPlanTests(unittest.TestCase):
 class LiveFactsTests(unittest.TestCase):
     """Facts measured on 2026-11-01 that the corpse run depends on."""
 
+    def test_the_first_leg_walks_from_the_graveyard_to_the_reclaim_point(self):
+        # The ghost appears at the graveyard while the corpse is out in the
+        # hostile area, so the first leg is the REVERSE of the remaining
+        # path. Getting this wrong makes the bridge reject the path
+        # ("segment exceeds 15 yards"), because it starts at the corpse.
+        path=[[0,0,0],[0,40,0],[0,80,0]]
+        plan=select_recovery(path,[0,0,0],radius=32)
+        first=plan['approach_chunks'][0][0]
+        last=plan['approach_chunks'][-1][-1]
+        self.assertEqual((last['x'],last['y'],last['z']),
+                         (plan['reclaim_xyz'][0],plan['reclaim_xyz'][1],plan['reclaim_xyz'][2]))
+        self.assertGreater(first['y'],last['y'],
+                           'the first leg must start at the far end of the path')
+
     def test_the_corpse_is_identified_by_the_player_own_guid(self):
         # The corpse object carries the player's own guid (ObjectTypeId Corpse
         # reuses it), so it is never identified by a guessed value.

@@ -47,6 +47,18 @@ def subdivide(points, segment=3, vertical=1):
     return out
 
 
+def _chunk_path(points,max_segment=25,max_points=100):
+    """Split a path into the sizes the bridge accepts."""
+    chunks=[];chunk=[];distance=0;previous=points[0]
+    for p in points[1:]:
+        d=math.dist(previous,p)
+        if chunk and (distance+d>max_segment or len(chunk)>=max_points):
+            chunks.append(chunk);chunk=[];distance=0
+        chunk.append(dict(zip(('x','y','z'),p)));distance+=d;previous=p
+    if chunk:chunks.append(chunk)
+    return chunks
+
+
 def select_recovery(path,corpse,radius=32,minimum_gain=5):
     if len(path)<2 or any(len(p)!=3 or not all(map(math.isfinite,p)) for p in path):
         raise ValueError('finite complete XYZ path required')
@@ -61,15 +73,17 @@ def select_recovery(path,corpse,radius=32,minimum_gain=5):
     if walked<minimum_gain:raise ValueError('no useful graveyard-directed reclaim point')
     retreat=dense[chosen:]
     if len(retreat)<2:raise ValueError('graveyard already inside reclaim range; no retreat experiment')
-    chunks=[];chunk=[];distance=0;previous=retreat[0]
-    for p in retreat[1:]:
-        d=math.dist(previous,p)
-        if chunk and (distance+d>25 or len(chunk)>=100):chunks.append(chunk);chunk=[];distance=0
-        chunk.append(dict(zip(('x','y','z'),p)));distance+=d;previous=p
-    if chunk:chunks.append(chunk)
+    chunks=_chunk_path(retreat)
+    # The ghost appears at the GRAVEYARD and the corpse is out in the hostile
+    # area, so the first leg is the walk from the graveyard down the same
+    # path to the reclaim point - the reverse of the remaining path. It was
+    # missing from the plan: the controller starts at the reclaim point and
+    # had no way to get there (2026-11-01, first wired run rejected the path
+    # with "segment exceeds 15 yards" because it started at the corpse).
+    approach=_chunk_path(list(reversed(dense[chosen:])))
     return {'corpse_xyz':corpse,'reclaim_xyz':dense[chosen],'reclaim_distance_3d':math.dist(dense[chosen],corpse),
             'corpse_to_graveyard_path_length':length(dense),'reclaim_to_graveyard_path_length':length(retreat),
-            'path_progress_before_revive':walked,'retreat_chunks':chunks,
+            'path_progress_before_revive':walked,'approach_chunks':approach,'retreat_chunks':chunks,
             'selection_basis':'connected navmesh prefix toward graveyard; threats/LOS not yet ranked'}
 
 
