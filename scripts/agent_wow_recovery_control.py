@@ -1,6 +1,56 @@
-"""Keep corpse reclaim and immediate preplanned retreat in one live session."""
+"""Keep corpse reclaim and immediate preplanned retreat in one live session.
+
+The danger-zone corpse run is an independent task (docs/52): the plan comes
+from agent_wow_recovery_plan, the control from here.
+
+Live facts this encodes (measured 2026-11-01):
+  - a character that has just died is still awaiting the release prompt and is
+    not a ghost yet; the ghost (and therefore the corpse query) only exists
+    after the release (CMSG_RELEASE_SPIRIT, 0x15A);
+  - the corpse object carries the player's own guid (ObjectTypeId Corpse
+    reuses it), so the corpse is identified by guid and never by a guess;
+  - a release teleports the ghost to the graveyard without telling the
+    bridge, which keeps validating paths against the place the character
+    fell at and then rejects the first segment ("segment exceeds 15 yards").
+    The corpse run therefore has to run in a session that starts with the
+    character already a ghost.
+"""
 import math
 import time
+
+
+def corpse_from_events(events):
+    """The corpse the server reported, or None.
+
+    The server answers a corpse query with the corpse's map and position; the
+    position is the server's own answer, never an estimate.
+    """
+    for event in events or ():
+        if event.get('kind') != 'corpse':
+            continue
+        corpse = event.get('corpse') or {}
+        if corpse.get('position_xyz'):
+            return corpse
+    return None
+
+
+def release_if_dead(rpc, drain, sleep=time.sleep, clock=time.monotonic, timeout=20.0):
+    """Release the spirit when the character is dead but not yet a ghost.
+
+    Returns the observation. A character that is alive is left alone.
+    """
+    state = drain()
+    me = state['self']
+    if me.get('ghost') or (me.get('health') or 0) > 0:
+        return state
+    rpc('bridge.release_spirit', {})
+    deadline = clock() + timeout
+    while clock() < deadline:
+        sleep(0.05)
+        state = drain()
+        if state['self'].get('ghost'):
+            break
+    return state
 
 
 def reclaim_and_retreat(rpc,drain,plan,current_position,timeout=8):

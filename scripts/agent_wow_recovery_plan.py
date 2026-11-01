@@ -10,6 +10,34 @@ def length(points):
     return sum(math.dist(a,b) for a,b in zip(points,points[1:]))
 
 
+def corpse_guid(visible_objects):
+    """The guid of the character's own corpse, or None.
+
+    The corpse object carries the player's own guid (ObjectTypeId Corpse
+    reuses it), so the corpse is identified by guid and never by a guessed
+    value (measured 2026-11-01).
+    """
+    for obj in visible_objects or ():
+        if obj.get('type_id') == 4:
+            return str(obj['guid'])
+    return None
+
+
+def bridge_position_is_stale(ghost_position, tracked_position, tolerance=10.0):
+    """True when the bridge's tracked position no longer matches the ghost.
+
+    The bridge validates every path against the position it tracks, and it
+    only learns a new position when it walks or at login. A release
+    teleports the ghost to the graveyard without telling the bridge, so the
+    bridge still believes the character is where it fell and then rejects the
+    first path segment (2026-11-01). The corpse run therefore has to run in a
+    session that starts with the character already a ghost.
+    """
+    if not ghost_position or not tracked_position:
+        return False
+    return math.dist(list(ghost_position)[:3], list(tracked_position)[:3]) > tolerance
+
+
 def subdivide(points, segment=3, vertical=1):
     out=[list(points[0])]
     for end in points[1:]:

@@ -1,6 +1,8 @@
 import unittest
-from agent_wow_recovery_plan import length,select_recovery
-from agent_wow_recovery_control import reclaim_and_retreat
+from agent_wow_recovery_plan import (bridge_position_is_stale, corpse_guid,
+                                      length, select_recovery)
+from agent_wow_recovery_control import (corpse_from_events, reclaim_and_retreat,
+                                        release_if_dead)
 
 
 class RecoveryPlanTests(unittest.TestCase):
@@ -32,6 +34,55 @@ class RecoveryPlanTests(unittest.TestCase):
         self.assertEqual(calls[:2],['bridge.reclaim_corpse','bridge.follow_path'])
         ghost['event_log'][0]['corpse']['position_xyz']=[20,0,0]
         with self.assertRaises(ValueError):reclaim_and_retreat(rpc,lambda:ghost,plan,plan['reclaim_xyz'])
+
+
+class LiveFactsTests(unittest.TestCase):
+    """Facts measured on 2026-11-01 that the corpse run depends on."""
+
+    def test_the_corpse_is_identified_by_the_player_own_guid(self):
+        # The corpse object carries the player's own guid (ObjectTypeId Corpse
+        # reuses it), so it is never identified by a guessed value.
+        objects=[{'guid':'9','type_id':4,'entry':0},
+                 {'guid':'12345','type_id':3,'entry':3124}]
+        self.assertEqual(corpse_guid(objects),'9')
+        self.assertIsNone(corpse_guid([{'guid':'1','type_id':3}]))
+
+    def test_the_corpse_position_comes_from_the_server_answer(self):
+        events=[{'kind':'corpse','corpse':{'found':True,'map':1,
+                                          'position_xyz':[1.0,2.0,3.0]}}]
+        self.assertEqual(corpse_from_events(events)['position_xyz'],[1.0,2.0,3.0])
+        self.assertIsNone(corpse_from_events(
+            [{'kind':'corpse','corpse':{'found':False}}]))
+        self.assertIsNone(corpse_from_events([]))
+
+    def test_a_dead_character_is_released_before_it_is_a_ghost(self):
+        # A character that just died is still awaiting the release prompt;
+        # the ghost, and therefore the corpse query, only exists afterwards.
+        calls=[]
+        dead={'self':{'ghost':False,'health':0}}
+        ghost={'self':{'ghost':True,'health':1}}
+        samples=iter([dead,ghost])
+        def rpc(method,params):calls.append(method);return {'result':{}}
+        state=release_if_dead(rpc,lambda:next(samples))
+        self.assertIn('bridge.release_spirit',calls)
+        self.assertTrue(state['self']['ghost'])
+
+    def test_a_living_character_is_not_released(self):
+        calls=[]
+        alive={'self':{'ghost':False,'health':108}}
+        state=release_if_dead(lambda m,p:{'result':{}},lambda:alive)
+        self.assertEqual(calls,[])
+        self.assertFalse(state['self']['ghost'])
+
+    def test_a_stale_bridge_position_is_detected(self):
+        # A release teleports the ghost to the graveyard without telling the
+        # bridge, so the bridge rejects the first path segment. The corpse run
+        # has to happen in a session that starts with the character a ghost.
+        graveyard=[-634.635,-4296.030,40.525]
+        pack=[-707.979,-4348.810,49.211]
+        self.assertTrue(bridge_position_is_stale(graveyard,pack))
+        self.assertFalse(bridge_position_is_stale(graveyard,graveyard))
+        self.assertFalse(bridge_position_is_stale(graveyard,None))
 
 
 if __name__=='__main__':unittest.main()
