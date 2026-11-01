@@ -1,0 +1,83 @@
+{
+  "run_id": "esc023",
+  "scope": "route A fallback: no escape route, fight instead of idling",
+  "status": "PASS",
+  "target": {
+    "guid": "17379391014435043887",
+    "entry": 3124,
+    "level": 3,
+    "health": 71,
+    "distance": 90.75
+  },
+  "reached_melee": true,
+  "start_attack": {
+    "result": "engaged"
+  },
+  "target_health_low": 20,
+  "target_max_health": 71,
+  "combat_engaged": true,
+  "target_health_before_exit": 20,
+  "hp_before_exit": 86,
+  "in_combat_before_exit": true,
+  "stop_attack": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {}
+  },
+  "target_health_at_exit": 20,
+  "in_combat_at_exit": true,
+  "finalize": {
+    "initial_self": {
+      "health": 83,
+      "ghost": false,
+      "in_combat": true
+    },
+    "combat_recovery": {
+      "combat_cleared": true,
+      "elapsed_s": 6.441,
+      "sample_count": 5,
+      "requests": "observation + stop_attack",
+      "actions": [
+        "stop_attack",
+        "finish_target"
+      ],
+      "cleared_reason": "target_died",
+      "reason": null,
+      "retreat_outcome": null,
+      "fallback_outcome": "target_dead"
+    },
+    "status": "resolved",
+    "logout": {
+      "status": "closed",
+      "reply": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "result": {
+          "status": "closed"
+        }
+      }
+    }
+  },
+  "post_logout_poll_error": "URLError: <urlopen error [Errno 111] Connection refused>",
+  "target_health_after_exit": null,
+  "after_exit": {
+    "health": null,
+    "ghost": null,
+    "in_combat": null
+  },
+  "recovery": {
+    "combat_cleared": true,
+    "elapsed_s": 6.441,
+    "sample_count": 5,
+    "requests": "observation + stop_attack",
+    "actions": [
+      "stop_attack",
+      "finish_target"
+    ],
+    "cleared_reason": "target_died",
+    "reason": null,
+    "retreat_outcome": null,
+    "fallback_outcome": "target_dead"
+  },
+  "verdict": "route_a_kill_survived"
+}

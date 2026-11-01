@@ -158,29 +158,21 @@ def resolve_combat_before_exit(backend, *, budget_seconds=60, poll_interval=0.5,
             # The mob is still hitting: waiting cannot end the combat.
             break
 
-    # Stage 3: leave the hostile's reach along the reversed outbound route.
-    retreat = _retreat_out_of_reach(backend, observation, sleep=sleep, clock=clock)
-    if retreat is not None:
-        actions.append('retreat')
-        samples.extend(retreat.get('samples', []))
-        observation = retreat.get('final', observation)
-    if observation.in_combat is not True:
-        return {'combat_cleared': True, 'samples': samples,
-                'elapsed_s': round(clock() - started, 3),
-                'final': observation, 'requests': _request_label(actions),
-                'actions': actions,
-                'cleared_reason': _cleared_reason(samples, retreated=retreat is not None,
-                                                   final=observation),
-                'reason': None, 'retreat': retreat}
-
-    # Stage 4: no usable escape route. Standing still while a hostile keeps
-    # hitting guarantees the character's death without changing the outcome
-    # (esc010, esc013, esc014 all ended this way). Fighting is strictly
-    # better than idling: the character takes the same damage but can end
-    # the combat by killing the target, which is the server's other ending.
-    # The attempt is bounded and never starts below the health floor.
-    if retreat is None and (observation.health is None
-                            or observation.health > min_health):
+    # Stage 3: choose how to end the combat.
+    #
+    # Both endings are available: kill the target, or leave its reach. Which
+    # one is cheaper depends on the state. Measured on 2026-11-01 (esc020):
+    # the target was at 22 of 71 HP and the character at 91 of 108, and the
+    # escape route was taken - the character ran 87 yards, took 60 damage and
+    # the combat did not clear. Killing a 22 HP target takes one hit. So a
+    # target that is nearly dead is killed, not escaped from.
+    #
+    # The route is planned first, because "no route" changes the decision:
+    # with no route, standing still guarantees death, so fighting wins.
+    route = _plan_escape_route(backend)
+    retreat = None
+    fallback = None
+    if _finish_the_target_is_better(observation, route, min_health=min_health):
         fallback = _finish_the_target(backend, observation, started=started,
                                       budget_seconds=budget_seconds,
                                       finish_budget_seconds=finish_budget_seconds,
@@ -194,8 +186,22 @@ def resolve_combat_before_exit(backend, *, budget_seconds=60, poll_interval=0.5,
                     'actions': actions,
                     'cleared_reason': _cleared_reason(samples, retreated=False,
                                                        final=observation),
-                    'reason': None, 'retreat': retreat,
+                    'reason': None, 'retreat': None,
                     'fallback': fallback}
+    else:
+        retreat = _perform_retreat(backend, observation, route, sleep=sleep, clock=clock)
+        if retreat is not None:
+            actions.append('retreat')
+            samples.extend(retreat.get('samples', []))
+            observation = retreat.get('final', observation)
+        if observation.in_combat is not True:
+            return {'combat_cleared': True, 'samples': samples,
+                    'elapsed_s': round(clock() - started, 3),
+                    'final': observation, 'requests': _request_label(actions),
+                    'actions': actions,
+                    'cleared_reason': _cleared_reason(samples, retreated=True,
+                                                       final=observation),
+                    'reason': None, 'retreat': retreat}
 
     # Still in combat: keep observing, but never below the health floor.
     while clock() - started < budget_seconds:
@@ -221,7 +227,8 @@ def resolve_combat_before_exit(backend, *, budget_seconds=60, poll_interval=0.5,
                                                final=observation)
                                if cleared else None),
             'reason': None if cleared else 'combat did not clear within budget',
-            'retreat': retreat}
+            'retreat': retreat,
+            'fallback': fallback if retreat is None else None}
 
 
 def _finish_the_target(backend, observation, *, started, budget_seconds=60,
@@ -243,7 +250,12 @@ def _finish_the_target(backend, observation, *, started, budget_seconds=60,
         return {'outcome': 'no_budget_left', 'samples': [], 'final': observation}
     try:
         from agent_wow_combat_control import fight
-        reference = list((getattr(backend, 'current_position', None)
+        # The bridge's submitted position is the authoritative one: the
+        # server never broadcasts the mover's own position (docs/88), so the
+        # observed position can still be the login point. Measuring the
+        # distance from a stale position makes the fight refuse to start.
+        reference = list((getattr(backend, 'submitted_position', None)
+                          or getattr(backend, 'current_position', None)
                           or getattr(backend, 'observed_position', None) or [])[:3])
         phase, observed = fight(backend.rpc, backend.drain, target['guid'],
                                 reference, backend.stream_now, budget=budget)
@@ -266,24 +278,46 @@ def _stop_attack(backend):
         return {'error': f'{type(exc).__name__}: {exc}'}
 
 
-def _retreat_out_of_reach(backend, observation, sleep=time.sleep, clock=time.monotonic):
-    """Leave the hostile's reach along a route that actually gets away.
+def _finish_the_target_is_better(observation, route, min_health=25,
+                                 finish_ratio=0.35, healthy_ratio=0.5):
+    """Decide between killing the target and leaving its reach.
 
-    Measured on 2026-11-01 (esc010): reversing the outbound approach route is
-    NOT an escape. The approach had only walked about 6 yards, so the
-    reversed route left the character inside the scorpid's aggro range: the
-    hostile kept hitting for 45 s and the character died. The escape has to
-    END far from the hostile, so the route is planned with the navmesh
-    instead of replaying the approach.
+    Killing the target ends the combat for certain; escaping depends on the
+    hostile giving up. So killing wins whenever it is cheap:
 
-    The navmesh is the same geometric authority the approach uses, and the
-    destination is snapped onto it, so the walk stays on walkable ground
-    rather than inventing a straight line (docs/51).
+      - no escape route at all: standing still while a hostile keeps hitting
+        guarantees death, so fighting is strictly better (esc010, esc013,
+        esc014 all ended with the character idling until it died);
+      - the target is nearly dead and the character is healthy: one hit ends
+        the combat, while escaping means running the whole way while being
+        hit (esc020: the target was at 22 of 71 HP, the character at 91 of
+        108, and the escape took 60 damage and did not clear the combat).
 
-    Returns None when no route can be planned: without a route there is no
-    justified escape.
+    Below the health floor the character does not start a new fight.
     """
-    route = _plan_escape_route(backend)
+    if observation.health is not None and observation.health <= min_health:
+        return False
+    if not route:
+        return True
+    context = getattr(observation, 'context', None) or {}
+    target_health = context.get('target_health')
+    target_max_health = context.get('target_max_health')
+    if not target_health or not target_max_health:
+        return False
+    if target_health / target_max_health > finish_ratio:
+        return False
+    if observation.health is None or observation.max_health <= 0:
+        return False
+    return observation.health / observation.max_health >= healthy_ratio
+
+
+def _perform_retreat(backend, observation, route, sleep=time.sleep, clock=time.monotonic):
+    """Walk the planned route out of the hostile's reach.
+
+    Returns None when no route is known: without a route there is no
+    geometrically justified escape, and inventing a straight line is exactly
+    the shortcut docs/51 rejects.
+    """
     if not route:
         return None
     points = route['points']
@@ -297,9 +331,9 @@ def _retreat_out_of_reach(backend, observation, sleep=time.sleep, clock=time.mon
     wait_seconds = max(15.0, 12.0 * (length / 30.0))
     try:
         from agent_wow_escape_control import retreat
-        result, state = retreat(backend.rpc, backend.drain, route['points'],
-                                route['origin'], wait_seconds=wait_seconds,
-                                sleep=sleep, clock=clock, route=route['points'])
+        result, state = retreat(backend.rpc, backend.drain, points, origin,
+                                wait_seconds=wait_seconds, sleep=sleep, clock=clock,
+                                route=points)
     except Exception as exc:  # noqa: BLE001 - a failed retreat must not abort the exit
         return {'outcome': 'retreat_failed', 'error': f'{type(exc).__name__}: {exc}',
                 'samples': [], 'final': observation, 'wait_seconds': wait_seconds,
@@ -313,6 +347,7 @@ def _retreat_out_of_reach(backend, observation, sleep=time.sleep, clock=time.mon
     result['route_length'] = round(length, 3)
     result['route'] = route
     return result
+
 
 
 def _plan_escape_route(backend, min_distance=40.0):

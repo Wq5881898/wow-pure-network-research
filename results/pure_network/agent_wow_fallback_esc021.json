@@ -1,0 +1,81 @@
+{
+  "run_id": "esc021",
+  "scope": "route A fallback: no escape route, fight instead of idling",
+  "status": "PASS",
+  "target": {
+    "guid": "17379391014435043887",
+    "entry": 3124,
+    "level": 3,
+    "health": 71,
+    "distance": 87.25
+  },
+  "reached_melee": true,
+  "start_attack": {
+    "result": "engaged"
+  },
+  "combat_engaged": true,
+  "target_health_before_exit": 71,
+  "hp_before_exit": 105,
+  "in_combat_before_exit": true,
+  "stop_attack": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {}
+  },
+  "target_health_at_exit": 71,
+  "in_combat_at_exit": true,
+  "finalize": {
+    "initial_self": {
+      "health": 105,
+      "ghost": false,
+      "in_combat": true
+    },
+    "combat_recovery": {
+      "combat_cleared": true,
+      "elapsed_s": 13.813,
+      "sample_count": 3,
+      "requests": "observation + stop_attack + one retreat",
+      "actions": [
+        "stop_attack",
+        "retreat"
+      ],
+      "cleared_reason": "left_reach",
+      "reason": null,
+      "retreat_outcome": "out_of_combat",
+      "fallback_outcome": null
+    },
+    "status": "resolved",
+    "logout": {
+      "status": "closed",
+      "reply": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "result": {
+          "status": "closed"
+        }
+      }
+    }
+  },
+  "post_logout_poll_error": "URLError: <urlopen error [Errno 111] Connection refused>",
+  "target_health_after_exit": null,
+  "after_exit": {
+    "health": null,
+    "ghost": null,
+    "in_combat": null
+  },
+  "recovery": {
+    "combat_cleared": true,
+    "elapsed_s": 13.813,
+    "sample_count": 3,
+    "requests": "observation + stop_attack + one retreat",
+    "actions": [
+      "stop_attack",
+      "retreat"
+    ],
+    "cleared_reason": "left_reach",
+    "reason": null,
+    "retreat_outcome": "out_of_combat",
+    "fallback_outcome": null
+  },
+  "verdict": "unexpected_left_reach"
+}

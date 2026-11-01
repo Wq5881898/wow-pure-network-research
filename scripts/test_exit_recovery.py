@@ -15,11 +15,15 @@ from agent_wow_exit_recovery import close_session, living, resolve_combat_before
 
 
 class Observation:
-    def __init__(self, health, ghost=False, in_combat=False, target_health=None):
+    def __init__(self, health, ghost=False, in_combat=False, target_health=None,
+                 target_max_health=None, max_health=108):
         self.health = health
         self.ghost = ghost
         self.in_combat = in_combat
-        self.context = {'target_health': target_health}
+        self.max_health = max_health
+        self.context = {'target_health': target_health,
+                        'target_max_health': target_max_health}
+
 
 
 class FakeBackend:
@@ -333,7 +337,61 @@ class ExitRecoveryTests(unittest.TestCase):
         self.assertTrue(result['combat_cleared'])
         self.assertEqual(result['cleared_reason'], 'server_cleared')
 
+    def test_a_nearly_dead_target_is_killed_not_escaped_from(self):
+        # esc020: the target was at 22 of 71 HP and the character at 91 of
+        # 108, yet the escape route was taken: the character ran 87 yards,
+        # took 60 damage and the combat did not clear. One hit would have
+        # ended it.
+        backend = FakeBackend([Observation(91, in_combat=True,
+                                           target_health=22, target_max_health=71)])
+        backend.target_dies = True
+        backend.outbound_route = [{'x': 0.0, 'y': 0.0, 'z': 0.0},
+                                  {'x': 0.0, 'y': 6.0, 'z': 0.0}]
+        backend.outbound_origin = [0.0, 0.0, 0.0]
+        result = resolve_combat_before_exit(backend, budget_seconds=30,
+                                            passive_seconds=2, sleep=sleeper,
+                                            finish_budget_seconds=0.3, clock=Clock())
+        self.assertIn('finish_target', result['actions'])
+        self.assertNotIn('rpc:bridge.follow_path', backend.requests,
+                         'a nearly dead target must not be escaped from')
+        self.assertEqual(result['cleared_reason'], 'target_died')
+
+    def test_a_healthy_target_is_escaped_from(self):
+        backend = FakeBackend([Observation(91, in_combat=True,
+                                           target_health=71, target_max_health=71)],
+                              retreat_clears_combat=True)
+        backend.outbound_route = [{'x': 0.0, 'y': 0.0, 'z': 0.0},
+                                  {'x': 0.0, 'y': 6.0, 'z': 0.0}]
+        backend.outbound_origin = [0.0, 0.0, 0.0]
+        result = resolve_combat_before_exit(backend, budget_seconds=30,
+                                            passive_seconds=2, sleep=sleeper,
+                                            finish_budget_seconds=0.3, clock=Clock())
+        self.assertIn('retreat', result['actions'])
+        self.assertNotIn('finish_target', result['actions'])
+        self.assertEqual(result['cleared_reason'], 'left_reach')
+
+    def test_no_route_means_fighting_even_for_a_healthy_target(self):
+        # Idling while a hostile keeps hitting guarantees death, so with no
+        # route the character must fight.
+        backend = FakeBackend([Observation(91, in_combat=True,
+                                           target_health=71, target_max_health=71)])
+        backend.target_dies = True
+        result = resolve_combat_before_exit(backend, budget_seconds=30,
+                                            passive_seconds=2, sleep=sleeper,
+                                            finish_budget_seconds=0.3, clock=Clock())
+        self.assertIn('finish_target', result['actions'])
+
+    def test_a_healthy_character_does_not_start_a_fight_below_the_floor(self):
+        backend = FakeBackend([Observation(20, in_combat=True,
+                                           target_health=10, target_max_health=71)])
+        result = resolve_combat_before_exit(backend, budget_seconds=30,
+                                            min_health=25, passive_seconds=2,
+                                            sleep=sleeper, finish_budget_seconds=0.3,
+                                            clock=Clock())
+        self.assertNotIn('rpc:bridge.start_attack', backend.requests)
+
     def test_never_sends_an_attack_while_escaping(self):
+
         backend = FakeBackend([Observation(71, in_combat=True)])
         backend.outbound_route = [{'x': 0.0, 'y': 0.0, 'z': 0.0}]
         backend.outbound_origin = [0.0, 0.0, 0.0]

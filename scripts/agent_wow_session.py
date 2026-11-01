@@ -259,10 +259,13 @@ class PureNetworkBackend:
         # value cannot distinguish "the hostile died" from "the hostile is
         # still hitting" (2026-11-01 esc008).
         live_target_health = None
+        live_target_max_health = None
         if self.target is not None:
             live = next((o for o in state['visible_objects']
                          if o['guid'] == self.target['guid']), None)
-            live_target_health = live.get('health') if live else None
+            if live is not None:
+                live_target_health = live.get('health')
+                live_target_max_health = live.get('max_health')
         return Observation(backend='pure-network', character=self.self_guid, session_id=self.session_id or '',
                            sequence=me.get('last_seq', 0), sampled_at=time.time(),
                            map_id=state['login']['map'], position=list(self.observed_position),
@@ -273,6 +276,7 @@ class PureNetworkBackend:
                            item_totals=totals, available=tuple(sorted(state.keys())),
                            context={'target': self.target and {'guid': self.target['guid'], 'entry': self.target['entry'], 'health': self.target['health']},
                                      'target_health': live_target_health,
+                                     'target_max_health': live_target_max_health,
                                      'position_evidence': {
                                          'source': 'last server object movement update',
                                          'movement_sequence': movement_sequence(state, self.self_guid),
@@ -557,7 +561,7 @@ class PureNetworkBackend:
     def _do_fight(self, params, timeout):
         if self.target is None:
             return {'error': 'no target selected'}
-        reference = self.current_position or self.observed_position or self.start_position
+        reference = self.submitted_position or self.current_position or self.observed_position or self.start_position
         phase, _observed = fight(self.rpc, self.drain, self.target['guid'], list(reference)[:3],
                                  self.stream_now, budget=params.get('budget', 35),
                                  advisory=self.advisory)

@@ -1,0 +1,72 @@
+{
+  "run_id": "esc020",
+  "scope": "route A fallback: no escape route, fight instead of idling",
+  "status": "INCONCLUSIVE",
+  "target": {
+    "guid": "17379391014435043887",
+    "entry": 3124,
+    "level": 3,
+    "health": 71,
+    "distance": 6.35
+  },
+  "reached_melee": true,
+  "start_attack": {
+    "result": "engaged"
+  },
+  "combat_engaged": true,
+  "target_health_before_exit": 22,
+  "hp_before_exit": 91,
+  "in_combat_before_exit": true,
+  "stop_attack": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {}
+  },
+  "target_health_at_exit": 22,
+  "in_combat_at_exit": true,
+  "finalize": {
+    "initial_self": {
+      "health": 90,
+      "ghost": false,
+      "in_combat": true
+    },
+    "combat_recovery": {
+      "combat_cleared": false,
+      "elapsed_s": 45.443,
+      "sample_count": 109,
+      "requests": "observation + stop_attack + one retreat",
+      "actions": [
+        "stop_attack",
+        "retreat"
+      ],
+      "cleared_reason": null,
+      "reason": "combat did not clear within budget",
+      "retreat_outcome": "still_in_combat",
+      "fallback_outcome": null
+    },
+    "status": "still_in_combat",
+    "reason": "escape did not clear combat; the session must stay open and be supervised - do not log out and do not close"
+  },
+  "target_health_after_exit": 22,
+  "after_exit": {
+    "health": 31,
+    "ghost": false,
+    "in_combat": true
+  },
+  "recovery": {
+    "combat_cleared": false,
+    "elapsed_s": 45.443,
+    "sample_count": 109,
+    "requests": "observation + stop_attack + one retreat",
+    "actions": [
+      "stop_attack",
+      "retreat"
+    ],
+    "cleared_reason": null,
+    "reason": "combat did not clear within budget",
+    "retreat_outcome": "still_in_combat",
+    "fallback_outcome": null
+  },
+  "verdict": "combat_never_cleared",
+  "close_refused_or_error": "RuntimeError: refusing to close: character is alive and still in combat"
+}
