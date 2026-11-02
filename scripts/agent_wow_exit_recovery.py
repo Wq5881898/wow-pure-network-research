@@ -42,8 +42,17 @@ from agent_wow_combat_state_machine import (ENDING_ESCAPE, ENDING_FIGHT,
 #   HOME position (m_homePosition), not its current position, and skips that
 #   check while the creature was recently damaged ("allow kiting away from
 #   spawnpoint").
-# So a hostile breaks off only when the character is more than 30 yards from
-# the hostile's SPAWN and has not damaged it for 11 seconds.
+#
+# IMPORTANT: those leash facts govern whether a creature may ACQUIRE a
+# target again, NOT when it lets go of one it already has. The real
+# disengage condition is upstream's EVADE_REASON_NO_PATH: when the path to
+# the victim becomes unreachable, the creature evades and the combat ends
+# (src/server/game/AI/UnitAI.cpp -> CreatureAI::_EnterEvadeMode()).
+# Measured on 2026-11-01 (b24_u1): both leash conditions were satisfied
+# (40.2 yards from the spawn, waited 20.2 s) and the hostile still did not
+# break off -- see docs/kb/mechanisms/机制-怪何时真正放弃-NO_PATH.md.
+# So the constants below are kept as DIAGNOSTICS ONLY; the escape has to put
+# the character where the hostile cannot path to it (corridor boundary).
 LEASH_RADIUS_YARDS = 30.0
 LEASH_TIMER_SECONDS = 11.0
 
