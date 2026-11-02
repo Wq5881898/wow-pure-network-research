@@ -33,6 +33,20 @@ import time
 from agent_wow_combat_state_machine import (ENDING_ESCAPE, ENDING_FIGHT,
                                             ENDING_FINISH_TARGET)
 
+# Server-side facts, taken from the local AzerothCore sources:
+#   CONFIG_CREATURE_LEASH_RADIUS ("CreatureLeashRadius") = 30.0 yards
+#     (src/server/game/World/WorldConfig.cpp)
+#   Creature::GetLeashTimer() = 11 seconds for low level mobs (1-5)
+#     (src/server/game/Entities/Creature/Creature.cpp)
+#   Creature::CanCreatureAttack() compares the victim against the creature's
+#   HOME position (m_homePosition), not its current position, and skips that
+#   check while the creature was recently damaged ("allow kiting away from
+#   spawnpoint").
+# So a hostile breaks off only when the character is more than 30 yards from
+# the hostile's SPAWN and has not damaged it for 11 seconds.
+LEASH_RADIUS_YARDS = 30.0
+LEASH_TIMER_SECONDS = 11.0
+
 
 def living(observation):
     """The character is alive and not a ghost, regardless of combat state."""
@@ -364,7 +378,11 @@ def _perform_retreat(backend, observation, route, sleep=time.sleep, clock=time.m
     # is left behind. The length is measured on the path, not on the number
     # of waypoints: a densified route has a waypoint every few yards.
     length = _route_length(points)
-    wait_seconds = max(15.0, 12.0 * (length / 30.0))
+    # The walk has to cover the route AND outlast the leash timer: the
+    # hostile only breaks off when the character is beyond the leash radius
+    # from its SPAWN and has not damaged it for the leash timer.
+    walk_seconds = length / 7.0
+    wait_seconds = max(20.0, walk_seconds + LEASH_TIMER_SECONDS + 5.0)
     try:
         from agent_wow_escape_control import retreat
         result, state = retreat(backend.rpc, backend.drain, points, origin,

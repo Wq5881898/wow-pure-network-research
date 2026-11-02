@@ -15,6 +15,7 @@ from pathlib import Path
 
 from wsl_lab_connect import Relay, Server, gateway, root
 from agent_wow_combat_control import estimated_position, fight
+from agent_wow_exit_recovery import LEASH_RADIUS_YARDS
 from agent_wow_loot_evidence import item_pushes
 from agent_wow_contract import Observation
 from agent_wow_position import landing_evidence, movement_sequence
@@ -473,17 +474,28 @@ class PureNetworkBackend:
         distance = math.dist(current[:3], hostile_position[:3])
         if distance < 1e-6:
             return None
+        # The escape has to break the LEASH, and the leash is measured from the
+        # hostile's HOME position (Creature::CanCreatureAttack compares
+        # against m_homePosition), not from where the hostile is now. The
+        # home position is the static movement.position_xyzo, which the world
+        # state never rewrites, so it is the reliable anchor for the escape.
+        home = list((self.target.get('movement') or {}).get('position_xyzo') or [])[:3]
+        if len(home) < 3:
+            home = list(hostile_position[:3])
         # Straight away from the hostile is the preferred bearing; the fan
         # around it exists because that bearing can be a cliff.
-        base = math.atan2(current[1] - hostile_position[1],
-                          current[0] - hostile_position[0])
+        base = math.atan2(current[1] - home[1], current[0] - home[0])
         errors = []
         for index in range(candidates):
             bearing = base + (0.0 if index == 0 else
                               math.copysign(((index + 1) // 2) * math.radians(30), index))
-            destination = [current[0] + math.cos(bearing) * min_distance,
-                           current[1] + math.sin(bearing) * min_distance,
-                           current[2]]
+            # The destination is placed beyond the leash radius measured from
+            # the hostile's SPAWN, so that walking there actually breaks the
+            # leash (CreatureLeashRadius = 30 yards).
+            reach = max(min_distance, LEASH_RADIUS_YARDS + 10.0)
+            destination = [home[0] + math.cos(bearing) * reach,
+                           home[1] + math.sin(bearing) * reach,
+                           home[2]]
             try:
                 raw = self._nav(current[:3], destination)
                 points = self._densify(raw, current)
@@ -493,14 +505,14 @@ class PureNetworkBackend:
             if not points:
                 continue
             end = points[-1]
-            end_distance = math.dist([end['x'], end['y'], end['z']], hostile_position[:3])
+            end_distance = math.dist([end['x'], end['y'], end['z']], home[:3])
             return {'points': [{'x': p['x'], 'y': p['y'], 'z': p['z']} for p in points],
                     'origin': current,
-                    'source': 'navmesh route planned away from the hostile',
+                    'source': 'navmesh route planned away from the hostile spawn',
                     'planned_distance': round(min_distance, 3),
                     'hostile_distance_at_plan': round(distance, 3),
                     'bearing_degrees': round(math.degrees(bearing) % 360, 1),
-                    'end_distance_from_hostile': round(end_distance, 3),
+                    'end_distance_from_hostile_spawn': round(end_distance, 3),
                     'destination': [round(c, 3) for c in destination],
                     'rejected_directions': errors}
         return None
