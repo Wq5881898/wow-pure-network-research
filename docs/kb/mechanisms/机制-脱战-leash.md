@@ -40,6 +40,37 @@
 
 - 实机读到一次完整的 leash 判定（需要一次"战斗未决 → 触发撤离"的运行）。
 
+## ⚠️ 本条模型已被实机判定数据推翻（2026-11-01 b24_u1）
+
+撤离证据里现在带 `leash_verdict`，b24_u1 实测：
+
+```json
+"actual_end_distance_from_hostile_spawn": 40.212,   ← > 30 ✓
+"beyond_leash_radius": true,                          ← ✓
+"waited_past_leash_timer": true,                     ← 等了 20.2s > 11s ✓
+"retreat_outcome": "still_in_combat"                 ← ✗ 两个条件都满足，怪仍不放弃
+```
+
+**两个条件都满足了，怪却没有重置。** 所以上面的"权威配方"**不完整**。
+
+**已知的问题**：我把 `CanCreatureAttack()` 里那套 leash 半径判定当成了"重置条件"，
+但那段代码决定的是**能否再次锁定攻击目标**（`MoveInLineOfSight` 的选取路径），
+**不是"放弃已有目标"的条件**。一旦怪已经有 victim，它会不会放手是**另一段逻辑**
+（大概率在 `Creature::UpdateCreature` / `m_leashTimer` 的使用处）。
+
+⇒ **下一步该做的**：在上游找到"怪何时真正放弃已有目标"的那段代码，
+而不是继续用 `CanCreatureAttack` 的半径与计时器去推。
+
+**在此之前不要把"撤离能解除战斗"当成已验证**：esc021 那次成功，是因为**目标恰好
+没有跟上来**，不是因为满足了 leash 条件。
+
+## 仍然有效的部分
+
+- `Creature::GetLeashTimer()` = 11 秒（低等级怪）—— 这个值本身没错
+- `CONFIG_CREATURE_LEASH_RADIUS` = 30 码 —— 存在且被用于"能否重新锁定目标"
+- **"刚被打过的怪跳过 leash 判定"**（注释原文 allow kiting away from spawnpoint）—— 真实存在
+- **脱战判定看出生点**（`m_homePosition`）—— 真实存在
+
 ## 相关
 
 - [[sources]] · [[index]] · [[教训-不要重做]]
