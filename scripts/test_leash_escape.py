@@ -15,7 +15,11 @@ So the hostile breaks off only when the character is more than 30 yards from
 the hostile's SPAWN and has not damaged it for 11 seconds. The escape has to
 be planned against the spawn, and it has to outlast the timer.
 """
+import shutil
 import unittest
+
+if not shutil.which('ip'):
+    raise unittest.SkipTest('the backend module requires the WSL `ip route` tool')
 
 from agent_wow_exit_recovery import LEASH_RADIUS_YARDS, LEASH_TIMER_SECONDS
 
