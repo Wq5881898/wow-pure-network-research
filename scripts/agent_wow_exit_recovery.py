@@ -400,7 +400,35 @@ def _perform_retreat(backend, observation, route, sleep=time.sleep, clock=time.m
     result['wait_seconds'] = wait_seconds
     result['route_length'] = round(length, 3)
     result['route'] = route
+    # The leash verdict, from the ACTUAL landing point rather than the
+    # planned one: the hostile breaks off only when the character is beyond
+    # the leash radius from its SPAWN and has not damaged it for the leash
+    # timer. Recording the real landing makes that judgeable without
+    # another life (2026-11-01 b12_u2: the escape was sent and the combat
+    # did not clear, with no evidence of which condition failed).
+    home = route.get('hostile_home') or []
+    actual_end = _actual_landing(result.get('movement'))
+    if home and actual_end:
+        end_distance = round(math.dist(list(actual_end)[:3], list(home)[:3]), 3)
+        result['actual_end'] = [round(v, 3) for v in actual_end[:3]]
+        result['actual_end_distance_from_hostile_spawn'] = end_distance
+        result['beyond_leash_radius'] = end_distance > LEASH_RADIUS_YARDS
+    result['leash_radius_yards'] = LEASH_RADIUS_YARDS
+    result['leash_timer_seconds'] = LEASH_TIMER_SECONDS
+    result['waited_past_leash_timer'] = wait_seconds >= LEASH_TIMER_SECONDS
     return result
+
+
+def _actual_landing(movement):
+    """Where the walk actually ended, from the bridge's own report."""
+    replies = movement if isinstance(movement, list) else [movement]
+    for reply in reversed(replies):
+        if not isinstance(reply, dict):
+            continue
+        submitted = (reply.get('result') or {}).get('submittedPosition')
+        if isinstance(submitted, list) and len(submitted) >= 3:
+            return list(submitted[:3])
+    return None
 
 
 
@@ -490,6 +518,7 @@ def close_session(backend, *, report, budget_seconds=60, poll_interval=0.5,
             backend, budget_seconds=budget_seconds, poll_interval=poll_interval,
             min_health=min_health, finish_budget_seconds=finish_budget_seconds,
             sleep=sleep, clock=clock)
+        retreat = recovery.get('retreat') or {}
         result['combat_recovery'] = {
             'combat_cleared': recovery['combat_cleared'],
             'elapsed_s': recovery['elapsed_s'],
@@ -498,8 +527,18 @@ def close_session(backend, *, report, budget_seconds=60, poll_interval=0.5,
             'actions': recovery.get('actions', []),
             'cleared_reason': recovery.get('cleared_reason'),
             'reason': recovery.get('reason'),
-            'retreat_outcome': (recovery.get('retreat') or {}).get('outcome'),
+            'retreat_outcome': retreat.get('outcome'),
             'fallback_outcome': (recovery.get('fallback') or {}).get('outcome'),
+            # The leash verdict, from the ACTUAL landing point: whether the
+            # character really got beyond the leash radius from the hostile's
+            # spawn, and whether the wait covered the leash timer. Without
+            # these, "the escape did not clear the combat" says nothing about
+            # which condition failed (2026-11-01 b12_u2, b13_u1).
+            'leash_verdict': {key: retreat.get(key) for key in (
+                'actual_end', 'actual_end_distance_from_hostile_spawn',
+                'beyond_leash_radius', 'leash_radius_yards',
+                'leash_timer_seconds', 'waited_past_leash_timer',
+                'wait_seconds', 'route_length') if key in retreat},
         }
         observation = recovery['final']
     if not living(observation):

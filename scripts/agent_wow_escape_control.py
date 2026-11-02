@@ -58,7 +58,7 @@ def retreat(rpc, drain, outbound_points, origin, wait_seconds=15,
         if 'error' in reply:
             rejected.append(reply['error'].get('message', 'path rejected'))
             break
-    result['movement'] = sent[-1] if sent else {'error': 'no path chunk to send'}
+    result['movement'] = sent
     result['chunks_sent'] = len(sent)
     if rejected:
         result['outcome'] = 'retreat_movement_rejected'

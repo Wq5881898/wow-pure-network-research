@@ -508,6 +508,7 @@ class PureNetworkBackend:
             end_distance = math.dist([end['x'], end['y'], end['z']], home[:3])
             return {'points': [{'x': p['x'], 'y': p['y'], 'z': p['z']} for p in points],
                     'origin': current,
+                    'hostile_home': [round(v, 3) for v in home],
                     'source': 'navmesh route planned away from the hostile spawn',
                     'planned_distance': round(min_distance, 3),
                     'hostile_distance_at_plan': round(distance, 3),
@@ -795,14 +796,25 @@ class PureNetworkBackend:
             self, budget_seconds=params.get('budget', 60),
             poll_interval=params.get('poll_interval', 0.5),
             min_health=params.get('min_health', 25))
+        retreat = recovery.get('retreat') or {}
         return {'combat_cleared': recovery['combat_cleared'],
                 'ending': recovery.get('ending'),
                 'cleared_reason': recovery.get('cleared_reason'),
                 'requests': recovery.get('requests'),
                 'actions': recovery.get('actions'),
                 'reason': recovery.get('reason'),
-                'retreat_outcome': (recovery.get('retreat') or {}).get('outcome'),
+                'retreat_outcome': retreat.get('outcome'),
                 'fallback_outcome': (recovery.get('fallback') or {}).get('outcome'),
+                # The leash verdict, from the ACTUAL landing point: whether the
+                # character really got beyond the leash radius from the
+                # hostile's spawn, and whether the wait covered the leash
+                # timer. Without these, "the escape did not clear the combat"
+                # says nothing about which condition failed (2026-11-01 b12_u2).
+                'leash_verdict': {key: retreat.get(key) for key in (
+                    'actual_end', 'actual_end_distance_from_hostile_spawn',
+                    'beyond_leash_radius', 'leash_radius_yards',
+                    'leash_timer_seconds', 'waited_past_leash_timer',
+                    'wait_seconds', 'route_length') if key in retreat},
                 'elapsed_s': recovery.get('elapsed_s'),
                 'side_effect_applied': True}
 
