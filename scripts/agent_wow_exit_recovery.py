@@ -56,6 +56,28 @@ from agent_wow_combat_state_machine import (ENDING_ESCAPE, ENDING_FIGHT,
 LEASH_RADIUS_YARDS = 30.0
 LEASH_TIMER_SECONDS = 11.0
 
+# The condition that actually ends a combat against a chasing mob.
+# Creature::CanCreatureAttack() drops the victim when it is further than the
+# visibility range away from the creature's CURRENT position
+# (src/server/game/Entities/Creature/Creature.cpp: visibility =
+# max(GetVisibilityRange(), victim->GetVisibilityRange()); then
+# if (!IsWithinDist(victim, visibility)) return false;). That check sits
+# BEFORE the "recently damaged" exemption, so it works even while the mob is
+# still hitting the character. The victim's range is the map's, and
+# DEFAULT_VISIBILITY_DISTANCE is 100 yards on continents
+# (src/server/game/Entities/Object/ObjectDefines.h).
+#
+# The leash radius above is NOT the escape distance: its check is skipped
+# while the mob is in melee range, because TargetedMovementGenerator refreshes
+# the leash extension on every attack tick ("Mobs should chase you infinitely
+# if you stop and wait every few seconds",
+# src/server/game/Movement/TargetedMovementGenerator.cpp). So the 30 yard
+# leash can essentially never fire while the mob keeps hitting.
+VISIBILITY_RANGE_YARDS = 100.0
+# Enough ground to clear the visibility range plus a margin, so the mob is
+# actually dropped instead of merely losing sight for a moment.
+ESCAPE_MIN_DISTANCE_YARDS = 115.0
+
 
 def living(observation):
     """The character is alive and not a ghost, regardless of combat state."""
@@ -425,6 +447,15 @@ def _perform_retreat(backend, observation, route, sleep=time.sleep, clock=time.m
     result['leash_radius_yards'] = LEASH_RADIUS_YARDS
     result['leash_timer_seconds'] = LEASH_TIMER_SECONDS
     result['waited_past_leash_timer'] = wait_seconds >= LEASH_TIMER_SECONDS
+    # The condition that can actually end the combat. The reference point is
+    # the hostile's CURRENT position, not its spawn, so the distance to the
+    # spawn is only a lower bound and is recorded under that name.
+    result['visibility_range_yards'] = VISIBILITY_RANGE_YARDS
+    result['escape_min_distance_yards'] = ESCAPE_MIN_DISTANCE_YARDS
+    if home and actual_end:
+        spawn_distance = round(math.dist(list(actual_end)[:3], list(home)[:3]), 3)
+        result['distance_from_hostile_spawn'] = spawn_distance
+        result['beyond_visibility_from_spawn'] = spawn_distance > VISIBILITY_RANGE_YARDS
     return result
 
 
@@ -441,13 +472,18 @@ def _actual_landing(movement):
 
 
 
-def _plan_escape_route(backend, min_distance=40.0):
-    """Plan a navmesh route that ends well away from the hostile.
+def _plan_escape_route(backend, min_distance=ESCAPE_MIN_DISTANCE_YARDS):
+    """Plan a navmesh route that ends out of the hostile's sight range.
 
     The character must get out of the hostile's reach, which means distance,
     not movement: esc010 reversed a 6-yard approach and stayed in aggro
     range. The destination is placed away from the tracked hostile and then
     snapped onto the navmesh by the same tool the approach uses.
+
+    The distance is the visibility range plus a margin, not the leash radius:
+    the leash check is skipped while the mob is in melee range (it refreshes
+    itself on every attack tick), so a 30-yard hop can never make a chasing
+    mob let go, while clearing the visibility range does.
 
     The route comes from the session's shared planner, so the combat state
     machine and this branch see the same answer.

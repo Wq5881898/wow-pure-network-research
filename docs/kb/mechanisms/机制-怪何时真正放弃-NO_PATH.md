@@ -1,45 +1,140 @@
-# 机制 · 怪何时真正放弃（NO_PATH）
+# 机制 · 怪何时真正放弃（完整模型）
 
-> **这才是脱战的真正机制。** 2026-11-01 查上游源码得到，
-> 并且**推翻了**我先前基于 leash 半径/计时器推出的模型（见 [[机制-脱战-leash]] 的更正）。
+> **这是脱战的权威判定。** 2026-11-01 查上游源码 + 实机判定数据得到。
+> 取代我先前基于 leash 半径推出的模型（见 [[机制-脱战-leash]] 的更正）。
 
-## 上游源码链条
+## 入口：怪为什么会放手
 
-| 环节 | 位置 | 内容 |
-|---|---|---|
-| 路径不可达 | `src/server/game/AI/UnitAI.cpp` | 怪寻路到目标失败 → `SetCannotReachTarget()` |
-| 放弃 | 同上 | 只有一个目标 → **`ai->EnterEvadeMode(CreatureAI::EVADE_REASON_NO_PATH)`**；多个目标 → 清掉该目标的威胁 |
-| 放弃动作 | `src/server/game/AI/CreatureAI.cpp` `_EnterEvadeMode()` | `CombatStop(true)` + `ClearLastLeashExtensionTimePtr()` + `SetCannotReachTarget()` → **战斗解除** |
+`Creature::CanCreatureAttack(victim)` 返回 false 时，
+`ThreatReference::ShouldBeOffline()`
+（`src/server/game/Combat/ThreatManager.cpp`）会把该受害者的威胁引用下线：
 
-**所以：怪放手的原因是"到目标的路径不存在了"，不是"跑远了"、也不是"过了多少秒"。**
+```cpp
+bool ThreatReference::ShouldBeOffline() const
+{
+    if (!_owner->CanSeeOrDetect(_victim)) return true;
+    if (!_owner->_IsTargetAcceptable(_victim) || !_owner->CanCreatureAttack(_victim)) return true;
+    ...
+}
+```
 
-## 为什么这解释了本项目的历史工作
+⇒ **怪丢失目标 = 战斗解除。** 所以问题变成：**`CanCreatureAttack` 会在什么情况下返回 false？**
 
-`docs/80`–`docs/82` 做的正是**走廊边界撤离**：
-把角色送到**怪无法寻路到达的网格边界**（另一个楼层、不可攀的落差、走廊边界），
-让怪的目标变得"不可达" → 怪放弃。
+## `CanCreatureAttack` 的全部否决条件
 
-既有产物（已验证，可直接复用）：
-- `results/pure_network/height_R792_segment{1..6}_{plan,reconciled,trial}.json`
-  —— 6 段走廊边界 staging 点，含独立核对与实机 trial 证据
-- `scripts/agent_wow_retreat.py` —— `prepare()` 校验证据链后返回分段
-- `scripts/plan_combat_retreat.py` / `survey_retreat_routes.py` /
-  `trial_retreat_route.py` / `verify_retreat_boundary.py`
-- 8 个 `test_retreat_*.py` / `test_agent_wow_retreat_controller.py`
+源码：`src/server/game/Entities/Creature/Creature.cpp`
 
-**这就是本项目"撤离"的既定机制**，本轮应该复用它，而不是另造"跑远 40 码"。
+| # | 条件 | 参照点 | 受"刚被打过"豁免影响吗 |
+|---|---|---|---|
+| **A** | `!victim->isInAccessiblePlaceFor(this)` —— **受害者在怪到不了的地方** | 导航 | ❌ **最先检查，完全不受豁免影响** |
+| **B** | `!IsWithinDist(victim, visibility)` —— **超出可见距离** | **怪的当前所在** | ❌ **不受豁免影响** |
+| **C** | 距**出生点/重置位** > 30 码（`IsInDist2d`，**2D**） | `m_homePosition` 或 idle motion 的 reset position | ✅ **豁免期间跳过** |
+| D | `victim->IsInMap` / `IsValidAttackTarget` / `isInAccessiblePlaceFor` / `IsInEvadeMode` / 5 秒宽限期 / FD | — | — |
 
-## 对工程的影响
+**关键顺序**：`visibility` 与"刚被打过"的豁免判断在**同一段**里，但豁免是**提前 return true**：
 
-1. **撤离路线不是"离怪多远"，而是"怪还寻不寻得到你"**。
-   ⇒ 规划撤离时必须验证：**从怪的位置到该点存在可达路径**（走得到 ⇒ 怪不会放弃）；
-   要让怪放弃，就得走到**从怪的位置不可达**的点。
-2. 导航工具的 `findPath` 在找不到路时报 `Incomplete path` / "surface walk left planned
-   corridor" —— 这正是服务器侧"不可达"的对应物，可以直接用来判定。
-3. **走廊边界不能凭 XY 距离认定**（docs/80 的结论）：要验证 visited 多边形的邻接、
-   表面高度、是否可插入合法走廊；或用显式安全中间点重算分段路径，
-   **保持完整连通与高度校验，不放宽规则**。
+```cpp
+if (!GetCharmerOrOwnerGUID().IsPlayer())
+{
+    if (GetMap()->IsDungeon()) return true;
+    float visibility = std::max<float>(GetVisibilityRange(), victim->GetVisibilityRange());
+    if (!IsWithinDist(victim, visibility)) return false;      // 条件 B：无条件生效
+    // "don't check distance to home position if recently damaged"
+    if (!isWorldBoss() && (GetLastLeashExtensionTime() + GetLeashTimer() > now || HasTauntAura()))
+        return true;                                          // 豁免：跳过条件 C
+}
+...
+float dist = sWorld->getFloatConfig(CONFIG_CREATURE_LEASH_RADIUS);   // 30
+MovementGenerator* idleSlot = GetMotionMaster()->GetMotionSlot(MOTION_SLOT_IDLE);
+if (idleSlot && idleSlot->GetResetPosition(x, y, z)) return IsInDist2d(x, y, dist);
+else return IsInDist2d(&m_homePosition, dist);                          // 条件 C
+```
+
+## 三个条件的实际含义
+
+### A · 不可达（NO_PATH）—— 唯一在"怪还在打你"时也生效的脱离方式
+
+路径到不了 ⇒ `isInAccessiblePlaceFor` 为假 ⇒ 威胁引用下线 ⇒ 怪放弃 ⇒ 脱战。
+上游对应 `EVADE_REASON_NO_PATH`
+（`src/server/game/AI/UnitAI.cpp` → `CreatureAI::_EnterEvadeMode()`）。
+
+**实测（2026-11-01，b24 战斗区）**：
+以角色所在位置 (-198.85, -4325.22, 66.63) 为圆心，**200 码内**共 24 个角色可达的地面点，
+**全部 24 个怪也能寻路到达**；已验证的"走廊边界终点" (-352.01, -4303.79, 53.27)
+从怪的位置寻路**同样 PASS**（13 个多边形）。
+⇒ **该区域不存在天然的分离点**，靠"走到怪到不了的地方"是走不掉的。
+
+### B · 超出可见距离 —— 参考点是**怪的当前所在**
+
+```cpp
+float visibility = std::max<float>(GetVisibilityRange(), victim->GetVisibilityRange());
+```
+
+- 玩家（受害者）的可见距离 = 地图的可见距离 =
+  `DEFAULT_VISIBILITY_DISTANCE` = **100 码**（大陆）
+  （`src/server/game/Entities/Object/ObjectDefines.h`）
+- 怪的可见距离 = `detection_range` × 视野系数（更小）
+
+⇒ `max` 取 **100 码** ⇒ 条件 B = **离怪的当前所在 3D 距离 > 100 码**。
+
+**这是"跑远"真正要跑出的距离。**
+参照点是**怪现在站的地方**，不是它的出生点 —— 怪会追上来，所以按出生点算会严重低估。
+
+### C · leash 半径 —— 实战中几乎不可能触发
+
+30 码、2D、参照出生点，且**只在"最近 11 秒没被伤害"时生效**。
+但 leash 扩展时间会被反复刷新：
+
+| 刷新点 | 含义 |
+|---|---|
+| `Creature.cpp` `JustEngagedWith` | 接战时 |
+| `Unit.cpp` `SetInCombatWith` → "Update leash timer when attacking creatures" | 每次开打 |
+| `Unit.cpp` `DealDamage`（非 DOT、受害者是怪） | **每次受到伤害** |
+| `TargetedMovementGenerator.cpp` | **怪在近战范围内时，每个攻击 tick 都刷新** |
+| `Creature.cpp` 定时器 | 失控（LOST_CONTROL）时每 3 秒 |
+
+上游注释原文：
+> `// Mobs should chase you infinitely if you stop and wait every few seconds.`
+
+⇒ **怪还在打你的时候，条件 C 永远不生效。** 这就是 b24_u1 失败的原因：
+
+- 角色停手 → 怪继续追、继续打 → leash 扩展每个攻击 tick 刷新 → 豁免一直有效；
+- 角色只走了 29 码 → 怪跟得上 → 始终在近战/可见距离内 → 条件 A、B 都不成立；
+- ⇒ `retreat_outcome = still_in_combat`。
+
+**b24 的判定数据（两个 leash 条件都满足却仍失败）**：
+
+```json
+"actual_end_distance_from_hostile_spawn": 40.212,   ← > 30 ✓
+"beyond_leash_radius": true,                          ← ✓
+"waited_past_leash_timer": true,                     ← 等了 20.2s > 11s ✓
+"retreat_outcome": "still_in_combat"                 ← ✗ 怪不放手
+```
+
+## ⇒ 实用的脱离配方
+
+1. **停止攻击**（否则怪每 tick 刷新 leash 豁免，且你会继续挨打）。
+2. **跑到离怪的当前所在 > 100 码**（条件 B）。
+   - 桥接 `run=True` 是 **7 码/秒** ⇒ 100 码约需 **15 秒**；
+   - 桥接单次请求上限 50 码、每段 ≤15 码 ⇒ **必须分段下发**；
+   - 参照点用**怪的实时位置**（世界状态里的 `server_motion`），不是出生点。
+3. 或者走到**怪寻路到不了**的点（条件 A）—— 实测本战斗区 200 码内不存在这样的点。
+4. **兜底**：条件都不成立时，打死目标或**死掉跑尸**（死亡会清空战斗状态）。
+   项目已有的跑尸链路（`agent_wow_danger_recovery.py`，dr03 实机通过）是可用的兜底。
+
+## 已实装的代码位置
+
+- `scripts/agent_wow_exit_recovery.py`
+  - `VISIBILITY_RANGE_YARDS = 100.0`、`ESCAPE_MIN_DISTANCE_YARDS = 115.0`
+  - `_plan_escape_route(backend, min_distance=ESCAPE_MIN_DISTANCE_YARDS)`
+  - 判定记录：`visibility_range_yards`、`escape_min_distance_yards`、
+    `distance_from_hostile_spawn`、`beyond_visibility_from_spawn`
+    （旧的 leash 字段保留为诊断）
+- `scripts/plan_no_path_retreat.py` —— 条件 A 的离线搜索器
+  （`find_separation_point`：找"角色可达 ∧ 怪不可达"的点），配
+  `scripts/test_plan_no_path_retreat.py`（5 项单元测试）。
 
 ## 相关
 
-- [[机制-脱战-leash]]（含被推翻的部分）· [[机制-位置与坐标的权威性]] · [[教训-不要重做]]
+- [[机制-脱战-leash]]（含被推翻的部分）· [[机制-位置与坐标的权威性]] ·
+  [[机制-桥接路径限制与分段]] · [[教训-不要重做]]
