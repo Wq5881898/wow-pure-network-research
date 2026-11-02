@@ -11,10 +11,20 @@ import time
 
 MAX_SEGMENT_YARDS = 15.0
 MAX_TOTAL_YARDS = 50.0
+MAX_HEIGHT_YARDS = 3.0
 
 
-def _chunks(points, max_segment=MAX_SEGMENT_YARDS, max_total=MAX_TOTAL_YARDS):
-    """Split a route into the pieces the bridge accepts."""
+def _chunks(points, max_segment=MAX_SEGMENT_YARDS, max_total=MAX_TOTAL_YARDS,
+             max_height=MAX_HEIGHT_YARDS):
+    """Split a route into the pieces the bridge accepts.
+
+    The bridge also refuses a segment whose height change is over 3 yards,
+    and it refuses the WHOLE path when one segment breaks a rule. The
+    height change is checked here for the same reason the length is: a
+    rejected path means the character does not move at all, which is how a
+    retreat turned into standing still and being killed (2026-11-01 b29_u1:
+    the escape route of 208 yards was planned and then refused outright).
+    """
     chunks = []
     current = []
     length = 0.0
@@ -24,7 +34,9 @@ def _chunks(points, max_segment=MAX_SEGMENT_YARDS, max_total=MAX_TOTAL_YARDS):
         if previous is None:
             previous = xyz
         step = math.dist(previous, xyz)
-        if current and (step > max_segment or length + step > max_total):
+        climb = abs(xyz[2] - previous[2])
+        if current and (step > max_segment or length + step > max_total
+                        or climb > max_height):
             chunks.append(current)
             current = []
             length = 0.0

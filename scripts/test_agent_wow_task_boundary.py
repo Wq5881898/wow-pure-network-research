@@ -45,6 +45,16 @@ class BoundaryTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             movement_boundary(report, max_age_seconds=1, now=finished + 2)
 
+    def test_a_report_without_an_approach_step_says_so(self):
+        # A movement unit that never reached an approach step has no
+        # boundary. It used to raise "max() iterable argument is empty",
+        # which hid the real cause (no target of the wanted entry in view).
+        report = {'run': {'records': [{'action_id': 'verify_alive'}]},
+                  'final_observation': {}}
+        with self.assertRaises(ValueError) as caught:
+            movement_boundary(report)
+        self.assertIn('never reached an approach step', str(caught.exception))
+
     def test_archived_boundary_and_rejected_combat(self):
         root = Path(__file__).resolve().parents[1]
         report = json.loads((root / 'results/pure_network/agent_wow_task_run106_task_unit_repeat.json').read_text())

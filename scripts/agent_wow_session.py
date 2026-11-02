@@ -336,15 +336,30 @@ class PureNetworkBackend:
         return json.loads(run.stdout)
 
     @staticmethod
-    def _densify(route, start, step=3, vertical=2):
+    def _densify(route, start, step=3, vertical=2, slope_tolerance=None):
         points = []
         previous = list(start)
         previous_route = list(start)
         for end in route['waypoints']:
-            if previous_route[2] - end[2] > 5:
-                # A sharp drop means the route runs over a ledge; the character
-                # would fall instead of walking the path.
-                raise RuntimeError('route drops more than 5 yards; refusing cliff path')
+            if slope_tolerance is None:
+                if previous_route[2] - end[2] > 5:
+                    # A sharp drop means the route runs over a ledge; the character
+                    # would fall instead of walking the path.
+                    raise RuntimeError('route drops more than 5 yards; refusing cliff path')
+            else:
+                # The drop is judged by the slope, not by the raw height: a
+                # cliff is a drop that is steep over a short distance, while a
+                # long ramp is walkable. The 5 yard rule refuses both, which
+                # stranded the travel on a plateau 8 yards above the corridor
+                # (2026-11-01 travel3101a/travel3101b: "no walkable leg
+                # towards the goal" while the navmesh had a path). A drop is
+                # only a cliff when it is BOTH more than 5 yards AND steeper
+                # than the tolerance: the ramp the character came up has a
+                # 4.35 yard step, which the 5 yard rule already allows.
+                horizontal = math.dist(previous_route[:2], end[:2])
+                drop = previous_route[2] - end[2]
+                if drop > 5.0 and drop > slope_tolerance * horizontal:
+                    raise RuntimeError('route drops too steeply; refusing cliff path')
             previous_route = list(end)
             distance = math.dist(previous, end)
             if distance < .02:

@@ -29,7 +29,16 @@ def verify_target(state, guid, entry, max_level, now_ms, position):
 
 def movement_boundary(report, max_age_seconds=None, now=None):
     records = report['run']['records']
-    approach_index = max(i for i, record in enumerate(records) if record['action_id'] == 'approach')
+    approach_indexes = [i for i, record in enumerate(records)
+                        if record['action_id'] == 'approach']
+    if not approach_indexes:
+        # The movement unit never got as far as an approach step, so there is
+        # no boundary to hand over. The usual cause is that no target of the
+        # wanted entry was in view; saying so is much more useful than the
+        # bare "max() iterable argument is empty" that an empty max() raised.
+        raise ValueError('the movement unit never reached an approach step '
+                         '(no target of the wanted entry was in view)')
+    approach_index = max(approach_indexes)
     approach = records[approach_index]
     if any(record.get('action_id') in ('fight', 'loot') for record in records[approach_index + 1:]):
         raise ValueError('combat followed movement; not a movement-only boundary')

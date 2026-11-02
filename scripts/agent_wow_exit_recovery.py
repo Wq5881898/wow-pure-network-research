@@ -601,6 +601,14 @@ def close_session(backend, *, report, budget_seconds=60, poll_interval=0.5,
                 'beyond_leash_radius', 'leash_radius_yards',
                 'leash_timer_seconds', 'waited_past_leash_timer',
                 'wait_seconds', 'route_length') if key in retreat},
+            # The bridge's own refusal has to be in the evidence: without it
+            # "retreat_movement_rejected" says nothing about which of the
+            # bridge's path limits was broken (2026-11-01 b29_u1: the escape
+            # route of 208 yards was planned and then refused, and the
+            # reason was nowhere in the report).
+            'retreat_rejection': retreat.get('rejection'),
+            'retreat_chunks_sent': retreat.get('chunks_sent'),
+            'retreat_path_source': retreat.get('path_source'),
         }
         observation = recovery['final']
     if not living(observation):

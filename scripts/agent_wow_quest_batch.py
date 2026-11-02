@@ -79,6 +79,10 @@ def main():
     parser.add_argument('--units', type=int, default=3,
                         help='task units in this batch (docs/52 allows at most 3)')
     parser.add_argument('--combat-budget', type=float, default=60)
+    parser.add_argument('--low-health-ratio', type=float, default=None,
+                        help='the health ratio at which the fight latches the '
+                             'low-health exit; the escape branch then decides '
+                             'how the combat ends')
     args = parser.parse_args()
     if not args.batch_id.replace('_', '').isalnum():
         parser.error('invalid batch ID')
@@ -144,7 +148,9 @@ def main():
                           '--combat-entry', str(args.combat_entry),
                           '--max-target-level', str(args.max_target_level),
                           '--combat-budget', str(args.combat_budget),
-                          '--budget-seconds', '300', '--action-budget', '10'])
+                          '--budget-seconds', '300', '--action-budget', '10']
+                          + ([] if args.low_health_ratio is None else
+                             ['--low-health-ratio', str(args.low_health_ratio)]))
             unit_report = FOLDER / f'agent_wow_task_{unit_id}.json'
             if not unit_report.exists():
                 unit['failed'] = 'the combat unit produced no report'
