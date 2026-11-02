@@ -19,6 +19,12 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 KB = ROOT / 'docs' / 'kb'
 
 
+def _printable(text):
+    """The console may not be UTF-8 (a GBK code page raises on some glyphs)."""
+    encoding = getattr(sys.stdout, 'encoding', None) or 'utf-8'
+    return text.encode(encoding, errors='replace').decode(encoding, errors='replace')
+
+
 def notes():
     if not KB.is_dir():
         return []
@@ -49,7 +55,7 @@ def main():
 
     if args.list or not args.terms:
         for path in notes():
-            print(path.relative_to(ROOT))
+            print(_printable(str(path.relative_to(ROOT))))
         return 0
 
     hits = search(args.terms)
@@ -63,7 +69,7 @@ def main():
         if shown >= args.max:
             print('... (%d more)' % (len(hits) - shown))
             break
-        print('%s:%d  %s' % (path.relative_to(ROOT), number, line))
+        print(_printable('%s:%d  %s' % (path.relative_to(ROOT), number, line)))
         shown += 1
     print()
     print('%d hit(s) in %d note(s)' % (len(hits), len({h[0] for h in hits})))
