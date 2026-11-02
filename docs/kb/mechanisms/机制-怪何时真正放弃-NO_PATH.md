@@ -80,6 +80,25 @@ float visibility = std::max<float>(GetVisibilityRange(), victim->GetVisibilityRa
 **这是"跑远"真正要跑出的距离。**
 参照点是**怪现在站的地方**，不是它的出生点 —— 怪会追上来，所以按出生点算会严重低估。
 
+**跑出这个距离要多久？（用实测速度推导）**
+
+| 量 | 值 | 出处 |
+|---|---|---|
+| 角色奔跑速度 | **7 码/秒** | 桥接 `run=True` |
+| 怪的追击速度 | `speed_walk` × 2.5 = **2.5 码/秒** | 本机 world DB：entry 3101 / 3124 的 `speed_walk = 1.0`（`speed_run = 0.857`，`detection_range = 10`） |
+| 间距增长速度 | **4.5 码/秒** | 差值 |
+| 需要的跑动时间 | (100 − 8) / 4.5 = **20.4 秒** | 起点按近战 8 码算 |
+| 需要的路径长度 | 7 × 20.4 ≈ **143 码** | |
+| **实装取值** | `ESCAPE_MIN_DISTANCE_YARDS = 165`（离出生点） | 路径实测 167 码、末间距约 **115 码**（余量 15 码） |
+
+**代价**：跑动约 **24 秒** ≈ 12 次攻击 ≈ 掉 60–85 血
+⇒ **角色 HP 低于约 85 时，逃跑注定致死**，此时应改选别的结局
+（`ESCAPE_MIN_HEALTH = 85`）。
+
+**离线验证工具（跑实机之前必须先跑，零代价）**：
+`python scripts/plan_escape_route_offline.py <角色x> <角色y> <角色z> <出生点x> <出生点y> <出生点z> [reach]`
+→ 输出每个方向的路径长度、跑动秒数、需要的桥接请求数。
+
 ### C · leash 半径 —— 实战中几乎不可能触发
 
 30 码、2D、参照出生点，且**只在"最近 11 秒没被伤害"时生效**。
@@ -125,7 +144,7 @@ float visibility = std::max<float>(GetVisibilityRange(), victim->GetVisibilityRa
 ## 已实装的代码位置
 
 - `scripts/agent_wow_exit_recovery.py`
-  - `VISIBILITY_RANGE_YARDS = 100.0`、`ESCAPE_MIN_DISTANCE_YARDS = 115.0`
+  - `VISIBILITY_RANGE_YARDS = 100.0`、`ESCAPE_MIN_DISTANCE_YARDS = 165.0`、`ESCAPE_MIN_HEALTH = 85`
   - `_plan_escape_route(backend, min_distance=ESCAPE_MIN_DISTANCE_YARDS)`
   - 判定记录：`visibility_range_yards`、`escape_min_distance_yards`、
     `distance_from_hostile_spawn`、`beyond_visibility_from_spawn`

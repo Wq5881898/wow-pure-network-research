@@ -15,7 +15,8 @@ from pathlib import Path
 
 from wsl_lab_connect import Relay, Server, gateway, root
 from agent_wow_combat_control import estimated_position, fight
-from agent_wow_exit_recovery import LEASH_RADIUS_YARDS
+from agent_wow_exit_recovery import (ESCAPE_MIN_DISTANCE_YARDS,
+                                    LEASH_RADIUS_YARDS)
 from agent_wow_loot_evidence import item_pushes
 from agent_wow_contract import Observation
 from agent_wow_position import landing_evidence, movement_sequence
@@ -434,7 +435,7 @@ class PureNetworkBackend:
         self._escape_route_target = guid
         return route
 
-    def plan_escape_route(self, min_distance=40.0, candidates=12):
+    def plan_escape_route(self, min_distance=ESCAPE_MIN_DISTANCE_YARDS, candidates=12):
         """Plan a navmesh route that ends well away from the tracked hostile.
 
         Measured on 2026-11-01 (esc010): reversing the outbound approach route
@@ -489,9 +490,12 @@ class PureNetworkBackend:
         for index in range(candidates):
             bearing = base + (0.0 if index == 0 else
                               math.copysign(((index + 1) // 2) * math.radians(30), index))
-            # The destination is placed beyond the leash radius measured from
-            # the hostile's SPAWN, so that walking there actually breaks the
-            # leash (CreatureLeashRadius = 30 yards).
+            # The destination is placed far enough from the hostile's SPAWN
+            # that the gap to the hostile's CURRENT position clears the
+            # visibility range. The leash radius is not the escape distance:
+            # the leash check is skipped while the mob is in melee range (it
+            # refreshes itself on every attack tick), so only clearing the
+            # visibility range makes a chasing mob let go.
             reach = max(min_distance, LEASH_RADIUS_YARDS + 10.0)
             destination = [home[0] + math.cos(bearing) * reach,
                            home[1] + math.sin(bearing) * reach,

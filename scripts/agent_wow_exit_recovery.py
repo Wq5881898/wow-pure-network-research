@@ -74,9 +74,23 @@ LEASH_TIMER_SECONDS = 11.0
 # src/server/game/Movement/TargetedMovementGenerator.cpp). So the 30 yard
 # leash can essentially never fire while the mob keeps hitting.
 VISIBILITY_RANGE_YARDS = 100.0
-# Enough ground to clear the visibility range plus a margin, so the mob is
-# actually dropped instead of merely losing sight for a moment.
-ESCAPE_MIN_DISTANCE_YARDS = 115.0
+# How far the escape has to reach, measured from the hostile's spawn, so the
+# gap to the hostile's CURRENT position really clears the visibility range.
+#
+# The gap grows at (run speed - hostile chase speed):
+#   the character runs at the bridge's run speed, 7 yards/s,
+#   the hostile chases at speed_walk * 2.5 yards/s; the local world DB has
+#   speed_walk = 1.0 for entry 3101 (Vile Familiar) and 3124 (Scorpid Worker),
+#   so 2.5 yards/s, and the gap opens at 4.5 yards/s.
+# The fight starts at melee range, about 8 yards, so clearing 100 yards needs
+# (100 - 8) / 4.5 = 20.4 s of running, which is 143 yards of path; 165 yards
+# of reach gives a path of about 167 yards (measured offline with
+# scripts/plan_escape_route_offline.py) and a final gap of about 115 yards.
+ESCAPE_MIN_DISTANCE_YARDS = 165.0
+# The run takes about 24 s, which is roughly a dozen mob attacks. Below this
+# health the character cannot survive the run, so escaping is not a plan any
+# more and the caller has to pick another ending.
+ESCAPE_MIN_HEALTH = 85
 
 
 def living(observation):
