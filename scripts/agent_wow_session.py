@@ -690,12 +690,31 @@ class PureNetworkBackend:
             if not here:
                 return {'error': 'the character position is unknown'}
             distance = math.dist(here, position)
-            if distance <= max_range:
+            # An estimate that looks close is not the same as being able to
+            # reach it: the target may be on another level with no line of
+            # sight (docs/72 rule 1 - three dimensional position, same level
+            # reachability and line of sight must be judged separately, and
+            # an XY distance must never authorise an attack).
+            # b16_u1 measured 1.64 yards and the attack never landed, because
+            # nothing ever checked that the point was walkable from here.
+            reachable = self._nav(here, position)
+            waypoints = (reachable or {}).get('waypoints') or []
+            if waypoints:
+                landing = list(waypoints[-1][:3])
+                on_surface = math.dist(here, landing)
+            else:
+                landing = None
+                on_surface = None
+            if on_surface is not None and on_surface <= max_range:
                 return {'skipped': 'already within reach',
-                        'distance': round(distance, 2), 'walks': walks}
+                        'distance': round(distance, 2),
+                        'nav_distance': round(on_surface, 2),
+                        'walks': walks}
             result = self._do_approach({}, params.get('approach_timeout', 90))
             walks.append({'attempt': attempt + 1,
                           'distance_before': round(distance, 2),
+                          'nav_distance': (round(on_surface, 2)
+                                          if on_surface is not None else None),
                           'reached': result.get('reached'),
                           'reason': result.get('reason'),
                           'error': result.get('error')})
@@ -709,6 +728,33 @@ class PureNetworkBackend:
         except Exception:  # noqa: BLE001
             final = None
         return {'walked': True, 'walks': walks, 'distance_after': final}
+
+    def _await_engagement(self, timeout=10.0, poll_interval=0.3):
+        """Wait for the hostile to engage, instead of chasing it.
+
+        A hostile that detects the character walks over: its detection distance
+        is 20 yards (Creature::m_detectionDistance). So the reliable way to
+        get into melee range is to walk into its range and let it come, not
+        to follow it. The engagement flag is the server's own signal, which
+        makes it far more trustworthy than a position estimate - and it is
+        exactly the signal that distinguishes "we are in melee range and
+        hitting it" (b12_u2: in_combat true for 77 of 78 samples, the target
+        fell to 8) from "our attack never landed" (b13_u1: in_combat never
+        true, the target never lost health).
+
+        This keeps the combat controller's contract intact: the fight still
+        only starts within melee range.
+        """
+        deadline = time.monotonic() + timeout
+        waited = 0.0
+        while time.monotonic() < deadline:
+            state = self.drain()
+            me = state.get('self') or {}
+            waited = round(timeout - (deadline - time.monotonic()), 3)
+            if me.get('in_combat') is True:
+                return {'engaged': True, 'waited_s': waited}
+            time.sleep(poll_interval)
+        return {'engaged': False, 'waited_s': waited}
 
     def _do_fight(self, params, timeout):
         if self.target is None:
@@ -756,6 +802,10 @@ class PureNetworkBackend:
         # the walk still points at the old position, which put the target
         # "out of reach" and stopped the fight (2026-11-01 huntG).
         reference = self.submitted_position or self.current_position or self.observed_position or self.start_position
+        # Wait for the hostile to walk over before fighting: the contract
+        # only starts a fight within melee range, and the hostile comes when
+        # it detects the character. Chasing it is what the contract refuses.
+        engagement = self._await_engagement(timeout=params.get('engage_timeout', 10.0))
         phase, _observed = fight(self.rpc, self.drain, self.target['guid'], list(reference)[:3],
                                  self.stream_now, budget=params.get('budget', 35),
                                  advisory=self.advisory, enforce=self.enforce,
@@ -767,6 +817,7 @@ class PureNetworkBackend:
         return {'outcome': phase['outcome'], 'phase': phase,
                 'side_effect_applied': bool(phase.get('start_sent_once')),
                 'approach': closed,
+                'engagement': engagement,
                 'escape_path_planned': bool(route),
                 'reference_position': list(reference)[:3]}
 
