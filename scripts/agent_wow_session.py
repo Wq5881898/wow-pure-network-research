@@ -727,7 +727,8 @@ class PureNetworkBackend:
             final = round(math.dist(here, list(target_position)[:3]), 2)
         except Exception:  # noqa: BLE001
             final = None
-        return {'walked': True, 'walks': walks, 'distance_after': final}
+        return {'walked': True, 'walks': walks, 'distance_after': final,
+                'nav_distance': final}
 
     def _await_engagement(self, timeout=10.0, poll_interval=0.3):
         """Wait for the hostile to engage, instead of chasing it.
@@ -789,33 +790,66 @@ class PureNetworkBackend:
         # thing. What the approach cannot do is be a separate plan step,
         # because its postcondition (a confirmed landing) is unobservable in
         # this session (docs/55, docs/88) and the plan would stop there.
-        closed = self._close_distance(params, target_position=snapshot)
-        if closed.get('error'):
-            return {'outcome': 'preconditions_not_met', 'phase': {
-                        'outcome': 'preconditions_not_met', 'start_sent_once': False,
-                        'observations': [], 'stop': {}},
-                    'side_effect_applied': False,
-                    'approach': closed,
-                    'reference_position': list(reference)[:3]}
-        # The reference is read AFTER the walk: the fight measures the
-        # distance to the target from here, and a reference captured before
-        # the walk still points at the old position, which put the target
-        # "out of reach" and stopped the fight (2026-11-01 huntG).
-        reference = self.submitted_position or self.current_position or self.observed_position or self.start_position
-        # Wait for the hostile to walk over before fighting: the contract
-        # only starts a fight within melee range, and the hostile comes when
-        # it detects the character. Chasing it is what the contract refuses.
-        engagement = self._await_engagement(timeout=params.get('engage_timeout', 10.0))
-        phase, _observed = fight(self.rpc, self.drain, self.target['guid'], list(reference)[:3],
-                                 self.stream_now, budget=params.get('budget', 35),
-                                 advisory=self.advisory, enforce=self.enforce,
-                                 config=self.combat_config,
-                                 escape_path_planned=bool(route),
-                                 target_position=snapshot)
+        phase = {'outcome': 'preconditions_not_met', 'start_sent_once': False,
+                 'observations': [], 'stop': {}}
+        closed = {}
+        engagement = {'engaged': False, 'waited_s': 0.0}
+        attempts = []
+        for attempt in range(max(1, int(params.get('attack_attempts', 3)))):
+            closed = self._close_distance(params, target_position=snapshot)
+            if closed.get('error'):
+                break
+            # The reference is read AFTER the walk: the fight measures the
+            # distance to the target from here, and a reference captured before
+            # the walk still points at the old position, which put the target
+            # "out of reach" and stopped the fight (2026-11-01 huntG).
+            reference = self.submitted_position or self.current_position or self.observed_position or self.start_position
+            # Wait for the hostile to walk over before fighting: the contract
+            # only starts a fight within reach, and the hostile comes when
+            # it detects the character. Chasing it is what the contract refuses.
+            engagement = self._await_engagement(timeout=params.get('engage_timeout', 10.0))
+            # The range check may use a NAV-VERIFIED distance instead of the
+            # raw estimate: the estimate of a roaming target moved between
+            # 9.5, 9.62 and 2.43 yards within a few seconds
+            # (2026-11-01 b21_u1), so gating on it is unreliable. The
+            # nav-verified distance is the target's position on the
+            # walkable surface, which is what "in reach" means.
+            try:
+                from agent_wow_combat_control import estimated_position
+                self._refresh_target()
+                snapshot = list(estimated_position(self.target, self.stream_now())[0][:3])
+            except Exception:  # noqa: BLE001 - the fight will measure it itself
+                snapshot = None
+            phase, _observed = fight(self.rpc, self.drain, self.target['guid'], list(reference)[:3],
+                                     self.stream_now, budget=params.get('budget', 35),
+                                     advisory=self.advisory, enforce=self.enforce,
+                                     config=self.combat_config,
+                                     escape_path_planned=bool(route),
+                                     target_position=snapshot,
+                                     range_override=closed.get('nav_distance'))
+            rows = phase.get('observations') or []
+            # Did the attack actually land? The server's own answer: the
+            # target's health and the engagement flag. An attack that never
+            # lands costs nothing (2026-11-01 b20_u1/b21_u1: the character
+            # stayed at full health), so the character walks closer and tries
+            # again rather than ending the attempt.
+            healths = [r.get('target_health') for r in rows if r.get('target_health') is not None]
+            engaged = any(r.get('in_combat') is True for r in rows)
+            landed = bool(healths) and healths[-1] < healths[0]
+            attempts.append({'attempt': attempt + 1,
+                             'outcome': phase.get('outcome'),
+                             'nav_distance': closed.get('nav_distance'),
+                             'distance': closed.get('distance'),
+                             'target_hp': (healths[0], healths[-1]) if healths else None,
+                             'engaged': engaged, 'landed': landed})
+            if phase.get('outcome') == 'target_dead' or engaged or landed:
+                break
+
 
         return {'outcome': phase['outcome'], 'phase': phase,
                 'side_effect_applied': bool(phase.get('start_sent_once')),
                 'approach': closed,
+                'attempts': attempts,
                 'engagement': engagement,
                 'escape_path_planned': bool(route),
                 'reference_position': list(reference)[:3]}

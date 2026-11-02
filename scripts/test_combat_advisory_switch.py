@@ -31,14 +31,23 @@ class AdvisorySwitchTests(unittest.TestCase):
             calls.append(method)
             return {'result': {}}
 
+        # The sample source cycles instead of running out: how many samples
+        # the fight consumes depends on how it ends, and the point of this
+        # test is that the advisory switch changes nothing at all.
+        def samples():
+            cycle = [state(), state(8.0), state(8.0)]
+            while True:
+                for item in cycle:
+                    yield item
+
         with patch('agent_wow_combat_control.time.sleep'):
-            default, _ = fight(rpc, unittest.mock.Mock(side_effect=[state(), state(8.0), state(8.0)]),
+            default, _ = fight(rpc, unittest.mock.Mock(side_effect=samples()),
                                'enemy', [0, 0, 0], lambda: 0, budget=1)
         default_calls = list(calls)
 
         calls.clear()
         with patch('agent_wow_combat_control.time.sleep'):
-            advised, _ = fight(rpc, unittest.mock.Mock(side_effect=[state(), state(8.0), state(8.0)]),
+            advised, _ = fight(rpc, unittest.mock.Mock(side_effect=samples()),
                                'enemy', [0, 0, 0], lambda: 0, budget=1, advisory=True)
 
         self.assertEqual(default['outcome'], advised['outcome'])

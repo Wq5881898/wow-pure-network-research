@@ -80,7 +80,7 @@ def fight(rpc, drain, target_guid, self_position, now_ms, budget=18,
           advisory=False, config=None, escape_path_planned=False, enforce=False,
           reapproach=None, max_reapproaches=3, chase_radius=25.0,
           target_position=None, refresh_target=None,
-          start_range=ATTACK_START_RANGE_YARDS):
+          start_range=ATTACK_START_RANGE_YARDS, range_override=None):
     """One bounded attack attempt against one target.
 
     ``target_position`` is a snapshot of the target's position. When it is
@@ -177,12 +177,24 @@ def fight(rpc, drain, target_guid, self_position, now_ms, budget=18,
                 if 'error' in row['face']:outcome='face_rejected';break
                 last_angle=angle
             if not sent:
-                if (me['health']<50 and me['in_combat'] is not True) or distance>start_range:outcome='preconditions_not_met';break
+                # The range check may use a NAV-VERIFIED distance instead of
+                # the raw estimate: the estimate of a roaming target moved
+                # between 9.5, 9.62 and 2.43 yards within a few seconds
+                # (2026-11-01 b21_u1), so gating on it is unreliable. The
+                # nav-verified distance is the target's position on the
+                # walkable surface, which is what "in reach" means.
+                check = distance if range_override is None else range_override
+                if (me['health']<50 and me['in_combat'] is not True) or check>start_range:outcome='preconditions_not_met';break
                 row['start']=rpc('bridge.start_attack',{'guid':target_guid})
                 if 'error' in row['start']:outcome='start_rejected';break
                 sent=True
-            if me['health']<25:outcome='health_budget';break
+                if me['health']<25:outcome='health_budget';break
+            # The pause belongs to EVERY iteration, not only the one that
+            # starts the attack: leaving it inside the "not sent" branch made
+            # the loop spin at full speed once the attack was away
+            # (2026-11-01 b23: 3.6 million rows in one fight).
             time.sleep(.2);observed=drain()
+
     finally:
         stop=rpc('bridge.stop_attack',{})
     observed=drain()
