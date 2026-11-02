@@ -61,10 +61,26 @@ def estimated_position(obj, now_ms):
     return points[-1], 'linear endpoint estimate'
 
 
+# The character's reach is 5 yards, but the position the controller compares
+# against is EXTRAPOLATED and its error is the same order as that reach
+# (2026-11-01 b18: the estimate said 5.11 yards and the attack never landed,
+# while in b5_u1 the estimate said 8.3 yards and every hit landed). The
+# threshold therefore needs a margin for the measurement error, otherwise the
+# range check is unreliable exactly when it matters most.
+#
+# This only widens WHEN an attack may start. It does NOT make the controller
+# follow a target that leaves: nothing is dispatched towards a fleeing target
+# (the "a fleeing target is not chased" rule is unchanged), and the
+# re-approach is off unless a caller explicitly asks for it.
+MELEE_REACH_YARDS = 5.0
+ATTACK_START_RANGE_YARDS = 7.0
+
+
 def fight(rpc, drain, target_guid, self_position, now_ms, budget=18,
           advisory=False, config=None, escape_path_planned=False, enforce=False,
           reapproach=None, max_reapproaches=3, chase_radius=25.0,
-          target_position=None, refresh_target=None):
+          target_position=None, refresh_target=None,
+          start_range=ATTACK_START_RANGE_YARDS):
     """One bounded attack attempt against one target.
 
     ``target_position`` is a snapshot of the target's position. When it is
@@ -131,12 +147,13 @@ def fight(rpc, drain, target_guid, self_position, now_ms, budget=18,
                     outcome=ENFORCED_OUTCOME.get(step.state,'budget_exhausted')
                     break
 
-            if sent and distance > 5:
-                # The target left melee range. A target that is still nearby
-                # is KITING (a roaming caster stepping back), and it can be
-                # fought by walking to it again. A target that has gone far
-                # away has LEFT, and chasing it would drag the character into
-                # unknown ground - so that is not chased.
+            if sent and distance > start_range:
+                # The target left the range the attack can reach. Nothing is
+                # dispatched towards it: a fleeing target is not chased.
+                # The optional re-approach exists for callers that ask for it
+                # explicitly; the production path does not (2026-11-01: the
+                # project chose the variant that does not change the contract,
+                # so chasing stays off).
                 if (reapproach is not None and reapproaches < max_reapproaches
                         and distance <= chase_radius):
                     reapproaches += 1
@@ -160,7 +177,7 @@ def fight(rpc, drain, target_guid, self_position, now_ms, budget=18,
                 if 'error' in row['face']:outcome='face_rejected';break
                 last_angle=angle
             if not sent:
-                if (me['health']<50 and me['in_combat'] is not True) or distance>5:outcome='preconditions_not_met';break
+                if (me['health']<50 and me['in_combat'] is not True) or distance>start_range:outcome='preconditions_not_met';break
                 row['start']=rpc('bridge.start_attack',{'guid':target_guid})
                 if 'error' in row['start']:outcome='start_rejected';break
                 sent=True

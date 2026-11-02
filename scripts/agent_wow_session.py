@@ -811,9 +811,8 @@ class PureNetworkBackend:
                                  advisory=self.advisory, enforce=self.enforce,
                                  config=self.combat_config,
                                  escape_path_planned=bool(route),
-                                 reapproach=self._reapproach,
-                                 refresh_target=self._refresh_target,
                                  target_position=snapshot)
+
         return {'outcome': phase['outcome'], 'phase': phase,
                 'side_effect_applied': bool(phase.get('start_sent_once')),
                 'approach': closed,

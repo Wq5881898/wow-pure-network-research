@@ -97,6 +97,26 @@ class PullTests(unittest.TestCase):
 
 
 
+class StartRangeTests(unittest.TestCase):
+    def test_an_attack_may_start_at_seven_yards(self):
+        # The range check runs against an extrapolated position whose error is
+        # the same order as the 5 yard melee reach (2026-11-01 b18: the
+        # estimate said 5.11 yards and the attack never landed; in b5_u1 it
+        # said 8.3 yards and every hit landed). The threshold carries a margin.
+        world = World([[6, 0, 0], [6, 0, 0]], [0, 0, 0])
+        rpc = FakeRpc()
+        phase, _ = fight(rpc, world, 'mob', [0, 0, 0], lambda: 0.0, budget=10)
+        self.assertIn('bridge.start_attack', rpc.calls,
+                      'an attack may start within the widened range')
+
+    def test_a_target_further_than_the_widened_range_is_still_refused(self):
+        world = World([[9, 0, 0], [9, 0, 0]], [0, 0, 0])
+        rpc = FakeRpc()
+        phase, _ = fight(rpc, world, 'mob', [0, 0, 0], lambda: 0.0, budget=10)
+        self.assertEqual(phase['outcome'], 'preconditions_not_met')
+        self.assertNotIn('bridge.start_attack', rpc.calls)
+
+
 class SharedSnapshotTests(unittest.TestCase):
     def test_the_first_range_check_uses_the_shared_snapshot(self):
         # b7_u1 (2026-11-01): the approach measured 0.16 yards to the
