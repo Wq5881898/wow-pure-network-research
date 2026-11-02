@@ -29,14 +29,9 @@ def search(current, goal, radius=45.0, bearings=16):
     goal = [float(v) for v in goal[:3]]
     bearing = math.atan2(goal[1] - current[1], goal[0] - current[0])
     candidates = [(bearing, math.dist(current, goal), goal)]
-    away = bearing + math.pi
-    candidates.append((away, radius, [
-        current[0] + math.cos(away) * radius,
-        current[1] + math.sin(away) * radius,
-        current[2]]))
     for index in range(bearings):
         angle = bearing + (0.0 if index == 0 else math.copysign(
-            ((index + 1) // 2) * math.pi / bearings, index))
+            ((index + 1) // 2) * 2 * math.pi / bearings, index))
         for distance in (radius, radius * 0.6, radius * 0.35):
             candidates.append((angle, distance, [
                 current[0] + math.cos(angle) * distance,

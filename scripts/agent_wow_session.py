@@ -30,6 +30,13 @@ module = folder / "modules/bridge"
 MMAPS = r'C:\Azerothcore\azerothcore-wotlk\build\bin\Debug\data\mmaps'
 NAV = root / '.cache/agent-wow-nav-build/Release/agent_wow_nav.exe'
 
+# A drop is a cliff only when it is BOTH more than 5 yards AND steeper than
+# this ratio (about 35 degrees). The strict 5 yard rule refuses ramps as
+# well, which stranded the character on a plateau 26 yards above its target
+# (2026-11-01 b32_u1: "route drops more than 5 yards; refusing cliff path"),
+# and it also refused the escape route whenever that route descended.
+SLOPE_TOLERANCE = 0.7
+
 
 def ensure_bridge_module():
     module.mkdir(parents=True, exist_ok=True)
@@ -517,7 +524,7 @@ class PureNetworkBackend:
                            home[2]]
             try:
                 raw = self._nav(current[:3], destination)
-                points = self._densify(raw, current)
+                points = self._densify(raw, current, slope_tolerance=SLOPE_TOLERANCE)
             except RuntimeError as exc:
                 errors.append(str(exc))
                 continue
@@ -570,7 +577,8 @@ class PureNetworkBackend:
                         'submitted_position': current, 'replies': replies, 'attempts': attempts,
                         'side_effect_applied': bool(replies)}
             try:
-                points = self._densify(self._nav(current, target_position), current)
+                points = self._densify(self._nav(current, target_position), current,
+                                   slope_tolerance=SLOPE_TOLERANCE)
             except RuntimeError as exc:
                 return {'error': f'attempt {attempt} nav failed: {exc}', 'replies': replies,
                         'submitted_position': current, 'attempts': attempts,

@@ -69,7 +69,16 @@ def _legal_prefix(points, start, min_length=4.0):
     return legal, total
 
 
-def plan_leg(backend, goal, radius=40.0, bearings=16, allow_detour=True):
+def _already_visited(reached, visited, tolerance=8.0):
+    """True when the character has already stood on this ground."""
+    if not visited:
+        return False
+    return any(math.dist(list(reached)[:3], list(point)[:3]) <= tolerance
+               for point in visited)
+
+
+def plan_leg(backend, goal, radius=40.0, bearings=16, allow_detour=True,
+             visited=None):
     """Plan one leg towards the goal; return the densified points or None.
 
     The goal is approached by trying a fan of bearings around the direct
@@ -94,20 +103,15 @@ def plan_leg(backend, goal, radius=40.0, bearings=16, allow_detour=True):
     # The goal itself is the best candidate when it works, because its path
     # follows the real navmesh around obstacles; it is tried first so a
     # working route does not pay for the whole fan.
+    # The fan covers the whole circle, not just the cone around the goal.
+    # A character that is stranded on a plateau can only walk sideways
+    # (2026-11-01 travel3125a: from the plateau at z=93 the walkable
+    # directions were 60..135 degrees while the goal lay at 280, and the
+    # goal-centred fan never looked there).
     candidates = [(bearing, distance_to_goal, goal)]
-    # Walking away from the goal is the detour. The navmesh often prefers a
-    # route that climbs over the character's own plateau and then drops off
-    # a cliff, which the densifier refuses, while the ramp the character came
-    # up is walkable in both directions. So the opposite bearing is tried
-    # before the fan (2026-11-01 travel3101b: the character was stranded on a
-    # plateau with "no walkable leg towards the goal").
-    away = bearing + math.pi
-    candidates.append((away, radius, [start[0] + math.cos(away) * radius,
-                                      start[1] + math.sin(away) * radius,
-                                      start[2]]))
     for index in range(bearings):
         angle = bearing + (0.0 if index == 0 else
-                           math.copysign(((index + 1) // 2) * math.pi / bearings,
+                           math.copysign(((index + 1) // 2) * 2 * math.pi / bearings,
                                          index))
         for distance in (radius, radius * 0.6, radius * 0.35):
             candidates.append((angle, distance, [
@@ -140,10 +144,14 @@ def plan_leg(backend, goal, radius=40.0, bearings=16, allow_detour=True):
         if progress <= 0:
             # A leg that does not get closer is wasted walking -- unless
             # nothing gets closer at all. A character that is stranded has to
-            # be able to walk away first: the navmesh may only offer the ramp
-            # it came up on, which leads backwards (2026-11-01 travel3101b:
-            # "no walkable leg towards the goal" on a plateau).
-            if (allow_detour and (fallback is None or travelled > fallback['length'])):
+            # be able to walk sideways first: the ground that leads towards
+            # the goal may be a cliff the densifier refuses, while the ground
+            # beside the character is walkable. A detour that lands on ground
+            # the character has already stood on is a loop, not a detour
+            # (2026-11-01 travel3125a: legs 4..17 alternated between two
+            # positions 42.8 yards apart).
+            if (allow_detour and (fallback is None or travelled > fallback['length'])
+                    and not _already_visited(reached, visited)):
                 fallback = {'points': points, 'length': round(travelled, 2),
                             'end': [round(v, 2) for v in reached],
                             'progress': round(progress, 2),
@@ -171,7 +179,8 @@ def travel(backend, *, report, goal, legs=6, radius=40.0, stop_distance=60.0,
     """
     legs_taken = []
     reached = False
-    detoured = False
+    detours = 0
+    visited = []
     for index in range(legs):
         start = list((backend.submitted_position or backend.current_position
                       or backend.observed_position or [])[:3])
@@ -182,11 +191,12 @@ def travel(backend, *, report, goal, legs=6, radius=40.0, stop_distance=60.0,
             reached = True
             break
         leg = plan_leg(backend, goal, radius=radius,
-                       allow_detour=not detoured)
+                       allow_detour=detours < 3, visited=visited)
         if leg is None:
             legs_taken.append({'index': index, 'planned': False,
                                 'reason': 'no walkable leg towards the goal'})
             break
+        visited.append(list(leg['end']))
         replies, failure = backend._send_path(leg['points'])
         legs_taken.append({'index': index, 'planned': True, 'length': leg['length'],
                            'end': leg['end'],
@@ -197,11 +207,12 @@ def travel(backend, *, report, goal, legs=6, radius=40.0, stop_distance=60.0,
         if failure:
             break
         if leg.get('detour'):
-            # One detour is allowed. A second one would walk the character
-            # back and forth over the same ground (2026-11-01 travel3125a:
-            # legs 4..17 alternated +42.8 and -42.8 yards of progress, and
-            # the journey never ended).
-            detoured = True
+            # A detour is a sideways move to get around ground that refuses
+            # the direct line. Several may be needed, but the character must
+            # not walk back over ground it has already stood on: that was an
+            # endless two-position loop (2026-11-01 travel3125a: legs 4..17
+            # alternated +42.8 and -42.8 yards of progress).
+            detours += 1
         sleep(2.0)
         state = backend.drain()
         me = state['self']
