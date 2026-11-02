@@ -31,7 +31,8 @@ import math
 import time
 
 from agent_wow_combat_state_machine import (ENDING_ESCAPE, ENDING_FIGHT,
-                                            ENDING_FINISH_TARGET)
+                                            ENDING_FINISH_TARGET,
+                                            ESCAPE_MIN_HEALTH_RATIO)
 
 # Server-side facts, taken from the local AzerothCore sources:
 #   CONFIG_CREATURE_LEASH_RADIUS ("CreatureLeashRadius") = 30.0 yards
@@ -87,9 +88,10 @@ VISIBILITY_RANGE_YARDS = 100.0
 # of reach gives a path of about 167 yards (measured offline with
 # scripts/plan_escape_route_offline.py) and a final gap of about 115 yards.
 ESCAPE_MIN_DISTANCE_YARDS = 165.0
-# The run takes about 24 s, which is roughly a dozen mob attacks. Below this
-# health the character cannot survive the run, so escaping is not a plan any
-# more and the caller has to pick another ending.
+# The share of the health budget the escape run costs. The rule that applies
+# it lives in agent_wow_combat_state_machine.ESCAPE_MIN_HEALTH_RATIO, so
+# there is one number and not two that can drift. For the level 3 budget of
+# 108 health that ratio is 85 health.
 ESCAPE_MIN_HEALTH = 85
 
 
@@ -380,7 +382,8 @@ def _combat_ending(observation, route, min_health=25, target_reachable=True):
         target_max_health=context.get('target_max_health'),
         escape_route_available=bool(route),
         target_reachable=target_reachable,
-        health_floor_ratio=(min_health / max_health if max_health else 0.25))
+        health_floor_ratio=(min_health / max_health if max_health else 0.25),
+        escape_health_ratio=ESCAPE_MIN_HEALTH_RATIO)
 
 
 def _target_reachable(backend, max_range=5.0):

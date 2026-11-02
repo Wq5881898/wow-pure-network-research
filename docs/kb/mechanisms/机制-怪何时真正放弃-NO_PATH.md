@@ -130,6 +130,28 @@ float visibility = std::max<float>(GetVisibilityRange(), victim->GetVisibilityRa
 "retreat_outcome": "still_in_combat"                 ← ✗ 怪不放手
 ```
 
+## 由此带来的**脱战择优规则**（已实装）
+
+撤离不是免费的：跑完 24 秒 ≈ 挨 12 次 ≈ 掉 78% 的生命预算。
+⇒ **低于 `ESCAPE_MIN_HEALTH_RATIO = 0.78` 时，撤离是"送死跑"**，
+此时若目标**已近死且够得着**，应**先打死目标**（一锤的事，不用跑）。
+
+改在**唯一那条**规则里（`agent_wow_combat_state_machine.choose_combat_ending`），
+状态机与退出分支共用：
+
+| 条件 | 结局 |
+|---|---|
+| 没有可用撤离路线 | `fight`（不许空等） |
+| 生命值 ≤ 健康底线 | `escape`（维持既有契约：太残就别开新战） |
+| 目标近死 + 够得着 + 角色 ≥ 50% | `finish_target`（既有契约） |
+| 角色 ≥ 78%（能撑住这趟跑） | `escape` |
+| **角色 < 78% + 目标近死 + 够得着** | **`finish_target`**（新增：跑会死，一锤能结束就别跑） |
+| 其余（跑会死 + 目标不近死） | `escape`（宁可死在离怪远的地方，尸体更好跑） |
+
+**注意**：这条**改了项目方一条既有契约**（原"低血时一律撤离"）。
+理由是机制模型的修正（撤离从"29 码"变成"165 码 / 24 秒"），
+已同步更新 `scripts/test_combat_ending_rule.py` 的断言与说明。
+
 ## ⇒ 实用的脱离配方
 
 1. **停止攻击**（否则怪每 tick 刷新 leash 豁免，且你会继续挨打）。

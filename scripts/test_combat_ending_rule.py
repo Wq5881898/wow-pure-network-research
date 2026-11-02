@@ -119,12 +119,47 @@ class StateMachineUsesTheSharedRuleTests(unittest.TestCase):
                                       target_max_health=71, health=90)
         self.assertEqual(step.decision, 'continue_attack')
 
-    def test_a_weak_character_still_escapes_from_a_nearly_dead_target(self):
+    def test_a_weak_character_kills_a_nearly_dead_target_instead_of_running(self):
+        # The escape route has to clear the hostile's visibility range, which
+        # is about 24 s of running and roughly a dozen mob attacks. At 28% of
+        # the health budget that run is a death march, and the target is one
+        # hit from dying, so the kill is the ending that does not need a run.
+        self.assertEqual(
+            choose_combat_ending(self_health=30, self_max_health=108,
+                                 target_health=10, target_max_health=71,
+                                 escape_route_available=True),
+            ENDING_FINISH_TARGET)
+
+    def test_a_weak_character_still_gets_out_when_the_target_is_healthy(self):
+        # The run is a death march and the target is not close to dying, so
+        # neither ending is cheap. Getting out still wins: if the character
+        # dies on the way it dies AWAY from the hostile, and the corpse run
+        # is much safer from there.
+        self.assertEqual(
+            choose_combat_ending(self_health=40, self_max_health=108,
+                                 target_health=71, target_max_health=71,
+                                 escape_route_available=True),
+            ENDING_ESCAPE)
+
+    def test_the_escape_is_offered_when_the_run_can_be_survived(self):
+        # 90 of 108 is 83%, above the survival ratio for the 24 s run.
+        self.assertEqual(
+            choose_combat_ending(self_health=90, self_max_health=108,
+                                 target_health=71, target_max_health=71,
+                                 escape_route_available=True),
+            ENDING_ESCAPE)
+
+
+    def test_a_latched_exit_kills_a_nearly_dead_target_it_cannot_outrun(self):
+        # The state machine has to reach the same conclusion as the rule:
+        # at 28% of the health budget the 24 s run is fatal, so a nearly
+        # dead target is killed instead.
         machine = self._machine(escape_path_planned=True)
-        self._low_health_step(machine, target_health=10, target_max_health=71)
+        self._low_health_step(machine, target_health=10, target_max_health=71,
+                              health=30)
         step = self._low_health_step(machine, target_health=10,
-                                      target_max_health=71)
-        self.assertEqual(step.decision, 'request_escape')
+                                     target_max_health=71, health=30)
+        self.assertEqual(step.decision, 'continue_attack')
 
 
 class ExitBranchUsesTheSharedRuleTests(unittest.TestCase):

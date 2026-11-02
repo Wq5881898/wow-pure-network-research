@@ -166,12 +166,21 @@ ENDING_FINISH_TARGET = 'finish_target'
 ENDING_FIGHT = 'fight'
 ENDINGS = (ENDING_ESCAPE, ENDING_FINISH_TARGET, ENDING_FIGHT)
 
+# The share of the health budget the escape has to leave untouched, because
+# the escape is not free: the route has to clear the hostile's visibility
+# range (100 yards from where the hostile is NOW), which at the local speeds
+# (7 yards/s running, 2.5 yards/s chase) is about 24 s of running, roughly a
+# dozen mob attacks, about 78% of the level 3 budget of 108 health.
+# Below this ratio the run is a death march and the kill is preferred.
+ESCAPE_MIN_HEALTH_RATIO = 0.78
+
 
 def choose_combat_ending(*, self_health=None, self_max_health=0,
                           target_health=None, target_max_health=None,
                           escape_route_available=False, target_reachable=True,
                           health_floor_ratio=0.25, finish_ratio=0.35,
-                          healthy_ratio=0.5):
+                          healthy_ratio=0.5,
+                          escape_health_ratio=ESCAPE_MIN_HEALTH_RATIO):
     """How an unresolved combat should be ended: flee, kill the target, or fight on.
 
     This is the single rule for both the state machine and the exit branch.
@@ -196,10 +205,18 @@ def choose_combat_ending(*, self_health=None, self_max_health=0,
         standing there. So the kill is only offered when the target can
         actually be reached.
       - below the health floor the character does not open a new fight.
+      - the escape only works when the character can survive it. Measured on
+        2026-11-01 (b24_u1): the escape route has to clear the hostile's
+        visibility range, which is 100 yards away from where the hostile is
+        NOW, and at the local speeds (7 yards/s running, 2.5 yards/s chase)
+        that is about 24 s of running, roughly a dozen mob attacks. Running
+        at less than three quarters of the health budget is a death march,
+        so below that ratio the kill is preferred.
     """
     ratio = (self_health / self_max_health) if (self_health is not None
                                                  and self_max_health) else None
     at_floor = ratio is not None and ratio <= health_floor_ratio
+    can_survive_escape = ratio is None or ratio >= escape_health_ratio
     if not escape_route_available:
         # With nowhere to run, the only ending the server offers is the
         # target dying, so fighting on beats standing still.
@@ -207,11 +224,22 @@ def choose_combat_ending(*, self_health=None, self_max_health=0,
     if at_floor:
         # Too hurt to open a new fight; get out instead.
         return ENDING_ESCAPE
-    if (target_reachable
-            and target_health and target_max_health
-            and target_health / target_max_health <= finish_ratio
-            and ratio is not None and ratio >= healthy_ratio):
+    target_low = bool(target_reachable and target_health and target_max_health
+                      and target_health / target_max_health <= finish_ratio)
+    if target_low and ratio is not None and ratio >= healthy_ratio:
         return ENDING_FINISH_TARGET
+    if can_survive_escape:
+        return ENDING_ESCAPE
+    if target_low:
+        # The run would be fatal and the target is one hit from dying, so
+        # killing it costs no run at all. This overrides the healthy_ratio
+        # guard above: that guard is about not trading hits, and one hit is
+        # all it takes here.
+        return ENDING_FINISH_TARGET
+    # The run is a death march and the target is not close to dying, so
+    # neither ending is cheap. Getting out still wins: if the character
+    # dies on the way it dies AWAY from the hostile, and the corpse run
+    # (docs/119) is much safer from there than from next to the mob.
     return ENDING_ESCAPE
 
 
