@@ -505,7 +505,7 @@ class PureNetworkBackend:
                     'rejected_directions': errors}
         return None
 
-    def _do_approach(self, params, timeout):
+    def _do_approach(self, params, timeout, run=False):
         """Approach the live target and verify every landing.
 
         The submitted position is not trusted: after each path the server
@@ -549,7 +549,7 @@ class PureNetworkBackend:
             self.outbound_route = [{'x': p['x'], 'y': p['y'], 'z': p['z']} for p in points]
             self.outbound_origin = list(current)
             before_sequence = movement_sequence(self.state, self.self_guid)
-            sent, failure = self._send_path(points)
+            sent, failure = self._send_path(points, run=run)
             replies.extend(sent)
             if failure:
                 return {'error': f'attempt {attempt} {failure}', 'replies': replies,
@@ -621,7 +621,29 @@ class PureNetworkBackend:
                           or self.observed_position or [])[:3])
         return {'moved': True, 'reference': reference, 'detail': closed}
 
-    def _close_distance(self, params, attempts=3, max_range=5.0):
+    def _refresh_target(self):
+        """Replace the tracked target with its live object.
+
+        ``select_target`` stores the object as it was then. The world state
+        REPLACES objects on every update, so the stored one keeps its old
+        motion and the position estimate extrapolates from a stale path: on
+        2026-11-01 (b8_u1) two measurements of the same instant differed by
+        8.4 yards, and the fight refused to start because the target
+        "reached" 8.88 yards while the character was standing on it.
+        """
+        if self.target is None:
+            return None
+        try:
+            state = self.drain()
+        except Exception:  # noqa: BLE001 - keep the old object if the drain fails
+            return self.target
+        live = next((o for o in state.get('visible_objects', [])
+                     if o.get('guid') == self.target.get('guid')), None)
+        if live is not None:
+            self.target = live
+        return self.target
+
+    def _close_distance(self, params, attempts=3, max_range=5.0, target_position=None):
         """Walk to the target until it is within melee range.
 
         The combat controller only fights within reach, and a roaming caster
@@ -629,6 +651,10 @@ class PureNetworkBackend:
         to be re-measured and the walk repeated. The attempts are bounded -
         the same "at most three re-plans for a moving target" rule as
         docs/43 - and the fight's own budget bounds the rest.
+
+        ``target_position`` is the shared snapshot: it is used for the first
+        measurement so that the approach and the fight judge the same
+        instant.
         """
         if self.target is None:
             return {'error': 'no target'}
@@ -638,15 +664,19 @@ class PureNetworkBackend:
         from agent_wow_combat_control import estimated_position
         walks = []
         for attempt in range(attempts):
-            try:
-                target_position = estimated_position(self.target, self.stream_now())[0]
-            except Exception:  # noqa: BLE001
-                return {'error': 'target position unknown'}
+            self._refresh_target()
+            if target_position is not None and attempt == 0:
+                position = list(target_position[:3])
+            else:
+                try:
+                    position = list(estimated_position(self.target, self.stream_now())[0][:3])
+                except Exception:  # noqa: BLE001
+                    return {'error': 'target position unknown'}
             here = list((self.submitted_position or self.current_position
                          or self.observed_position or self.start_position)[:3])
             if not here:
                 return {'error': 'the character position is unknown'}
-            distance = math.dist(here, list(target_position)[:3])
+            distance = math.dist(here, position)
             if distance <= max_range:
                 return {'skipped': 'already within reach',
                         'distance': round(distance, 2), 'walks': walks}
@@ -676,6 +706,18 @@ class PureNetworkBackend:
         # about the SAME route. The route is planned away from the tracked
         # target, so the plan is refreshed when the target changes.
         route = self.escape_route(refresh=True)
+        # ONE snapshot of the target's position, used by both the approach and
+        # the fight's own range check. The estimate is extrapolated over time
+        # and moves between two measurements of the same instant, which made
+        # the approach see 0.16 yards and the fight see more than 5 (2026-11-01
+        # b7_u1). One measurement, used twice.
+        snapshot = None
+        try:
+            from agent_wow_combat_control import estimated_position
+            self._refresh_target()
+            snapshot = list(estimated_position(self.target, self.stream_now())[0][:3])
+        except Exception:  # noqa: BLE001 - the fight will measure it itself
+            snapshot = None
         # A target that is not in melee range cannot be fought: the combat
         # controller only faces and attacks within reach, and it reports
         # 'target_left_melee' beyond that. The hunt targets (entry 3101) are
@@ -688,7 +730,7 @@ class PureNetworkBackend:
         # thing. What the approach cannot do is be a separate plan step,
         # because its postcondition (a confirmed landing) is unobservable in
         # this session (docs/55, docs/88) and the plan would stop there.
-        closed = self._close_distance(params)
+        closed = self._close_distance(params, target_position=snapshot)
         if closed.get('error'):
             return {'outcome': 'preconditions_not_met', 'phase': {
                         'outcome': 'preconditions_not_met', 'start_sent_once': False,
@@ -706,7 +748,9 @@ class PureNetworkBackend:
                                  advisory=self.advisory, enforce=self.enforce,
                                  config=self.combat_config,
                                  escape_path_planned=bool(route),
-                                 reapproach=self._reapproach)
+                                 reapproach=self._reapproach,
+                                 refresh_target=self._refresh_target,
+                                 target_position=snapshot)
         return {'outcome': phase['outcome'], 'phase': phase,
                 'side_effect_applied': bool(phase.get('start_sent_once')),
                 'approach': closed,

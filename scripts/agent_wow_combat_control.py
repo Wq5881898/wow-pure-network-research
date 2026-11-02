@@ -63,7 +63,17 @@ def estimated_position(obj, now_ms):
 
 def fight(rpc, drain, target_guid, self_position, now_ms, budget=18,
           advisory=False, config=None, escape_path_planned=False, enforce=False,
-          reapproach=None, max_reapproaches=3, chase_radius=25.0):
+          reapproach=None, max_reapproaches=3, chase_radius=25.0,
+          target_position=None, refresh_target=None):
+    """One bounded attack attempt against one target.
+
+    ``target_position`` is a snapshot of the target's position. When it is
+    given, the FIRST distance check uses it instead of re-estimating: the
+    position estimate is extrapolated over time and moves between two
+    measurements of the same instant (2026-11-01 b7_u1: the approach
+    measured 0.16 yards and the fight measured more than 5, on the same
+    coordinates, so the fight refused to start). One measurement, used twice.
+    """
     rows=[];start=time.monotonic();deadline=start+budget;sent=False;outcome='budget_exhausted';last_angle=None
     advisor=CombatStateMachine(config or CombatSMConfig(),
                                target_guid=target_guid,
@@ -80,7 +90,22 @@ def fight(rpc, drain, target_guid, self_position, now_ms, budget=18,
             if not targets:outcome='target_missing';break
             target=targets[0]
             if target['health']==0:outcome='target_dead';break
-            tp,source=estimated_position(target,now_ms())
+            if refresh_target is not None:
+                # The target object is replaced on every world-state update, so
+                # a stored one keeps its old motion and the position estimate
+                # extrapolates from a stale path (2026-11-01 b8_u1: two
+                # measurements of the same instant differed by 8.4 yards).
+                refreshed = refresh_target()
+                if refreshed is not None:
+                    target = refreshed
+
+            if target_position is not None and last_target_position is None:
+                # The shared snapshot: one measurement, used by the approach
+                # and by this check.
+                tp = list(target_position[:3])
+                source = 'shared snapshot'
+            else:
+                tp,source=estimated_position(target,now_ms())
             distance=math.dist(self_position[:3],tp)
             if last_target_position is None:
                 last_target_position = list(tp[:3])
@@ -105,6 +130,7 @@ def fight(rpc, drain, target_guid, self_position, now_ms, budget=18,
                               'reasons':list(step.reasons)}
                     outcome=ENFORCED_OUTCOME.get(step.state,'budget_exhausted')
                     break
+
             if sent and distance > 5:
                 # The target left melee range. A target that is still nearby
                 # is KITING (a roaming caster stepping back), and it can be

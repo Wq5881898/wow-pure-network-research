@@ -97,6 +97,27 @@ class PullTests(unittest.TestCase):
 
 
 
+class SharedSnapshotTests(unittest.TestCase):
+    def test_the_first_range_check_uses_the_shared_snapshot(self):
+        # b7_u1 (2026-11-01): the approach measured 0.16 yards to the
+        # target and the fight then measured more than 5 on the same
+        # coordinates, because the position estimate is extrapolated over time
+        # and moves between two measurements. One measurement, used twice.
+        world = World([[3, 0, 0], [3, 0, 0]], [0, 0, 0])
+        rpc = FakeRpc()
+        phase, _ = fight(rpc, world, 'mob', [0, 0, 0], lambda: 0.0, budget=10,
+                         target_position=[3, 0, 0])
+        self.assertIn('bridge.start_attack', rpc.calls,
+                      'the shared snapshot must decide the first range check')
+        self.assertNotEqual(phase['outcome'], 'preconditions_not_met')
+
+    def test_without_a_snapshot_the_fight_measures_it_itself(self):
+        world = World([[3, 0, 0], [3, 0, 0]], [0, 0, 0])
+        rpc = FakeRpc()
+        phase, _ = fight(rpc, world, 'mob', [0, 0, 0], lambda: 0.0, budget=10)
+        self.assertIn('bridge.start_attack', rpc.calls)
+
+
 if __name__ == '__main__':
     unittest.main()
 
