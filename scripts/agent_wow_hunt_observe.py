@@ -47,6 +47,7 @@ def main():
             me = state['self']
             report['self'] = {'health': me.get('health'), 'ghost': me.get('ghost'),
                               'in_combat': me.get('in_combat'),
+                              'level': me.get('level'),
                               'position': list((me.get('movement') or {}).get('position_xyzo') or [])[:3],
                               'quest_log': me.get('quest_log')}
             creatures = {}
