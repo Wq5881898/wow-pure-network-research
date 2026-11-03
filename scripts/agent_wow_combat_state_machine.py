@@ -166,24 +166,23 @@ ENDING_FINISH_TARGET = 'finish_target'
 ENDING_FIGHT = 'fight'
 ENDINGS = (ENDING_ESCAPE, ENDING_FINISH_TARGET, ENDING_FIGHT)
 
-# The share of the health budget the escape has to leave untouched.
+# There is deliberately no "health ratio the escape has to leave untouched".
 #
 # Measured on 2026-11-01 (b38_u1, b41_u1): the escape costs almost nothing
 # against a MELEE target -- once the gap opens the hostile cannot reach the
-# character any more, and the health did not move (118/127). So the escape is
-# available at any health, and this ratio does not change the outcome; it is
-# kept because it is the documented parameter of the rule, not because it
-# gates anything. The rule's real teeth are "a target that is one hit from
-# dying is killed instead of run from".
-ESCAPE_MIN_HEALTH_RATIO = 0.78
+# character any more and the health did not move (118/127). Against a RANGED
+# target the escape costs the whole run (2026-11-01 b24_u1, the Vile Familiar
+# kept casting), but then the character dies and dies are a defined path: the
+# corpse run clears the combat and the ghost comes back at the graveyard
+# (docs/119). So in neither case is a health gate the deciding factor, and a
+# knob that never fires is worse than no knob.
 
 
 def choose_combat_ending(*, self_health=None, self_max_health=0,
                           target_health=None, target_max_health=None,
                           escape_route_available=False, target_reachable=True,
                           health_floor_ratio=0.25, finish_ratio=0.35,
-                          healthy_ratio=0.5,
-                          escape_health_ratio=ESCAPE_MIN_HEALTH_RATIO):
+                          healthy_ratio=0.5):
     """How an unresolved combat should be ended: flee, kill the target, or fight on.
 
     This is the single rule for both the state machine and the exit branch.
@@ -208,18 +207,17 @@ def choose_combat_ending(*, self_health=None, self_max_health=0,
         standing there. So the kill is only offered when the target can
         actually be reached.
       - below the health floor the character does not open a new fight.
-      - the escape only works when the character can survive it. Measured on
-        2026-11-01 (b24_u1): the escape route has to clear the hostile's
-        visibility range, which is 100 yards away from where the hostile is
-        NOW, and at the local speeds (7 yards/s running, 2.5 yards/s chase)
-        that is about 24 s of running, roughly a dozen mob attacks. Running
-        at less than three quarters of the health budget is a death march,
-        so below that ratio the kill is preferred.
+      - the escape is not gated by the health budget. Measured on
+        2026-11-01 (b38_u1, b41_u1): against a melee target the escape costs
+        almost no health (the hostile cannot reach the character once the
+        gap opens), and against a ranged target it costs the whole run but
+        the character dies in a place where the corpse run is safe
+        (2026-11-01 b24_u1, docs/119). So the health does not decide the
+        ending; what decides it is whether the target is one hit from dying.
     """
     ratio = (self_health / self_max_health) if (self_health is not None
                                                  and self_max_health) else None
     at_floor = ratio is not None and ratio <= health_floor_ratio
-    can_survive_escape = ratio is None or ratio >= escape_health_ratio
     if not escape_route_available:
         # With nowhere to run, the only ending the server offers is the
         # target dying, so fighting on beats standing still.
@@ -231,8 +229,6 @@ def choose_combat_ending(*, self_health=None, self_max_health=0,
                       and target_health / target_max_health <= finish_ratio)
     if target_low and ratio is not None and ratio >= healthy_ratio:
         return ENDING_FINISH_TARGET
-    if can_survive_escape:
-        return ENDING_ESCAPE
     if target_low:
         # The run would be fatal and the target is one hit from dying, so
         # killing it costs no run at all. This overrides the healthy_ratio

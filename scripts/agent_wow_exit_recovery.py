@@ -31,8 +31,7 @@ import math
 import time
 
 from agent_wow_combat_state_machine import (ENDING_ESCAPE, ENDING_FIGHT,
-                                            ENDING_FINISH_TARGET,
-                                            ESCAPE_MIN_HEALTH_RATIO)
+                                            ENDING_FINISH_TARGET)
 
 # Server-side facts, taken from the local AzerothCore sources:
 #   CONFIG_CREATURE_LEASH_RADIUS ("CreatureLeashRadius") = 30.0 yards
@@ -382,8 +381,7 @@ def _combat_ending(observation, route, min_health=25, target_reachable=True):
         target_max_health=context.get('target_max_health'),
         escape_route_available=bool(route),
         target_reachable=target_reachable,
-        health_floor_ratio=(min_health / max_health if max_health else 0.25),
-        escape_health_ratio=ESCAPE_MIN_HEALTH_RATIO)
+        health_floor_ratio=(min_health / max_health if max_health else 0.25))
 
 
 def _target_reachable(backend, max_range=5.0):
