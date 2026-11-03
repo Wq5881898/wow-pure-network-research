@@ -24,6 +24,9 @@ def parse_options(argv=None):
     parser.add_argument('--combat-entry', type=int, default=3124)
     parser.add_argument('--max-target-level', type=int, default=3)
     parser.add_argument('--quest-item-entry', type=int, default=4862)
+    parser.add_argument('--objective-kind', choices=('kill', 'item'), default=None,
+                        help='kill counts the quest log, item counts the item '
+                             'in the bag; a collecting quest has a quest id too')
     parser.add_argument('--quest-id', type=int)
     parser.add_argument('--kill-slot', type=int, choices=range(4), default=0)
     parser.add_argument('--objective-total', type=int, default=8)
@@ -156,10 +159,18 @@ def _combat_config(options):
 def main(argv=None):
     options = parse_options(argv)
     from agent_wow_objective import progress, increased
-    objective = ({'kind': 'kill', 'quest': options.quest_id, 'slot': options.kill_slot,
-                  'entry': options.combat_entry, 'total': options.objective_total}
-                 if options.quest_id else {'kind': 'item', 'entry': options.quest_item_entry,
-                                           'total': options.objective_total})
+    # The objective kind is explicit: a quest that collects an item still has a
+    # quest id, and the item counter lives in the bag, not in the kill
+    # counters of the quest log (2026-11-01 quest 794 "Burning Blade
+    # Medallion" collects item 4859 and has no kill objective at all).
+    kind = options.objective_kind or ('item' if not options.quest_id else 'kill')
+    if kind == 'item':
+        objective = {'kind': 'item', 'entry': options.quest_item_entry,
+                     'total': options.objective_total}
+    else:
+        objective = {'kind': 'kill', 'quest': options.quest_id,
+                     'slot': options.kill_slot, 'entry': options.combat_entry,
+                     'total': options.objective_total}
     report_path = root / f'results/pure_network/agent_wow_task_{options.run_id}.json'
     unified_name = f'agent_wow_task_{options.run_id.removesuffix("_verify")}_unified.json'
     if report_path.exists() or (options.verify_movement_from

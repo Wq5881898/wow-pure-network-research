@@ -49,9 +49,18 @@ def _observe(run_id, target_entry, max_level, seconds=6.0):
     return json.loads(report.read_text(encoding='utf-8'))
 
 
-def _counter(report):
+def _counter(report, quest_id=None):
+    """The objective counter of the quest this batch is working on.
+
+    The quest has to be picked by id: a character can carry more than one
+    quest, and the first one with counters is not necessarily the one the
+    batch is about. For a collecting quest the server counts the item in the
+    quest log too, so the same counter answers both kinds.
+    """
     log = (report.get('self') or {}).get('quest_log') or []
     for quest in log:
+        if quest_id is not None and quest.get('quest') != quest_id:
+            continue
         counters = quest.get('counters') or []
         if counters:
             return counters[0]
@@ -83,6 +92,12 @@ def main():
                         help='the health ratio at which the fight latches the '
                              'low-health exit; the escape branch then decides '
                              'how the combat ends')
+    parser.add_argument('--objective-kind', choices=('kill', 'item'), default='kill',
+                        help='kill counts the quest log counters, item counts '
+                             'the quest item in the bag; a collecting quest '
+                             'has a quest id too (quest 794 collects item 4859)')
+    parser.add_argument('--quest-item-entry', type=int, default=4862,
+                        help='the item the collecting objective needs')
     args = parser.parse_args()
     if not args.batch_id.replace('_', '').isalnum():
         parser.error('invalid batch ID')
@@ -95,7 +110,7 @@ def main():
         before = _observe(args.batch_id + '_pre', args.combat_entry,
                           args.max_target_level)
         report['before'] = {'safe': _safe(before),
-                            'counter': _counter(before or {}),
+                            'counter': _counter(before or {}, args.quest_id),
                             'health': ((before or {}).get('self') or {}).get('health')}
         if not before or before.get('error'):
             report['error'] = 'the pre-batch read-only login failed'
@@ -148,7 +163,9 @@ def main():
                           '--combat-entry', str(args.combat_entry),
                           '--max-target-level', str(args.max_target_level),
                           '--combat-budget', str(args.combat_budget),
-                          '--budget-seconds', '300', '--action-budget', '10']
+                          '--budget-seconds', '300', '--action-budget', '10',
+                          '--objective-kind', args.objective_kind,
+                          '--quest-item-entry', str(args.quest_item_entry)]
                           + ([] if args.low_health_ratio is None else
                              ['--low-health-ratio', str(args.low_health_ratio)]))
             unit_report = FOLDER / f'agent_wow_task_{unit_id}.json'
@@ -165,7 +182,7 @@ def main():
             after = _observe(unit_id + '_post', args.combat_entry,
                              args.max_target_level)
             unit['after'] = {'safe': _safe(after),
-                              'counter': _counter(after or {}),
+                              'counter': _counter(after or {}, args.quest_id),
                               'health': ((after or {}).get('self') or {}).get('health')}
             report['units'].append(unit)
             new_counter = unit['after']['counter']
@@ -183,7 +200,7 @@ def main():
         after = _observe(args.batch_id + '_final', args.combat_entry,
                           args.max_target_level)
         report['final'] = {'safe': _safe(after),
-                           'counter': _counter(after or {}),
+                           'counter': _counter(after or {}, args.quest_id),
                            'health': ((after or {}).get('self') or {}).get('health'),
                            'quest_log': (after or {}).get('self', {}).get('quest_log')}
     except SystemExit:
