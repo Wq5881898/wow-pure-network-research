@@ -166,12 +166,15 @@ ENDING_FINISH_TARGET = 'finish_target'
 ENDING_FIGHT = 'fight'
 ENDINGS = (ENDING_ESCAPE, ENDING_FINISH_TARGET, ENDING_FIGHT)
 
-# The share of the health budget the escape has to leave untouched, because
-# the escape is not free: the route has to clear the hostile's visibility
-# range (100 yards from where the hostile is NOW), which at the local speeds
-# (7 yards/s running, 2.5 yards/s chase) is about 24 s of running, roughly a
-# dozen mob attacks, about 78% of the level 3 budget of 108 health.
-# Below this ratio the run is a death march and the kill is preferred.
+# The share of the health budget the escape has to leave untouched.
+#
+# Measured on 2026-11-01 (b38_u1, b41_u1): the escape costs almost nothing
+# against a MELEE target -- once the gap opens the hostile cannot reach the
+# character any more, and the health did not move (118/127). So the escape is
+# available at any health, and this ratio does not change the outcome; it is
+# kept because it is the documented parameter of the rule, not because it
+# gates anything. The rule's real teeth are "a target that is one hit from
+# dying is killed instead of run from".
 ESCAPE_MIN_HEALTH_RATIO = 0.78
 
 
