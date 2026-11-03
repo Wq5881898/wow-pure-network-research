@@ -98,6 +98,9 @@ def main():
                              'has a quest id too (quest 794 collects item 4859)')
     parser.add_argument('--quest-item-entry', type=int, default=4862,
                         help='the item the collecting objective needs')
+    parser.add_argument('--objective-optional', action='store_true',
+                        help='the objective counter does not have to advance; '
+                             'for a run whose purpose is experience')
     args = parser.parse_args()
     if not args.batch_id.replace('_', '').isalnum():
         parser.error('invalid batch ID')
@@ -166,6 +169,7 @@ def main():
                           '--budget-seconds', '300', '--action-budget', '10',
                           '--objective-kind', args.objective_kind,
                           '--quest-item-entry', str(args.quest_item_entry)]
+                          + (['--objective-optional'] if args.objective_optional else [])
                           + ([] if args.low_health_ratio is None else
                              ['--low-health-ratio', str(args.low_health_ratio)]))
             unit_report = FOLDER / f'agent_wow_task_{unit_id}.json'
@@ -189,7 +193,8 @@ def main():
             if not unit['after']['safe']:
                 report['status'] = 'the character is not safe after the unit'
                 break
-            if not isinstance(new_counter, int) or new_counter <= counter:
+            if (not args.objective_optional
+                    and (not isinstance(new_counter, int) or new_counter <= counter)):
                 report['status'] = 'the objective counter did not advance'
                 break
             counter = new_counter

@@ -27,6 +27,9 @@ def parse_options(argv=None):
     parser.add_argument('--objective-kind', choices=('kill', 'item'), default=None,
                         help='kill counts the quest log, item counts the item '
                              'in the bag; a collecting quest has a quest id too')
+    parser.add_argument('--objective-optional', action='store_true',
+                        help='the objective counter does not have to advance; '
+                             'for a run whose purpose is experience, not progress')
     parser.add_argument('--quest-id', type=int)
     parser.add_argument('--kill-slot', type=int, choices=range(4), default=0)
     parser.add_argument('--objective-total', type=int, default=8)
