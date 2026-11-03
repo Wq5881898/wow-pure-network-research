@@ -210,7 +210,8 @@ def main(argv=None):
             Action('fight', 'fight', {'budget': options.combat_budget}, timeout=options.combat_budget + 30,
                    side_effecting=True,
                    expectation=lambda before, after, evidence: evidence.get('outcome') == 'target_dead'
-                   and (not options.quest_id or increased(before.to_dict(), after.to_dict(), objective))),
+                   and (options.objective_optional or not options.quest_id
+                        or increased(before.to_dict(), after.to_dict(), objective))),
             Action('loot', 'loot', {}, timeout=30, side_effecting=True,
                     expectation=lambda before, after, evidence: (
                         not any(evidence.get(key) for key in
