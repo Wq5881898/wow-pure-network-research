@@ -14,8 +14,8 @@ MAX_TOTAL_YARDS = 50.0
 MAX_HEIGHT_YARDS = 3.0
 
 
-def _chunks(points, max_segment=MAX_SEGMENT_YARDS, max_total=MAX_TOTAL_YARDS,
-             max_height=MAX_HEIGHT_YARDS):
+def _chunks(points, origin=None, max_segment=MAX_SEGMENT_YARDS,
+            max_total=MAX_TOTAL_YARDS, max_height=MAX_HEIGHT_YARDS):
     """Split a route into the pieces the bridge accepts.
 
     The bridge also refuses a segment whose height change is over 3 yards,
@@ -24,6 +24,13 @@ def _chunks(points, max_segment=MAX_SEGMENT_YARDS, max_total=MAX_TOTAL_YARDS,
     rejected path means the character does not move at all, which is how a
     retreat turned into standing still and being killed (2026-11-01 b29_u1:
     the escape route of 208 yards was planned and then refused outright).
+
+    The length is counted the way the bridge counts it: the first segment
+    runs from the character's OWN tracked position, not from the first point
+    of the route. Leaving that segment out is what made every escape fail:
+    the chunk was 50 yards long by this counter and 51.09 by the bridge's,
+    and the bridge refuses anything over 50 (2026-11-01 b36_u1: "path length
+    must be .05..50 yards").
     """
     chunks = []
     current = []
@@ -32,7 +39,7 @@ def _chunks(points, max_segment=MAX_SEGMENT_YARDS, max_total=MAX_TOTAL_YARDS,
     for point in points:
         xyz = (point['x'], point['y'], point['z'])
         if previous is None:
-            previous = xyz
+            previous = tuple(origin[:3]) if origin else xyz
         step = math.dist(previous, xyz)
         climb = abs(xyz[2] - previous[2])
         if current and (step > max_segment or length + step > max_total
@@ -64,7 +71,7 @@ def retreat(rpc, drain, outbound_points, origin, wait_seconds=15,
     # so the walk is submitted in the sizes it accepts.
     sent = []
     rejected = []
-    for chunk in _chunks(points):
+    for chunk in _chunks(points, origin):
         reply = rpc('bridge.follow_path', {'points': chunk, 'run': True})
         sent.append(reply)
         if 'error' in reply:

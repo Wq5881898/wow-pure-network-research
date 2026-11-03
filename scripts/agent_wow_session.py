@@ -916,6 +916,14 @@ class PureNetworkBackend:
                 'reason': recovery.get('reason'),
                 'retreat_outcome': retreat.get('outcome'),
                 'fallback_outcome': (recovery.get('fallback') or {}).get('outcome'),
+                # The bridge's own refusal has to be in the evidence: without
+                # it "retreat_movement_rejected" says nothing about which of
+                # the bridge's path limits was broken (2026-11-01 b29_u1 and
+                # b36_u1: the escape route of 195..208 yards was planned and
+                # then refused, and the reason was nowhere in the report).
+                'retreat_rejection': retreat.get('rejection'),
+                'retreat_chunks_sent': retreat.get('chunks_sent'),
+                'retreat_path_source': retreat.get('path_source'),
                 # The leash verdict, from the ACTUAL landing point: whether the
                 # character really got beyond the leash radius from the
                 # hostile's spawn, and whether the wait covered the leash
