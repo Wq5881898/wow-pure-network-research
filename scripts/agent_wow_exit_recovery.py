@@ -525,7 +525,11 @@ def _plan_escape_route(backend, min_distance=ESCAPE_MIN_DISTANCE_YARDS):
     origin = getattr(backend, 'outbound_origin', None)
     if not route or not origin:
         return None
-    return {'points': list(reversed(route[:-1])) + [dict(zip(('x', 'y', 'z'), origin[:3]))],
+    # The far end of the outbound route has to be kept: dropping it left a
+    # route that starts and ends on the same spot, and the bridge refuses a
+    # path whose length is 0 ("path length must be .05..50 yards",
+    # 2026-11-01 b39_u1), so the character did not move at all.
+    return {'points': list(reversed(route)) + [dict(zip(('x', 'y', 'z'), origin[:3]))],
             'origin': list(origin[:3]),
             'source': 'reversed submitted outbound route',
             'planned_distance': None}

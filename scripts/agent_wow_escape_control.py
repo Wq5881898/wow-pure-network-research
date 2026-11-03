@@ -12,45 +12,117 @@ import time
 MAX_SEGMENT_YARDS = 15.0
 MAX_TOTAL_YARDS = 50.0
 MAX_HEIGHT_YARDS = 3.0
+MAX_POINTS = 128
+MAX_MIN_YARDS = 0.05
+
+
+def _chunk_ok(chunk, anchor, max_segment=MAX_SEGMENT_YARDS,
+              max_total=MAX_TOTAL_YARDS, max_height=MAX_HEIGHT_YARDS,
+              require_minimum=True):
+    """True when the bridge would accept this chunk from this anchor.
+
+    This is the bridge's own rule (probes/AgentWowBridge/actions.go,
+    validatePath): the first segment runs from the bridge's tracked position,
+    every segment is at most 15 yards long with at most a 3 yard height
+    change, and the whole path is between .05 and 50 yards.
+
+    The minimum length belongs to the finished chunk, not to a chunk that is
+    still being built: the first point of a route is often the character's
+    own position, and that zero length segment must not stop the rest of
+    the route from being added.
+    """
+    if not chunk or len(chunk) > MAX_POINTS:
+        return False
+    previous = list(anchor[:3])
+    total = 0.0
+    for point in chunk:
+        xyz = (point['x'], point['y'], point['z'])
+        distance = math.hypot(xyz[0] - previous[0], xyz[1] - previous[1])
+        if distance > max_segment or abs(xyz[2] - previous[2]) > max_height:
+            return False
+        total += distance
+        previous = list(xyz)
+    if total > max_total:
+        return False
+    return (not require_minimum) or total >= MAX_MIN_YARDS
+
+
+def _subdivide(points, max_segment=MAX_SEGMENT_YARDS, max_height=MAX_HEIGHT_YARDS):
+    """Split every step that the bridge would refuse.
+
+    The bridge refuses a segment over 15 yards or a height change over 3
+    yards. Both are per-segment limits, so a straight step can be split
+    into several legal ones without changing where the character walks.
+    """
+    out = []
+    previous = None
+    for point in points:
+        if previous is None:
+            out.append(dict(point))
+            previous = point
+            continue
+        horizontal = math.hypot(point['x'] - previous['x'],
+                                point['y'] - previous['y'])
+        climb = abs(point['z'] - previous['z'])
+        count = max(1,
+                    math.ceil(horizontal / (max_segment * 0.5)) if horizontal else 1,
+                    math.ceil(climb / (max_height * 0.5)) if climb else 1)
+        for index in range(1, count + 1):
+            fraction = index / count
+            out.append({'x': previous['x'] + (point['x'] - previous['x']) * fraction,
+                        'y': previous['y'] + (point['y'] - previous['y']) * fraction,
+                        'z': previous['z'] + (point['z'] - previous['z']) * fraction})
+        previous = point
+    return out
 
 
 def _chunks(points, origin=None, max_segment=MAX_SEGMENT_YARDS,
             max_total=MAX_TOTAL_YARDS, max_height=MAX_HEIGHT_YARDS):
     """Split a route into the pieces the bridge accepts.
 
-    The bridge also refuses a segment whose height change is over 3 yards,
-    and it refuses the WHOLE path when one segment breaks a rule. The
-    height change is checked here for the same reason the length is: a
-    rejected path means the character does not move at all, which is how a
-    retreat turned into standing still and being killed (2026-11-01 b29_u1:
-    the escape route of 208 yards was planned and then refused outright).
+    The split is driven by the bridge's rule, not by a length estimate: a
+    point is only added to the current chunk when the whole chunk still
+    passes _chunk_ok from the position the bridge will validate it against
+    (the character's own position for the first chunk, the end of the
+    previous chunk for the rest).
 
-    The length is counted the way the bridge counts it: the first segment
-    runs from the character's OWN tracked position, not from the first point
-    of the route. Leaving that segment out is what made every escape fail:
-    the chunk was 50 yards long by this counter and 51.09 by the bridge's,
-    and the bridge refuses anything over 50 (2026-11-01 b36_u1: "path length
-    must be .05..50 yards").
+    Two earlier versions of this function failed in the field, both times
+    because the length was counted differently from the bridge's:
+      - the first segment from the character to the first point of the route
+        was left out, so a chunk of 50 yards looked like 51.09 to the bridge
+        and was refused ("path length must be .05..50 yards", 2026-11-01
+        b29_u1, b36_u1);
+      - a chunk that was cut to a single point has a length of 0 and is
+        refused for the same reason (2026-11-01 b39_u1).
+    A chunk that the bridge would refuse is worse than no chunk at all: the
+    character does not move and keeps taking hits.
     """
     chunks = []
     current = []
-    length = 0.0
-    previous = None
-    for point in points:
-        xyz = (point['x'], point['y'], point['z'])
-        if previous is None:
-            previous = tuple(origin[:3]) if origin else xyz
-        step = math.dist(previous, xyz)
-        climb = abs(xyz[2] - previous[2])
-        if current and (step > max_segment or length + step > max_total
-                        or climb > max_height):
-            chunks.append(current)
-            current = []
-            length = 0.0
-        current.append(point)
-        length += step
-        previous = xyz
-    if current:
+    anchor = list(origin[:3]) if origin else None
+    if anchor is not None:
+        current = [{'x': anchor[0], 'y': anchor[1], 'z': anchor[2]}]
+    for point in _subdivide(points, max_segment, max_height):
+        if anchor is None:
+            anchor = [point['x'], point['y'], point['z']]
+            current = [{'x': anchor[0], 'y': anchor[1], 'z': anchor[2]}]
+        if _chunk_ok(current + [point], anchor, max_segment, max_total, max_height, require_minimum=False):
+            current.append(point)
+            continue
+        if len(current) > 1:
+            if _chunk_ok(current, anchor):
+                chunks.append(current)
+            # The anchor always moves on, even when the chunk was dropped:
+            # a chunk the bridge would refuse must not freeze the rest of
+            # the route.
+            anchor = [current[-1]['x'], current[-1]['y'], current[-1]['z']]
+            current = [{'x': anchor[0], 'y': anchor[1], 'z': anchor[2]}]
+        if _chunk_ok(current + [point], anchor, max_segment, max_total, max_height, require_minimum=False):
+            current.append(point)
+        # A point that does not fit even from the new anchor is skipped: the
+        # bridge would refuse the whole path for it, and skipping keeps the
+        # rest of the route walkable.
+    if len(current) > 1 and _chunk_ok(current, anchor):
         chunks.append(current)
     return chunks
 
@@ -61,7 +133,12 @@ def retreat(rpc, drain, outbound_points, origin, wait_seconds=15,
     # unless the caller already planned an ordered escape route (a route that
     # ends far from the hostile, planned on the navmesh).
     if route is None:
-        points = list(reversed(outbound_points[:-1])) + [dict(zip(('x', 'y', 'z'), origin[:3]))]
+        # The reversed outbound route, walked back to where the character
+        # started. The far end of the outbound route has to be kept:
+        # dropping it left a route that starts and ends on the same spot,
+        # and a path like that is refused by the bridge (its length is 0),
+        # so the character did not move at all.
+        points = list(reversed(outbound_points)) + [dict(zip(('x', 'y', 'z'), origin[:3]))]
         source = 'reversed submitted navmesh route'
     else:
         points = list(route)

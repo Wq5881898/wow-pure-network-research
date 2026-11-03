@@ -163,7 +163,8 @@ class ExitRecoveryTests(unittest.TestCase):
         # character: below the floor the wait aborts and says so. With a
         # route available the character gets out instead of fighting on.
         backend = FakeBackend([Observation(20, in_combat=True)])
-        backend.outbound_route = [{'x': 0.0, 'y': 0.0, 'z': 0.0}]
+        backend.outbound_route = [{'x': 0.0, 'y': 0.0, 'z': 0.0},
+                              {'x': 0.0, 'y': 6.0, 'z': 0.0}]
         backend.outbound_origin = [0.0, 0.0, 0.0]
         result = resolve_combat_before_exit(backend, budget_seconds=30,
                                             min_health=25, sleep=sleeper,
@@ -221,7 +222,8 @@ class ExitRecoveryTests(unittest.TestCase):
         # the caller read `.in_combat` off a dict and raise AttributeError.
         backend = FakeBackend([Observation(71, in_combat=True)],
                               retreat_clears_combat=True)
-        backend.outbound_route = [{'x': 0.0, 'y': 0.0, 'z': 0.0}]
+        backend.outbound_route = [{'x': 0.0, 'y': 0.0, 'z': 0.0},
+                              {'x': 0.0, 'y': 6.0, 'z': 0.0}]
         backend.outbound_origin = [0.0, 0.0, 0.0]
         result = resolve_combat_before_exit(backend, budget_seconds=30,
                                             passive_seconds=2, sleep=sleeper, finish_budget_seconds=0.3,
@@ -300,10 +302,13 @@ class ExitRecoveryTests(unittest.TestCase):
                          'navmesh route planned away from the hostile')
         self.assertEqual(result['retreat']['route']['planned_distance'], 40.0)
         # The submitted path must be the planned one, split into the sizes the
-        # bridge accepts (at most 15 yards per segment, 50 per path).
+        # bridge accepts (at most 15 yards per segment, 50 per path). A 40
+        # yard route fits in one path, but it must be sent in segments the
+        # bridge accepts, so the steps are subdivided.
         follow = [r for r in backend.requests if r == 'rpc:bridge.follow_path']
-        self.assertGreaterEqual(len(follow), 2,
-                                'a 40 yard route must be sent in several chunks')
+        self.assertGreaterEqual(len(follow), 1,
+                                'the planned escape route must be sent')
+
         self.assertGreater(result['retreat']['route_length'], 30.0)
 
     def test_the_short_approach_route_is_the_fallback(self):
@@ -326,7 +331,8 @@ class ExitRecoveryTests(unittest.TestCase):
                                Observation(76, in_combat=True),
                                Observation(70, in_combat=True)],
                               retreat_clears_combat=True)
-        backend.outbound_route = [{'x': 0.0, 'y': 0.0, 'z': 0.0}]
+        backend.outbound_route = [{'x': 0.0, 'y': 0.0, 'z': 0.0},
+                              {'x': 0.0, 'y': 6.0, 'z': 0.0}]
         backend.outbound_origin = [0.0, 0.0, 0.0]
         result = resolve_combat_before_exit(backend, budget_seconds=30,
                                             passive_seconds=20, sleep=sleeper, finish_budget_seconds=0.3,
@@ -393,7 +399,8 @@ class ExitRecoveryTests(unittest.TestCase):
     def test_a_healthy_character_does_not_start_a_fight_below_the_floor(self):
         backend = FakeBackend([Observation(20, in_combat=True,
                                            target_health=10, target_max_health=71)])
-        backend.outbound_route = [{'x': 0.0, 'y': 0.0, 'z': 0.0}]
+        backend.outbound_route = [{'x': 0.0, 'y': 0.0, 'z': 0.0},
+                              {'x': 0.0, 'y': 6.0, 'z': 0.0}]
         backend.outbound_origin = [0.0, 0.0, 0.0]
         result = resolve_combat_before_exit(backend, budget_seconds=30,
                                             min_health=25, passive_seconds=2,
@@ -421,7 +428,8 @@ class ExitRecoveryTests(unittest.TestCase):
         backend = FakeBackend([Observation(91, in_combat=True,
                                            target_health=22, target_max_health=71)])
         backend.target['movement'] = {'position_xyzo': [500.0, 500.0, 0.0]}
-        backend.outbound_route = [{'x': 0.0, 'y': 0.0, 'z': 0.0}]
+        backend.outbound_route = [{'x': 0.0, 'y': 0.0, 'z': 0.0},
+                              {'x': 0.0, 'y': 6.0, 'z': 0.0}]
         backend.outbound_origin = [0.0, 0.0, 0.0]
         result = resolve_combat_before_exit(backend, budget_seconds=30,
                                             passive_seconds=2, sleep=sleeper,
@@ -446,7 +454,8 @@ class ExitRecoveryTests(unittest.TestCase):
     def test_never_sends_an_attack_while_escaping(self):
 
         backend = FakeBackend([Observation(71, in_combat=True)])
-        backend.outbound_route = [{'x': 0.0, 'y': 0.0, 'z': 0.0}]
+        backend.outbound_route = [{'x': 0.0, 'y': 0.0, 'z': 0.0},
+                              {'x': 0.0, 'y': 6.0, 'z': 0.0}]
         backend.outbound_origin = [0.0, 0.0, 0.0]
         resolve_combat_before_exit(backend, budget_seconds=30,
                                    passive_seconds=2, sleep=sleeper, finish_budget_seconds=0.3,
