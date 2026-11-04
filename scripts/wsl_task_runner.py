@@ -231,7 +231,11 @@ def main(argv=None):
             Action('logout', 'logout', {}, timeout=45, side_effecting=True,
                    expectation=lambda before, after, evidence: evidence.get('status') == 'closed'),
         ]
-        if options.quest_id:
+        if options.quest_id and objective['kind'] != 'item':
+            # A kill objective needs no loot. An ITEM objective does: the
+            # quest item only reaches the bag through the loot action, and
+            # dropping it here is why a collecting quest (794) never saw its
+            # counter move (2026-11-01 q794d).
             actions = [a for a in actions if a.id != 'loot']
         if boundary and options.combat_after_verification:
             # A two-session unit: the movement leg is proven by this fresh
