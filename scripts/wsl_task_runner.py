@@ -214,6 +214,7 @@ def main(argv=None):
                    side_effecting=True,
                    expectation=lambda before, after, evidence: evidence.get('outcome') == 'target_dead'
                    and (options.objective_optional or not options.quest_id
+                        or objective['kind'] == 'item'
                         or increased(before.to_dict(), after.to_dict(), objective))),
             Action('loot', 'loot', {}, timeout=30, side_effecting=True,
                     expectation=lambda before, after, evidence: (
