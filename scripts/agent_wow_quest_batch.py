@@ -80,7 +80,10 @@ def _safe(report):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--batch-id', required=True)
-    parser.add_argument('--quest-id', type=int, required=True)
+    parser.add_argument('--quest-id', type=int, default=None,
+                        help='the quest whose counter is the objective; '
+                             'omit it for a run whose purpose is not progress '
+                             '(the quest may already have been handed in)')
     parser.add_argument('--kill-slot', type=int, default=0)
     parser.add_argument('--objective-total', type=int, default=8)
     parser.add_argument('--combat-entry', type=int, default=3101)
@@ -123,8 +126,12 @@ def main():
             raise SystemExit(1)
         counter = report['before']['counter']
         if not isinstance(counter, int):
-            report['error'] = 'the objective counter is not readable'
-            raise SystemExit(1)
+            if args.quest_id is None:
+                # No quest to count: the run's purpose is not progress.
+                counter = 0
+            else:
+                report['error'] = 'the objective counter is not readable'
+                raise SystemExit(1)
 
         for index in range(args.units):
             if counter >= args.objective_total:
@@ -193,7 +200,7 @@ def main():
             if not unit['after']['safe']:
                 report['status'] = 'the character is not safe after the unit'
                 break
-            if (not args.objective_optional
+            if (not args.objective_optional and args.quest_id is not None
                     and (not isinstance(new_counter, int) or new_counter <= counter)):
                 report['status'] = 'the objective counter did not advance'
                 break
