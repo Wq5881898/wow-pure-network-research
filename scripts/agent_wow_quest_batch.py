@@ -49,14 +49,21 @@ def _observe(run_id, target_entry, max_level, seconds=6.0):
     return json.loads(report.read_text(encoding='utf-8'))
 
 
-def _counter(report, quest_id=None):
+def _counter(report, quest_id=None, kind='kill', entry=None):
     """The objective counter of the quest this batch is working on.
+
+    A kill objective counts the quest log; an ITEM objective counts the item
+    in the bag, because that is where a collecting quest's progress lives
+    (quest 794 collects item 4859 and its quest log counters stayed at 0
+    while the item was already in the bag, 2026-11-01 q794e).
 
     The quest has to be picked by id: a character can carry more than one
     quest, and the first one with counters is not necessarily the one the
-    batch is about. For a collecting quest the server counts the item in the
-    quest log too, so the same counter answers both kinds.
+    batch is about.
     """
+    if kind == 'item':
+        totals = (report.get('self') or {}).get('item_totals') or {}
+        return totals.get(str(entry), 0)
     log = (report.get('self') or {}).get('quest_log') or []
     for quest in log:
         if quest_id is not None and quest.get('quest') != quest_id:
@@ -116,7 +123,8 @@ def main():
         before = _observe(args.batch_id + '_pre', args.combat_entry,
                           args.max_target_level)
         report['before'] = {'safe': _safe(before),
-                            'counter': _counter(before or {}, args.quest_id),
+                            'counter': _counter(before or {}, args.quest_id, args.objective_kind,
+                        args.quest_item_entry),
                             'health': ((before or {}).get('self') or {}).get('health')}
         if not before or before.get('error'):
             report['error'] = 'the pre-batch read-only login failed'
@@ -193,7 +201,8 @@ def main():
             after = _observe(unit_id + '_post', args.combat_entry,
                              args.max_target_level)
             unit['after'] = {'safe': _safe(after),
-                              'counter': _counter(after or {}, args.quest_id),
+                              'counter': _counter(after or {}, args.quest_id, args.objective_kind,
+                    args.quest_item_entry),
                               'health': ((after or {}).get('self') or {}).get('health')}
             report['units'].append(unit)
             new_counter = unit['after']['counter']
@@ -212,7 +221,8 @@ def main():
         after = _observe(args.batch_id + '_final', args.combat_entry,
                           args.max_target_level)
         report['final'] = {'safe': _safe(after),
-                           'counter': _counter(after or {}, args.quest_id),
+                           'counter': _counter(after or {}, args.quest_id, args.objective_kind,
+                    args.quest_item_entry),
                            'health': ((after or {}).get('self') or {}).get('health'),
                            'quest_log': (after or {}).get('self', {}).get('quest_log')}
     except SystemExit:

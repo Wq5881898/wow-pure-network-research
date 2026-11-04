@@ -45,9 +45,15 @@ def main():
         while time.monotonic() < deadline:
             state = backend.drain()
             me = state['self']
+            totals = {}
+            for obj in state.get('visible_objects', []):
+                if obj.get('type_id') in (1, 2) and obj.get('owner_guid') == backend.self_guid:
+                    key = str(obj.get('entry'))
+                    totals[key] = totals.get(key, 0) + (obj.get('stack_count') or 0)
             report['self'] = {'health': me.get('health'), 'ghost': me.get('ghost'),
                               'in_combat': me.get('in_combat'),
                               'level': me.get('level'),
+                              'item_totals': totals,
                               'position': list((me.get('movement') or {}).get('position_xyzo') or [])[:3],
                               'quest_log': me.get('quest_log')}
             creatures = {}
