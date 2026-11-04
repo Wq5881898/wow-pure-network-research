@@ -41,7 +41,7 @@ func(b *bridge) FollowPath(ctx context.Context,r *api.PathRequest)(response *api
  b.mu.Lock();p:=b.position;ready:=b.positioned;b.mu.Unlock()
  if !ready{return nil,status.Error(codes.FailedPrecondition,"fresh login position required")}
  if _,e:=validatePath(p,r.Points);e!=nil{return nil,status.Error(codes.InvalidArgument,e.Error())}
- b.mu.Lock();b.positioned=false;b.mu.Unlock()
+ b.mu.Lock();b.positioned=false;b.startSeq=b.sequence;b.mu.Unlock()
  begun:=time.Now()
  flags:=uint32(0x101);stopFlags:=uint32(0x100);speed:=2.5
  if r.Run{flags=1;stopFlags=0;speed=7}
@@ -70,8 +70,18 @@ func(b *bridge) FollowPath(ctx context.Context,r *api.PathRequest)(response *api
   p[0],p[1],p[2]=target.X,target.Y,target.Z
   if err=b.movePacket(ctx,0xee,flags,p);err!=nil{return nil,err}
  }
- b.mu.Lock();b.position=p;b.positioned=true;b.mu.Unlock()
- return &api.StepResponse{SubmittedPosition:p[:],ElapsedMs:uint32(time.Since(begun)/time.Millisecond)},nil
+ // Where the character ended up is what the SERVER says, not where the path
+ // asked it to go: the server's collision can stop the character short (a
+ // wall, a building), and taking the path end as the truth forks the
+ // position. Every later plan then starts from a place the character is not
+ // in, which is how a retreat walks the character into a building and keeps
+ // it walking forward (2026-11-01).
+ b.mu.Lock()
+ confirmed:=b.serverPositionValid && b.serverPositionSeq>b.startSeq
+ if confirmed{b.position=b.serverPosition}else{b.position=p}
+ b.positioned=true
+ b.mu.Unlock()
+ return &api.StepResponse{SubmittedPosition:b.position[:],ElapsedMs:uint32(time.Since(begun)/time.Millisecond)},nil
 }
 
 func(b *bridge) AttackOnce(ctx context.Context,r *api.AttackRequest)(*emptypb.Empty,error){

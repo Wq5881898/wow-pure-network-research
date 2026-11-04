@@ -35,6 +35,14 @@ type bridge struct {
  action sync.Mutex
  position [4]float32
  positioned bool
+ // The position the SERVER reported, with the sequence it arrived at. The
+ // server's position is the only authority: collision can stop the character
+ // short, so "the end of the path I asked for" is not where it is.
+ serverPosition [4]float32
+ serverPositionSeq uint64
+ serverPositionValid bool
+ // the sequence at the start of the current action
+ startSeq uint64
   hit chan uint64
 }
 
@@ -82,7 +90,7 @@ func(b *bridge) OnPacket(_ context.Context,p *mod.WorldPacket)(*emptypb.Empty,er
    self,_:=strconv.ParseUint(b.guid,10,64)
    if valid&&attacker==self{select{case b.hit<-target:default:}}
  }
- if p.Opcode==0x236 && len(p.Payload)==20{for i:=0;i<4;i++{b.position[i]=math.Float32frombits(binary.LittleEndian.Uint32(p.Payload[4+i*4:]))};b.positioned=true}
+ if p.Opcode==0x236 && len(p.Payload)==20{for i:=0;i<4;i++{b.position[i]=math.Float32frombits(binary.LittleEndian.Uint32(p.Payload[4+i*4:]))};b.positioned=true;b.serverPosition=b.position;b.serverPositionSeq=b.sequence;b.serverPositionValid=true}
  b.sequence++
  for len(b.packets)>0 && (len(b.packets)>=1024 || b.bytes+len(p.Payload)>4<<20){
   b.bytes-=len(b.packets[0].Payload);b.packets[0]=nil;b.packets=b.packets[1:];b.dropped++
