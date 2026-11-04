@@ -220,7 +220,22 @@ def travel(backend, *, report, goal, legs=6, radius=40.0, stop_distance=60.0,
         legs_taken[-1]['health_after'] = health
         legs_taken[-1]['in_combat_after'] = me.get('in_combat')
         if me.get('in_combat') is True:
-            legs_taken[-1]['stopped'] = 'combat engaged; not fought back'
+            # Stopping is not enough: a character that stands in combat is
+            # killed, because the server keeps hitting it and closing the
+            # session does not stop that (2026-11-01 travelfarm2 leg 4: the
+            # travel stopped at 109 health and the character was dead).
+            # The verified way out is the escape branch: run out of the
+            # hostile's reach, which the server answers by dropping the
+            # target (docs/kb/mechanisms/机制-怪何时真正放弃-NO_PATH).
+            legs_taken[-1]['stopped'] = 'combat engaged; leaving reach'
+            try:
+                from agent_wow_contract import Action
+                evidence = backend.execute(
+                    Action('recover_combat', 'recover_combat', {'budget': 60},
+                           timeout=90, side_effecting=True))
+            except Exception as exc:  # noqa: BLE001 - the travel must still finish
+                evidence = {'error': f'{type(exc).__name__}: {exc}'}
+            legs_taken[-1]['escape'] = evidence
             break
         if health is not None and health <= 0:
             legs_taken[-1]['stopped'] = 'the character died'
