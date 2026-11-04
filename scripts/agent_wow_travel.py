@@ -197,13 +197,29 @@ def travel(backend, *, report, goal, legs=6, radius=40.0, stop_distance=60.0,
                                 'reason': 'no walkable leg towards the goal'})
             break
         visited.append(list(leg['end']))
+        before = list((backend.submitted_position or backend.current_position
+                       or backend.observed_position or [])[:3])
         replies, failure = backend._send_path(leg['points'])
+        after = list((backend.submitted_position or backend.current_position
+                      or backend.observed_position or [])[:3])
+        advanced = math.dist(before[:2], after[:2]) if (before and after) else 0.0
+        blocked = bool(leg['points']) and advanced < 1.0 and not failure
         legs_taken.append({'index': index, 'planned': True, 'length': leg['length'],
                            'end': leg['end'],
                            'progress': leg['progress'],
                            'detour': bool(leg.get('detour')),
                            'goal_distance_after': leg['goal_distance'],
-                           'chunks': len(replies), 'failure': failure})
+                           'chunks': len(replies), 'failure': failure,
+                           'moved_yards': round(advanced, 2),
+                           'blocked': blocked})
+        if blocked:
+            # The character did not advance: the route is blocked where it is.
+            # Walking it again only walks deeper into whatever it is stuck
+            # against (2026-11-01: the character was seen walking forward
+            # inside a building, forever).
+            legs_taken[-1]['stopped'] = ('the character did not advance; '
+                                         'the route is blocked here')
+            break
         if failure:
             break
         if leg.get('detour'):

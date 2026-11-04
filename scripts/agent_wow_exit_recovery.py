@@ -446,6 +446,17 @@ def _perform_retreat(backend, observation, route, sleep=time.sleep, clock=time.m
     result['wait_seconds'] = wait_seconds
     result['route_length'] = round(length, 3)
     result['route'] = route
+    # Did the character actually move? The bridge reports the position the
+    # SERVER confirms, so this is measurable now: a retreat that does not
+    # advance is blocked where it is, and saying so is worth more than a
+    # timeout (2026-11-01: a retreat walked the character into a building
+    # and kept it walking forward).
+    landing = _actual_landing(result.get('movement'))
+    origin = route.get('origin') or []
+    if landing and origin:
+        result['moved_yards'] = round(math.dist(list(landing)[:3],
+                                                  list(origin)[:3]), 2)
+        result['route_blocked'] = result['moved_yards'] < 1.0
     # The leash verdict, from the ACTUAL landing point rather than the
     # planned one: the hostile breaks off only when the character is beyond
     # the leash radius from its SPAWN and has not damaged it for the leash
