@@ -17,6 +17,7 @@ is hostile to faction group 2 and its level is close to the character's.
 """
 import json
 import math
+import os
 import re
 import subprocess
 import sys
@@ -72,7 +73,7 @@ def hostile_spawns(min_level=MIN_LEVEL, max_level=MAX_LEVEL):
              "and ct.faction in ({factions})").format(
         database=database, lo=min_level, hi=max_level,
         factions=','.join(str(f) for f in HOSTILE_FACTIONS))
-    environment = {'MYSQL_PWD': password, 'PATH': r'C:\Windows\System32'}
+    environment = dict(os.environ, MYSQL_PWD=password)
     run = subprocess.run([MYSQL, '-h', host, '-P', port, '-u', user, '-N', '-B',
                           '-e', query], capture_output=True, text=True,
                          env=environment, timeout=120)
