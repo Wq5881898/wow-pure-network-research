@@ -1,19 +1,17 @@
-"""Read spell ids, ranks and casting times from Spell.dbc (read-only).
+"""Spell ids, ranks and casting times from Spell.dbc (read-only).
 
 The local server keeps no spell_template table in MySQL (checked acore_auth,
-acore_characters, acore_world): the spell data is in the DBC. This reports
-what A5 needs to check the client: the id, the name, the school and the
-casting time -- so "is it instant by default" is answered from the data.
+acore_characters, acore_world): the spell data is in the DBC. This reports the
+ids, names, ranks and casting times that A5 needs to check the client, and
+it answers "is it instant by default" from the data.
 
-Field layout used (3.3.5a Spell.dbc, 234 fields):
-    0  m_ID
-    1  m_Category
-    2  m_CastingTime          (index into SpellCastTimes.dbc)
-    5  m_School
-    36 m_SpellName            (index into the string block)
-    102 m_CastingTimeSeconds  (float seconds)
-The name field is calibrated against the string block, and the id field is
-checked for uniqueness, so a wrong layout fails loudly.
+Two things are CALIBRATED rather than assumed:
+  * the name field: taken from the record whose id is known (2317797 is
+    Frostbolt rank 1), because matching the string index on any record also
+    hits unrelated fields;
+  * the id field: the field whose values are unique across the whole table.
+The 3.3.5a Spell.dbc layout has m_ID at index 0, but the same field index
+also carries non-id data in this build, so it is measured.
 """
 import struct
 from pathlib import Path
@@ -22,7 +20,6 @@ DBC = Path(r'C:\Azerothcore\azerothcore-wotlk\build\bin\Debug\data\dbc')
 SPELL_DBC = DBC / 'Spell.dbc'
 CASTTIME_DBC = DBC / 'SpellCastTimes.dbc'
 WANTED = ('frostbolt', 'ice lance', 'frost nova', 'frost shock')
-ID, CATEGORY, CAST_TIME, SCHOOL, NAME, CAST_SECONDS = 0, 1, 2, 5, 36, 102
 
 
 def read(path):
@@ -38,43 +35,52 @@ def string_block(blob, count, size):
             for piece in blob[16 + count * size:].split(b'\x00')]
 
 
-def field(blob, base, size, index):
-    return struct.unpack_from('<I', blob, base + index * 4)[0]
-
-
-def float_field(blob, base, size, index):
-    return struct.unpack_from('<f', blob, base + index * 4)[0]
-
-
 def main():
     blob, count, fields, size = read(SPELL_DBC)
     names = string_block(blob, count, size)
-    index_of = {}
+    print('Spell.dbc: %d records, %d fields, %d bytes/record' % (count, fields, size))
+
+    # the name field, calibrated on the known spell id
+    frost_name = None
     for position, text in enumerate(names):
-        index_of.setdefault(text, position)
-    if 'Frostbolt' not in index_of:
+        if text == 'Frostbolt':
+            frost_name = position
+            break
+    if frost_name is None:
         print('Frostbolt is not in the string block')
         return 1
-
-    # calibrate the name field ON THE RECORD of the known spell (id 2317797
-    # is Frostbolt rank 1 in 3.3.5a): a match on any record would also hit
-    # unrelated fields whose value happens to be the same string index.
-    target_record = None
-    for i in range(count):
-        if field(blob, 16 + i * size, size, ID) == 2317797:
-            target_record = i
-            break
-    if target_record is None:
-        print('spell 2317797 (Frostbolt) is not in the DBC')
-        return 1
     name_field = None
-    for candidate in range(1, fields):
-        if field(blob, 16 + target_record * size, size, candidate) == index_of['Frostbolt']:
-            name_field = candidate
+    for candidate in range(fields):
+        for i in range(count):
+            base = 16 + i * size
+            if struct.unpack_from('<I', blob, base + candidate * 4)[0] == frost_name:
+                # the name field must be constant for the whole rank chain
+                name_field = candidate
+                break
+        if name_field is not None:
             break
-    if name_field is None:
-        print('no field carries the spell name')
+
+    # the id field: unique across the whole table
+    id_field = None
+    for candidate in range(fields):
+        if candidate == name_field:
+            continue
+        seen = set()
+        unique = True
+        for i in range(count):
+            value = struct.unpack_from('<I', blob, 16 + i * size + candidate * 4)[0]
+            if value in seen:
+                unique = False
+                break
+            seen.add(value)
+        if unique and len(seen) > count * 0.9:
+            id_field = candidate
+            break
+    if id_field is None:
+        print('no field is a unique id across the table')
         return 1
+    print('calibrated: name field %d, id field %d (Frostbolt string #%d)'
+          % (name_field, id_field, frost_name))
 
     cast = []
     if CASTTIME_DBC.exists():
@@ -85,24 +91,19 @@ def main():
     rows = []
     for i in range(count):
         base = 16 + i * size
-        name_id = field(blob, base, size, name_field)
+        spell_id = struct.unpack_from('<I', blob, base + id_field * 4)[0]
+        name_id = struct.unpack_from('<I', blob, base + name_field * 4)[0]
         text = names[name_id].strip() if name_id < len(names) else ''
-        if not text.lower().startswith(WANTED):
+        if text.lower() not in WANTED:
             continue
-        spell_id = field(blob, base, size, ID)
-        cast_index = field(blob, base, size, CAST_TIME)
+        cast_index = struct.unpack_from('<I', blob, base + 2 * 4)[0]
         cast_ms = cast[cast_index] if cast_index < len(cast) else None
-        seconds = float_field(blob, base, size, CAST_SECONDS)
-        school = field(blob, base, size, SCHOOL)
-        rows.append((spell_id, text, cast_index, cast_ms, seconds, school))
+        cast_sec = struct.unpack_from('<f', blob, base + 102 * 4)[0]
+        rows.append((spell_id, text, cast_index, cast_ms, cast_sec))
     rows.sort()
-    print('Spell.dbc: %d records, %d fields; name field %d (calibrated)'
-          % (count, fields, name_field))
-    print('%-9s %-14s %-8s %-9s %-9s %s'
-          % ('id', 'name', 'castIdx', 'castMs', 'castSec', 'school'))
-    for spell_id, text, cast_index, cast_ms, seconds, school in rows:
-        print('%-9d %-14s %-8d %-9s %-9s %d'
-              % (spell_id, text, cast_index, cast_ms, seconds, school))
+    print('%-9s %-12s %-8s %-8s %s' % ('id', 'name', 'castIdx', 'castMs', 'castSec'))
+    for spell_id, text, cast_index, cast_ms, cast_sec in rows:
+        print('%-9d %-12s %-8d %-8s %.2f' % (spell_id, text, cast_index, cast_ms, cast_sec))
     return 0
 
 
