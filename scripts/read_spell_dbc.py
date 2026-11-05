@@ -1,109 +1,86 @@
 """Spell ids, ranks and casting times from Spell.dbc (read-only).
 
 The local server keeps no spell_template table in MySQL (checked acore_auth,
-acore_characters, acore_world): the spell data is in the DBC. This reports the
-ids, names, ranks and casting times that A5 needs to check the client, and
-it answers "is it instant by default" from the data.
+acore_characters, acore_world): the spell data is in the DBC.
 
-Two things are CALIBRATED rather than assumed:
-  * the name field: taken from the record whose id is known (2317797 is
-    Frostbolt rank 1), because matching the string index on any record also
-    hits unrelated fields;
+Two fields are MEASURED, not assumed:
+  * the name field: the field whose values point at short, capitalised,
+    single-word strings. The string block also holds descriptions and rank
+    strings ("Rank 1"), so a string index alone does not identify it;
   * the id field: the field whose values are unique across the whole table.
-The 3.3.5a Spell.dbc layout has m_ID at index 0, but the same field index
-also carries non-id data in this build, so it is measured.
+Both are found from the data, so a different client build still works.
 """
 import struct
 from pathlib import Path
 
 DBC = Path(r'C:\Azerothcore\azerothcore-wotlk\build\bin\Debug\data\dbc')
-SPELL_DBC = DBC / 'Spell.dbc'
-CASTTIME_DBC = DBC / 'SpellCastTimes.dbc'
-WANTED = ('frostbolt', 'ice lance', 'frost nova', 'frost shock')
+SPELL = DBC / 'Spell.dbc'
+CAST = DBC / 'SpellCastTimes.dbc'
+CAST_SECONDS_FIELD = 102
+FAMILIES = ('frostbolt', 'ice lance', 'frost nova', 'frost shock', 'frost ward')
 
 
 def read(path):
     blob = path.read_bytes()
     if blob[:4] != b'WDBC':
         raise RuntimeError('%s is not a WDBC file' % path.name)
-    count, fields, size = struct.unpack('<III', blob[4:16])
-    return blob, count, fields, size
-
-
-def string_block(blob, count, size):
-    return [piece.decode('utf-8', 'replace')
-            for piece in blob[16 + count * size:].split(b'\x00')]
+    count, fields, size, strings = struct.unpack('<IIII', blob[4:20])
+    return blob, count, fields, size, strings
 
 
 def main():
-    blob, count, fields, size = read(SPELL_DBC)
-    names = string_block(blob, count, size)
-    print('Spell.dbc: %d records, %d fields, %d bytes/record' % (count, fields, size))
+    blob, count, fields, size, string_size = read(SPELL)
+    block = blob[20 + count * size:20 + count * size + string_size]
+    parts = [piece.decode('utf-8', 'replace') for piece in block.split(b'\x00')]
+    records = [struct.unpack_from('<' + 'I' * fields, blob, 16 + i * size)
+               for i in range(count)]
+    print('Spell.dbc: %d records, %d fields, %d byte string block, %d strings'
+          % (count, fields, string_size, len(parts)))
 
-    # the name field, calibrated on the known spell id
-    frost_name = None
-    for position, text in enumerate(names):
-        if text == 'Frostbolt':
-            frost_name = position
-            break
-    if frost_name is None:
-        print('Frostbolt is not in the string block')
-        return 1
-    name_field = None
-    for candidate in range(fields):
-        for i in range(count):
-            base = 16 + i * size
-            if struct.unpack_from('<I', blob, base + candidate * 4)[0] == frost_name:
-                # the name field must be constant for the whole rank chain
-                name_field = candidate
-                break
-        if name_field is not None:
-            break
+    def score(index):
+        hits = 0
+        for record in records[:600]:
+            value = record[index]
+            if value >= len(parts):
+                continue
+            text = parts[value]
+            if text and len(text) < 32 and ' ' not in text and text[0].isupper():
+                hits += 1
+        return hits
 
-    # the id field: unique across the whole table
+    ranked = sorted(((score(index), index) for index in range(fields)), reverse=True)
+    name_field = ranked[0][1]
     id_field = None
     for candidate in range(fields):
         if candidate == name_field:
             continue
-        seen = set()
-        unique = True
-        for i in range(count):
-            value = struct.unpack_from('<I', blob, 16 + i * size + candidate * 4)[0]
-            if value in seen:
-                unique = False
-                break
-            seen.add(value)
-        if unique and len(seen) > count * 0.9:
+        if len({record[candidate] for record in records}) > count * 0.9:
             id_field = candidate
             break
-    if id_field is None:
-        print('no field is a unique id across the table')
-        return 1
-    print('calibrated: name field %d, id field %d (Frostbolt string #%d)'
-          % (name_field, id_field, frost_name))
+    print('measured: name field %d, id field %d, cast-seconds field %d'
+          % (name_field, id_field, CAST_SECONDS_FIELD))
 
     cast = []
-    if CASTTIME_DBC.exists():
-        cblob, ccount, cfields, csize = read(CASTTIME_DBC)
-        for i in range(ccount):
-            cast.append(struct.unpack_from('<i', cblob, 16 + i * csize)[0])
+    if CAST.exists():
+        cblob, ccount, cfields, csize, _ = read(CAST)
+        cast = [struct.unpack_from('<i', cblob, 16 + i * csize)[0] for i in range(ccount)]
 
-    rows = []
-    for i in range(count):
-        base = 16 + i * size
-        spell_id = struct.unpack_from('<I', blob, base + id_field * 4)[0]
-        name_id = struct.unpack_from('<I', blob, base + name_field * 4)[0]
-        text = names[name_id].strip() if name_id < len(names) else ''
-        if text.lower() not in WANTED:
+    families = {}
+    for index, record in enumerate(records):
+        value = record[name_field]
+        text = parts[value].strip() if value < len(parts) else ''
+        low = text.lower()
+        if not any(low.startswith(f) for f in FAMILIES):
             continue
-        cast_index = struct.unpack_from('<I', blob, base + 2 * 4)[0]
-        cast_ms = cast[cast_index] if cast_index < len(cast) else None
-        cast_sec = struct.unpack_from('<f', blob, base + 102 * 4)[0]
-        rows.append((spell_id, text, cast_index, cast_ms, cast_sec))
-    rows.sort()
-    print('%-9s %-12s %-8s %-8s %s' % ('id', 'name', 'castIdx', 'castMs', 'castSec'))
-    for spell_id, text, cast_index, cast_ms, cast_sec in rows:
-        print('%-9d %-12s %-8d %-8s %.2f' % (spell_id, text, cast_index, cast_ms, cast_sec))
+        base = 16 + index * size
+        seconds = struct.unpack_from('<f', blob, base + CAST_SECONDS_FIELD * 4)[0]
+        families.setdefault(text, []).append(
+            (record[id_field], round(seconds, 3)))
+    for text in sorted(families):
+        rows = sorted(families[text])
+        print('\n%s  (%d records)' % (text, len(rows)))
+        for spell_id, seconds in rows:
+            print('  id %-8d cast %ss' % (spell_id, seconds))
     return 0
 
 
