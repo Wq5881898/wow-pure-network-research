@@ -23,6 +23,7 @@ import json
 import subprocess
 import sys
 import time
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -30,26 +31,68 @@ RUNNER = ROOT / 'scripts' / 'wsl_task_runner.py'
 FOLDER = ROOT / 'results/pure_network'
 
 
+def _wait_for_owner(command, *, window_seconds, on_timeout=None):
+    """Wait without killing a child that may still own a gameplay session.
+
+    Output goes to temporary files so a prolonged recovery cannot block on a
+    pipe or grow the parent's memory without limit. Only bounded tails are
+    returned. Expiry is diagnostic, never authorization to terminate.
+    """
+    with tempfile.TemporaryFile() as stdout, tempfile.TemporaryFile() as stderr:
+        process = subprocess.Popen(command, cwd=str(ROOT), stdout=stdout, stderr=stderr)
+        expired = 0
+        while True:
+            try:
+                code = process.wait(timeout=window_seconds)
+                break
+            except subprocess.TimeoutExpired:
+                expired += 1
+                if on_timeout is not None:
+                    try:
+                        on_timeout({'pid': process.pid, 'windows_expired': expired,
+                                    'status': 'waiting_for_session_owner'})
+                    except OSError:
+                        # A failed diagnostic write cannot release ownership.
+                        continue
+        def tail(handle):
+            handle.seek(0, 2)
+            handle.seek(max(0, handle.tell() - 65536))
+            return handle.read().decode('utf-8', errors='replace')
+        return subprocess.CompletedProcess(command, code, tail(stdout), tail(stderr))
+
+
 def _run(argv):
-    return subprocess.run([sys.executable, str(RUNNER), *argv],
-                          cwd=str(ROOT), capture_output=True, text=True, timeout=900)
+    run_id = argv[argv.index('--run-id') + 1]
+    return _wait_for_owner([sys.executable, str(RUNNER), *argv], window_seconds=900,
+                           on_timeout=lambda state: _record_wait(run_id, state))
+
+
+def _record_wait(run_id, state):
+    path = FOLDER / f'agent_wow_owner_wait_{run_id}.json'
+    temporary = path.with_suffix('.json.tmp')
+    temporary.write_text(json.dumps(state, indent=2), encoding='utf-8')
+    temporary.replace(path)
 
 
 def _observe(run_id, target_entry, max_level, seconds=6.0):
     """A read-only login: the character's state and the objective counters."""
     script = ROOT / 'scripts' / 'agent_wow_hunt_observe.py'
-    result = subprocess.run([sys.executable, str(script), '--run-id', run_id,
+    result = _wait_for_owner([sys.executable, str(script), '--run-id', run_id,
                               '--target-entry', str(target_entry),
                               '--max-level', str(max_level),
                               '--seconds', str(seconds)],
-                             cwd=str(ROOT), capture_output=True, text=True, timeout=300)
+                             window_seconds=300,
+                             on_timeout=lambda state: _record_wait(run_id, state))
     report = FOLDER / f'agent_wow_huntobs_{run_id}.json'
     if not report.exists():
         return None
-    return json.loads(report.read_text(encoding='utf-8'))
+    data = json.loads(report.read_text(encoding='utf-8'))
+    if result.returncode != 0 or data.get('status') != 'PASS':
+        data['error'] = data.get('error') or 'observation did not finish with accepted logout'
+    return data
 
 
-def _counter(report, quest_id=None, kind='kill', entry=None):
+def _counter(report, quest_id=None, kind='kill', entry=None, slot=0):
     """The objective counter of the quest this batch is working on.
 
     A kill objective counts the quest log; an ITEM objective counts the item
@@ -62,21 +105,23 @@ def _counter(report, quest_id=None, kind='kill', entry=None):
     batch is about.
     """
     if kind == 'item':
-        totals = (report.get('self') or {}).get('item_totals') or {}
-        return totals.get(str(entry), 0)
-    log = (report.get('self') or {}).get('quest_log') or []
-    for quest in log:
-        if quest_id is not None and quest.get('quest') != quest_id:
-            continue
-        counters = quest.get('counters') or []
-        if counters:
-            return counters[0]
-    return None
+        totals = (report.get('self') or {}).get('item_totals')
+        if not isinstance(totals, dict) or type(entry) is not int or entry <= 0:
+            return None
+        value = totals.get(str(entry), 0)
+        return value if type(value) is int and value >= 0 else None
+    if quest_id is None:
+        return None
+    from agent_wow_objective import progress
+    return progress(report.get('self') or {},
+                    {'kind': kind, 'quest': quest_id, 'slot': slot})
 
 
 def _safe(report):
     """True when the character is alive, not a ghost and out of combat."""
     if not report:
+        return False
+    if report.get('error'):
         return False
     me = report.get('self') or {}
     health = me.get('health')
@@ -91,7 +136,7 @@ def main():
                         help='the quest whose counter is the objective; '
                              'omit it for a run whose purpose is not progress '
                              '(the quest may already have been handed in)')
-    parser.add_argument('--kill-slot', type=int, default=0)
+    parser.add_argument('--kill-slot', type=int, choices=range(4), default=0)
     parser.add_argument('--objective-total', type=int, default=8)
     parser.add_argument('--combat-entry', type=int, default=3101)
     parser.add_argument('--max-target-level', type=int, default=3)
@@ -110,12 +155,17 @@ def main():
                         help='the item the collecting objective needs')
     parser.add_argument('--objective-optional', action='store_true',
                         help='the objective counter does not have to advance; '
-                             'for a run whose purpose is experience')
+                              'for a run whose purpose is experience')
+    parser.add_argument('--stop-level', type=int, default=None,
+                        help='stop opening new units once this level is observed')
+    parser.add_argument('--skip-loot', action='store_true')
     args = parser.parse_args()
     if not args.batch_id.replace('_', '').isalnum():
         parser.error('invalid batch ID')
-    if args.units > 3:
+    if not 1 <= args.units <= 3:
         parser.error('a batch is at most three task units (docs/52)')
+    if args.objective_total <= 0 or args.quest_item_entry <= 0:
+        parser.error('objective total and item entry must be positive')
 
     report = {'batch_id': args.batch_id, 'quest_id': args.quest_id,
               'objective_total': args.objective_total, 'units': [], 'status': 'unknown'}
@@ -124,7 +174,7 @@ def main():
                           args.max_target_level)
         report['before'] = {'safe': _safe(before),
                             'counter': _counter(before or {}, args.quest_id, args.objective_kind,
-                        args.quest_item_entry),
+                        args.quest_item_entry, args.kill_slot),
                             'health': ((before or {}).get('self') or {}).get('health')}
         if not before or before.get('error'):
             report['error'] = 'the pre-batch read-only login failed'
@@ -142,7 +192,11 @@ def main():
                 raise SystemExit(1)
 
         for index in range(args.units):
-            if counter >= args.objective_total:
+            if (args.stop_level is not None and
+                    ((before or {}).get('self') or {}).get('level', 0) >= args.stop_level):
+                report['status'] = 'target_level_reached'
+                break
+            if args.quest_id is not None and counter >= args.objective_total:
                 report['status'] = 'objective_reached'
                 break
             unit_id = f'{args.batch_id}_u{index + 1}'
@@ -153,7 +207,7 @@ def main():
                          '--max-target-level', str(args.max_target_level),
                          '--budget-seconds', '200'])
             boundary = FOLDER / f'agent_wow_task_{unit_id}move.json'
-            if not boundary.exists():
+            if move.returncode != 0 or not boundary.exists():
                 unit['failed'] = 'the movement unit produced no report'
                 unit['stderr'] = (move.stderr or '')[-300:]
                 report['units'].append(unit)
@@ -175,7 +229,6 @@ def main():
             fight = _run(['--run-id', unit_id,
                           '--verify-movement-from', str(boundary),
                           '--combat-after-verification', '--advisory-record',
-                          '--quest-id', str(args.quest_id),
                           '--kill-slot', str(args.kill_slot),
                           '--objective-total', str(args.objective_total),
                           '--combat-entry', str(args.combat_entry),
@@ -183,8 +236,10 @@ def main():
                           '--combat-budget', str(args.combat_budget),
                           '--budget-seconds', '300', '--action-budget', '10',
                           '--objective-kind', args.objective_kind,
-                          '--quest-item-entry', str(args.quest_item_entry)]
-                          + (['--objective-optional'] if args.objective_optional else [])
+                           '--quest-item-entry', str(args.quest_item_entry)]
+                           + ([] if args.quest_id is None else ['--quest-id', str(args.quest_id)])
+                           + (['--objective-optional'] if args.objective_optional else [])
+                           + (['--skip-loot'] if args.skip_loot else [])
                           + ([] if args.low_health_ratio is None else
                              ['--low-health-ratio', str(args.low_health_ratio)]))
             unit_report = FOLDER / f'agent_wow_task_{unit_id}.json'
@@ -197,24 +252,32 @@ def main():
             unit['combat'] = json.loads(unit_report.read_text(encoding='utf-8'))
             records = (unit['combat'].get('run') or {}).get('records') or []
             unit['records'] = [(r.get('action_id'), r.get('status')) for r in records]
+            if (fight.returncode != 0 or unit['combat'].get('error')
+                    or (unit['combat'].get('run') or {}).get('status') != 'success'):
+                unit['failed'] = 'combat runner failed; reconcile before another login'
+                report['units'].append(unit)
+                report['status'] = 'failed_at_combat'
+                break
 
             after = _observe(unit_id + '_post', args.combat_entry,
                              args.max_target_level)
             unit['after'] = {'safe': _safe(after),
                               'counter': _counter(after or {}, args.quest_id, args.objective_kind,
-                    args.quest_item_entry),
+                    args.quest_item_entry, args.kill_slot),
                               'health': ((after or {}).get('self') or {}).get('health')}
             report['units'].append(unit)
             new_counter = unit['after']['counter']
             if not unit['after']['safe']:
                 report['status'] = 'the character is not safe after the unit'
                 break
-            if (not args.objective_optional and args.quest_id is not None
+            if (not args.objective_optional
+                    and (args.quest_id is not None or args.objective_kind == 'item')
                     and (not isinstance(new_counter, int) or new_counter <= counter)):
                 report['status'] = 'the objective counter did not advance'
                 break
-            counter = new_counter
+            counter = new_counter if isinstance(new_counter, int) else counter
             unit['counter_after'] = new_counter
+            before = after
         else:
             report['status'] = 'batch_complete'
 
@@ -222,7 +285,7 @@ def main():
                           args.max_target_level)
         report['final'] = {'safe': _safe(after),
                            'counter': _counter(after or {}, args.quest_id, args.objective_kind,
-                    args.quest_item_entry),
+                    args.quest_item_entry, args.kill_slot),
                            'health': ((after or {}).get('self') or {}).get('health'),
                            'quest_log': (after or {}).get('self', {}).get('quest_log')}
     except SystemExit:

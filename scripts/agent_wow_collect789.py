@@ -4,7 +4,8 @@ import subprocess
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
-LINUX='/mnt/c/APP/opencode/project/WoW自动化预研/pure-network'
+from project_paths import wsl_path
+LINUX=wsl_path(ROOT)
 if __name__=='__main__':
     for n in range(79,91):
         name=f'run{n}_scorpid_collection';path=ROOT/f'results/pure_network/agent_wow_bridge_{name}.json'

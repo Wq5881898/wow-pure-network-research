@@ -28,8 +28,37 @@ static double number(const char* text) {
     return value;
 }
 
+// Experimental A/B only: same furthest-common-poly merge used by
+// AzerothCore PathGenerator::FixupCorridor. Default production path unchanged.
+static bool fixCorridor(std::vector<dtPolyRef>& path, const dtPolyRef* visited, int count) {
+    int commonPath=-1, commonVisited=-1;
+    for(int i=int(path.size())-1;i>=0 && commonPath<0;--i)
+        for(int j=count-1;j>=0;--j)
+            if(path[i]==visited[j]) { commonPath=i;commonVisited=j;break; }
+    if(commonPath<0)return false;
+    std::vector<dtPolyRef> merged;
+    for(int j=count-1;j>=commonVisited;--j)merged.push_back(visited[j]);
+    merged.insert(merged.end(),path.begin()+commonPath+1,path.end());
+    if(merged.size()>4096)return false;
+    path.swap(merged);
+    return true;
+}
+
 int main(int argc, char** argv) {
     try {
+        if(argc==2 && std::strcmp(argv[1],"--corridor-self-test")==0) {
+            std::vector<dtPolyRef> p{1,2,3,4};dtPolyRef v[]{1,5,2};
+            if(!fixCorridor(p,v,3)||p!=std::vector<dtPolyRef>({2,3,4}))
+                throw std::runtime_error("common suffix merge test failed");
+            std::vector<dtPolyRef> q{1,2,3};dtPolyRef outside[]{8,9};
+            if(fixCorridor(q,outside,2)||q!=std::vector<dtPolyRef>({1,2,3}))
+                throw std::runtime_error("disjoint layer rejection test failed");
+            std::vector<dtPolyRef> large(4096);for(int i=0;i<4096;++i)large[i]=i+1;
+            dtPolyRef overflow[]{1,9000,9001};auto original=large;
+            if(fixCorridor(large,overflow,3)||large!=original)
+                throw std::runtime_error("capacity rejection test failed");
+            std::puts("corridor self-test PASS: merge, disjoint refs, capacity");return 0;
+        }
         if (argc != 9) throw std::runtime_error("usage: nav <mmaps-directory> <map-id> <x y z> <x y z>");
         std::filesystem::path root(argv[1]);
         int map = static_cast<int>(number(argv[2]));
@@ -48,8 +77,8 @@ int main(int argc, char** argv) {
         int ax = grid(a[2]), ay = grid(a[0]), bx = grid(b[2]), by = grid(b[0]);
         if (std::abs(ax-bx) > 8 || std::abs(ay-by) > 8) throw std::runtime_error("probe only supports bounded local routes");
         int loaded = 0, missing = 0;
-        for (int x = std::max(0, std::min(ax,bx)-1); x <= std::min(63, std::max(ax,bx)+1); ++x) {
-            for (int y = std::max(0, std::min(ay,by)-1); y <= std::min(63, std::max(ay,by)+1); ++y) {
+        for (int x = std::max(0, std::min(ax,bx)-3); x <= std::min(63, std::max(ax,bx)+3); ++x) {
+            for (int y = std::max(0, std::min(ay,by)-3); y <= std::min(63, std::max(ay,by)+3); ++y) {
                 std::snprintf(name, sizeof(name), "%03d%02d%02d.mmtile", map, x, y);
                 std::ifstream tile(root / name, std::ios::binary);
                 if (!tile) { ++missing; continue; }
@@ -63,18 +92,36 @@ int main(int argc, char** argv) {
             }
         }
         std::unique_ptr<dtNavMeshQuery, decltype(&dtFreeNavMeshQuery)> query(dtAllocNavMeshQuery(), dtFreeNavMeshQuery);
-        if (!query || dtStatusFailed(query->init(mesh.get(),10000))) throw std::runtime_error("query init failed");
+        if (!query || dtStatusFailed(query->init(mesh.get(),65535))) throw std::runtime_error("query init failed");
         dtQueryFilter filter;
-        filter.setIncludeFlags(1|2);
+        // AzerothCore MapDefines.h: GROUND=1, MAGMA=2, SLIME=4, WATER=8.
+        // This probe authorizes ground travel only, not swimming or lava.
+        filter.setIncludeFlags(1);
         filter.setExcludeFlags(0);
         float ext[3] = {5,12,5}, pa[3]{}, pb[3]{};
         dtPolyRef ra=0, rb=0;
         if (dtStatusFailed(query->findNearestPoly(a,ext,&filter,&ra,pa)) || dtStatusFailed(query->findNearestPoly(b,ext,&filter,&rb,pb)) || !ra || !rb) throw std::runtime_error("no endpoint polygon");
+        if(std::getenv("AGENT_WOW_NAV_CORRIDOR_AB")) {
+            auto distance=[](const float* x,const float* y){return std::sqrt(
+                (x[0]-y[0])*(x[0]-y[0])+(x[1]-y[1])*(x[1]-y[1])+(x[2]-y[2])*(x[2]-y[2]));};
+            if(distance(a,pa)>1.f || distance(b,pb)>1.f)
+                throw std::runtime_error("experimental endpoint projection exceeds 1 yard; arrival not authorized");
+        }
         dtPolyRef polygons[4096]; int n=0;
         dtStatus pathStatus = query->findPath(ra,rb,pa,pb,&filter,polygons,&n,4096);
-        if (dtStatusFailed(pathStatus) || dtStatusDetail(pathStatus,DT_BUFFER_TOO_SMALL) || dtStatusDetail(pathStatus,DT_OUT_OF_NODES) || !n || polygons[n-1]!=rb) throw std::runtime_error("incomplete path");
+        if (dtStatusFailed(pathStatus) || dtStatusDetail(pathStatus,DT_BUFFER_TOO_SMALL) || dtStatusDetail(pathStatus,DT_OUT_OF_NODES) || !n || polygons[n-1]!=rb) {
+            // Diagnostic only: never turn the reachable prefix into a complete
+            // route or dispatch it as arrival evidence.
+            float partial[3]{};
+            if (n && dtStatusSucceed(query->closestPointOnPoly(polygons[n-1],pb,partial,nullptr)))
+                std::fprintf(stderr,"partial endpoint WoW %.5f %.5f %.5f; polygons=%d status=%u\n",partial[2],partial[0],partial[1],n,unsigned(pathStatus));
+            throw std::runtime_error("incomplete path");
+        }
         float pts[4096*3]; unsigned char flags[4096]; dtPolyRef refs[4096]; int count=0;
         dtStatus straight = query->findStraightPath(pa,pb,polygons,n,pts,flags,refs,&count,4096,DT_STRAIGHTPATH_ALL_CROSSINGS);
+        if (std::getenv("AGENT_WOW_NAV_DIAGNOSTIC"))
+            for(int i=0;i<count;++i)
+                std::fprintf(stderr,"route vertex %d WoW %.5f %.5f %.5f\n",i,pts[3*i+2],pts[3*i],pts[3*i+1]);
         if (dtStatusFailed(straight) || dtStatusDetail(straight,DT_BUFFER_TOO_SMALL) || !count) throw std::runtime_error("straight path failed or truncated");
         // Straight-path portal vertices may carry interpolated polygon-edge
         // heights rather than the local detail-mesh surface. Snap each vertex
@@ -92,6 +139,9 @@ int main(int argc, char** argv) {
         // sample globally (which can jump between overlapping height layers).
         std::vector<float> surface;
         int boundarySnaps=0;
+        const bool updateCorridor = std::getenv("AGENT_WOW_NAV_CORRIDOR_AB") != nullptr;
+        std::vector<dtPolyRef> workingCorridor(polygons,polygons+n);
+        int corridorUpdates=0;
         float current[3]={pa[0],pa[1],pa[2]}; dtPolyRef currentRef=ra;
         surface.insert(surface.end(),current,current+3);
         for(int i=1;i<count;++i) {
@@ -105,7 +155,12 @@ int main(int argc, char** argv) {
                 dtStatus s=query->moveAlongSurface(currentRef,current,goal,&filter,reached,visited,&nv,64);
                 if(dtStatusFailed(s)||dtStatusDetail(s,DT_BUFFER_TOO_SMALL)||!nv)
                     throw std::runtime_error("surface walk failed");
-                for(int v=0;v<nv;++v)
+                if(updateCorridor) {
+                    if(!fixCorridor(workingCorridor,visited,nv) || workingCorridor.front()!=visited[nv-1])
+                        throw std::runtime_error("experimental corridor merge failed");
+                    ++corridorUpdates;
+                }
+                for(int v=0;!updateCorridor && v<nv;++v)
                     if(std::find(polygons,polygons+n,visited[v])==polygons+n) {
                         // Only accept an endpoint boundary tie: the entire
                         // move prefix remains in the corridor, and the last
@@ -163,9 +218,11 @@ int main(int argc, char** argv) {
                 surface.insert(surface.end(),current,current+3);
             }
         }
+        if(updateCorridor && (std::hypot(current[0]-b[0],current[2]-b[2])>1.f || std::abs(current[1]-b[1])>1.f))
+            throw std::runtime_error("experimental sampled endpoint differs from request; arrival not authorized");
         std::printf("{\"status\":\"PASS\",\"map\":%d,\"loaded_tiles\":%d,\"missing_tiles\":%d,\"path_polygons\":%d,\"waypoints\":[",map,loaded,missing,n);
         for (int i=0;i<count;++i) std::printf("%s[%.5f,%.5f,%.5f]",i?",":"",pts[3*i+2],pts[3*i],pts[3*i+1]);
-        std::printf("],\"boundary_snaps\":%d,\"surface_samples\":[",boundarySnaps);
+        std::printf("],\"experimental_corridor_updates\":%d,\"boundary_snaps\":%d,\"surface_samples\":[",corridorUpdates,boundarySnaps);
         for(size_t i=0;i<surface.size()/3;++i)
             std::printf("%s[%.5f,%.5f,%.5f]",i?",":"",surface[i*3+2],surface[i*3],surface[i*3+1]);
         std::printf("]}\n");

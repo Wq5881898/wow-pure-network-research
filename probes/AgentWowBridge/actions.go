@@ -44,7 +44,11 @@ func(b *bridge) FollowPath(ctx context.Context,r *api.PathRequest)(response *api
  b.mu.Lock();b.positioned=false;b.startSeq=b.sequence;b.mu.Unlock()
  begun:=time.Now()
  flags:=uint32(0x101);stopFlags:=uint32(0x100);speed:=2.5
- if r.Run{flags=1;stopFlags=0;speed=7}
+  if r.Run{flags=1;stopFlags=0;speed=7}
+  if r.Swim{
+   flags=0x00200001;stopFlags=0x00200000;speed=4.722222
+   if err=b.movePacket(ctx,0xca,flags,p);err!=nil{return nil,err}
+  }
  // A bounded best-effort STOP is attempted even on caller cancellation/errors.
  defer func(){stop,cancel:=context.WithTimeout(context.Background(),3*time.Second);defer cancel();e:=b.movePacket(stop,0xb7,stopFlags,p);if err==nil&&e!=nil{err=e}}()
  moving:=false

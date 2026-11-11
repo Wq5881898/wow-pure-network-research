@@ -15,7 +15,8 @@ from agent_wow_session import PureNetworkBackend, root
 from agent_wow_task_boundary import movement_boundary, verify_target
 from agent_wow_position import confirm_relogin
 from agent_wow_batch import classify
-from agent_wow_exit_recovery import close_session
+from agent_wow_exit_recovery import close_session, finish_session
+from agent_wow_loot_evidence import loot_confirmed
 
 
 def parse_options(argv=None):
@@ -29,7 +30,8 @@ def parse_options(argv=None):
                              'in the bag; a collecting quest has a quest id too')
     parser.add_argument('--objective-optional', action='store_true',
                         help='the objective counter does not have to advance; '
-                             'for a run whose purpose is experience, not progress')
+                              'for a run whose purpose is experience, not progress')
+    parser.add_argument('--skip-loot', action='store_true', help='explicit experience-only run')
     parser.add_argument('--quest-id', type=int)
     parser.add_argument('--kill-slot', type=int, choices=range(4), default=0)
     parser.add_argument('--objective-total', type=int, default=8)
@@ -102,7 +104,7 @@ def _supervise_until_safe(backend, report, *, budget_seconds=180, poll_interval=
         if observation.health <= 0 or observation.ghost:
             return {'cleared': True, 'died': True, 'sample_count': len(samples),
                     'final': {'health': observation.health, 'ghost': observation.ghost}}
-        if observation.in_combat is not True:
+        if observation.in_combat is False:
             return {'cleared': True, 'died': False, 'sample_count': len(samples),
                     'final': {'health': observation.health, 'in_combat': observation.in_combat}}
         time.sleep(poll_interval)
@@ -192,6 +194,8 @@ def main(argv=None):
         return observation.health > 0 and not observation.ghost and observation.in_combat is False
 
     def eligible(observation):
+        if options.objective_optional or options.quest_id is None:
+            return alive(observation)
         count = progress(observation.to_dict(), objective)
         return alive(observation) and isinstance(count, int) and count < objective['total']
 
@@ -216,22 +220,17 @@ def main(argv=None):
                    and (options.objective_optional or not options.quest_id
                         or objective['kind'] == 'item'
                         or increased(before.to_dict(), after.to_dict(), objective))),
-            Action('loot', 'loot', {}, timeout=30, side_effecting=True,
-                    expectation=lambda before, after, evidence: (
-                        not any(evidence.get(key) for key in
-                                ('take_error', 'observation_error', 'reason', 'release_error',
-                                 'loot_open_error'))
-                        and evidence.get('released', {}).get('result') is not None
-                        and any(push['entry'] == options.quest_item_entry
-                                for push in evidence.get('confirmed_item_pushes', [])))
-                    and int(after.item_totals.get(str(options.quest_item_entry), 0))
-                   > int(before.item_totals.get(str(options.quest_item_entry), 0))),
+             Action('loot', 'loot', {}, timeout=30, side_effecting=True,
+                     expectation=lambda before, after, evidence: loot_confirmed(
+                         before.to_dict(), after.to_dict(), evidence,
+                         options.quest_item_entry if options.quest_id
+                         and objective['kind'] == 'item' else None)),
             Action('settle', 'settle', {}, timeout=90, side_effecting=True,
                    expectation=lambda before, after, evidence: after.in_combat is False),
             Action('logout', 'logout', {}, timeout=45, side_effecting=True,
                    expectation=lambda before, after, evidence: evidence.get('status') == 'closed'),
         ]
-        if options.quest_id and objective['kind'] != 'item':
+        if options.skip_loot or (options.quest_id and objective['kind'] != 'item'):
             # A kill objective needs no loot. An ITEM objective does: the
             # quest item only reaches the bag through the loot action, and
             # dropping it here is why a collecting quest (794) never saw its
@@ -346,25 +345,17 @@ def main(argv=None):
             except Exception as close_exc:  # noqa: BLE001
                 report['finalize'] = {'error': f'{type(close_exc).__name__}: {close_exc}'}
     finally:
-        try:
-            # close() refuses to tear down a living character that is still in
-            # combat: the server keeps attacking it after the client is gone
-            # and it dies there (2026-11-01 cs002, esc003). The refusal is
-            # recorded rather than raised past the report.
-            backend.close()
-        except Exception as exc:  # noqa: BLE001
-            report.setdefault('close_error', f'{type(exc).__name__}: {exc}')
-            report['close_refused'] = True
-            # The session is still open with the character in combat. Leaving
-            # it unattended is what kills it, so keep polling until the server
-            # clears the combat (or the character dies) and only then close.
-            report['supervised_after_refusal'] = _supervise_until_safe(
-                backend, report)
+        if (('executor' in locals() and 'logout' in executor.completed)
+                or (report.get('finalize', {}).get('logout') or {}).get('status') == 'closed'):
             try:
                 backend.close()
             except Exception as exc:  # noqa: BLE001
-                report.setdefault('close_error_after_supervision',
-                                  f'{type(exc).__name__}: {exc}')
+                report['close_error'] = f'{type(exc).__name__}: {exc}'
+        elif backend.session_id:
+            finish_session(backend, report=report, hold_ownership=True,
+                           checkpoint=lambda data: write_json_atomic(report_path, data))
+        else:
+            backend.close()
     report['elapsed_s'] = round(time.monotonic() - started, 3)
     write_json_atomic(report_path, report)
     if options.verify_movement_from:

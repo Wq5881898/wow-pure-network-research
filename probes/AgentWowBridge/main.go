@@ -52,8 +52,9 @@ func movementPayload(guid uint64, flags, clock uint32,p [4]float32)[]byte{
  out:=append([]byte{mask},raw...)
  out=binary.LittleEndian.AppendUint32(out,flags);out=binary.LittleEndian.AppendUint16(out,0)
  out=binary.LittleEndian.AppendUint32(out,clock)
- for _,v:=range p{out=binary.LittleEndian.AppendUint32(out,math.Float32bits(v))}
- return binary.LittleEndian.AppendUint32(out,0)
+  for _,v:=range p{out=binary.LittleEndian.AppendUint32(out,math.Float32bits(v))}
+  if flags&(0x00200000|0x02000000)!=0{out=binary.LittleEndian.AppendUint32(out,0)} // pitch required while swimming/flying
+  return binary.LittleEndian.AppendUint32(out,0)
 }
 
 func(b *bridge) Step(ctx context.Context,r *api.StepRequest)(*api.StepResponse,error){

@@ -17,6 +17,7 @@ Truth rules baked in here (verified against archived traces):
   combat requires consecutive confirmed samples plus a minimum dwell.
 """
 from dataclasses import dataclass, field
+import math
 
 # States (exact strings required by the task contract).
 PRECHECK = 'precheck'
@@ -95,6 +96,106 @@ class CombatSMConfig:
             raise ValueError('a single sample must never confirm disengagement')
         if self.min_disengage_seconds < 0 or self.max_range <= 0:
             raise ValueError('dwell must be nonnegative and range positive')
+
+
+class OutOfCombatConfirmator:
+    """The single rule for "the server says the character is out of combat".
+
+    One sample never confirms. A run of confirmed non-combat samples has to
+    reach the required count AND span the required dwell, and any sample that
+    is not a confirmed non-combat sample ends the run:
+
+      * unknown combat (None) is uninformative and never counts;
+      * unknown health (never transmitted) is uninformative and never counts;
+      * a transmitted zero is death and ends the run;
+      * health that fell during the window invalidates the window.
+
+    This lives here, not in each caller, because the combat state machine and
+    the exit branch both have to answer "is the character out of combat?" and
+    two copies of the rule would drift apart: one of them would start
+    declaring a character safe to log out on a single unknown sample.
+
+    The state machine and the exit branch both feed this; a test asserts the
+    two agree on the same observation sequence.
+    """
+
+    def __init__(self, confirmations=3, min_seconds=2.0):
+        if confirmations < 2:
+            raise ValueError('a single sample must never confirm disengagement')
+        if min_seconds < 0:
+            raise ValueError('dwell must be nonnegative')
+        self.confirmations = confirmations
+        self.min_seconds = min_seconds
+        self.streak = 0
+        self.run_started_at = None
+        self.last_known_health = None
+        self.health_unknown = False
+        self.last_sample_at = None
+
+    def reset(self):
+        """End the current run without forgetting the last known health."""
+        self.streak = 0
+        self.run_started_at = None
+        self.last_sample_at = None
+
+    def note_health(self, observation):
+        """Track the last health seen, for the "health fell" rule."""
+        health = getattr(observation, 'health', None)
+        if health is not None:
+            self.last_known_health = health
+
+    def observe(self, observation, now):
+        """Feed one observation; True when the run confirms out of combat."""
+        if not math.isfinite(now) or (self.last_sample_at is not None
+                                     and now <= self.last_sample_at):
+            self.reset()
+            return False
+        self.health_unknown = False
+        combat = getattr(observation, 'in_combat', None)
+        health = getattr(observation, 'health', None)
+        context = getattr(observation, 'context', None) or {}
+        poll = context.get('transport_poll')
+        if poll is not None and (poll.get('caught_up') is not True
+                                 or not isinstance(poll.get('polled_at_monotonic'), (int, float))
+                                 or not math.isfinite(poll['polled_at_monotonic'])
+                                 or not 0 <= now - poll['polled_at_monotonic'] <= 2.0):
+            # A cached state behind the receive queue or an old/invalid poll
+            # cannot authorize safety. This is transport freshness, NOT a new
+            # server transmission of the combat flag.
+            self.reset()
+        elif combat is not False:
+            # Unknown combat: uninformative, ends the run, never counts.
+            self.reset()
+        elif (not getattr(observation, 'health_transmitted', True)
+              or health is None):
+            # Unknown health: uninformative, ends the run, never counts.
+            self.reset()
+            self.health_unknown = True
+        elif health <= 0 or getattr(observation, 'ghost', False):
+            # A transmitted zero is death: it ends the run.
+            self.reset()
+        elif (self.last_known_health is not None
+              and health < self.last_known_health):
+            # Health fell during the window: the window is invalid.
+            self.reset()
+            self.last_known_health = health
+        else:
+            self.last_known_health = health
+            self.streak += 1
+            if self.streak == 1:
+                # The first clean sample anchors the dwell clock; it cannot
+                # confirm by itself.
+                self.run_started_at = now
+        self.last_sample_at = now
+        return self.confirmed
+
+    @property
+    def confirmed(self):
+        """True when the current run satisfies count and dwell."""
+        return (self.streak >= self.confirmations
+                and self.run_started_at is not None
+                and self.last_sample_at is not None
+                and self.last_sample_at - self.run_started_at >= self.min_seconds)
 
 
 @dataclass
@@ -278,12 +379,12 @@ class CombatStateMachine:
         self._combat_observed = bool(start_sent)
         self._state = PRECHECK
         self._reasons = ()
-        self._out_of_combat_streak = 0
-        # Start of the current unbroken clean (counted) sample run; the
-        # minimum dwell must be covered by this run alone. None means no
-        # clean run is currently open.
-        self._clean_run_started_at = None
-        self._last_known_health = None
+        # The out-of-combat rule lives in one place and is shared with the
+        # exit branch (which must not declare a character safe to log out on
+        # a single unknown sample).
+        self._confirmator = OutOfCombatConfirmator(
+            confirmations=self.config.out_of_combat_confirmations,
+            min_seconds=self.config.min_disengage_seconds)
         self._finished = False
         self._finish_reason = None
         self._low_exit_reasons = ()
@@ -312,7 +413,19 @@ class CombatStateMachine:
 
     @property
     def out_of_combat_streak(self):
-        return self._out_of_combat_streak
+        return self._confirmator.streak
+
+    @property
+    def _out_of_combat_streak(self):
+        return self._confirmator.streak
+
+    @property
+    def _clean_run_started_at(self):
+        return self._confirmator.run_started_at
+
+    @property
+    def _last_known_health(self):
+        return self._confirmator.last_known_health
 
     @property
     def combat_observed(self):
@@ -520,8 +633,7 @@ class CombatStateMachine:
             self._engaged = True
             self._combat_observed = True
             self._state = IN_COMBAT
-            self._out_of_combat_streak = 0
-            self._clean_run_started_at = None
+            self._confirmator.reset()
             health_reason = self._health_gate(observation)
             if health_reason in (REASON_HEALTH_RATIO_BELOW_LOW,
                                  REASON_HEALTH_RATIO_BELOW_CRITICAL):
@@ -548,8 +660,7 @@ class CombatStateMachine:
             return self._observe_disengage(observation)
 
         # in_combat unknown: never counts toward any confirmation.
-        self._out_of_combat_streak = 0
-        self._clean_run_started_at = None
+        self._confirmator.reset()
         if self._state == PRECHECK and self._engaged:
             # An attack was dispatched but combat is not yet confirmed.
             return StepResult(ENGAGING, DECISION_HOLD_AND_OBSERVE,
@@ -565,8 +676,7 @@ class CombatStateMachine:
                           (REASON_OUT_OF_COMBAT_NOT_YET_CONFIRMED,))
 
     def _note_health(self, observation):
-        if observation.health is not None:
-            self._last_known_health = observation.health
+        self._confirmator.note_health(observation)
 
     def _observe_disengage(self, observation):
         if not self._combat_observed:
@@ -577,56 +687,19 @@ class CombatStateMachine:
             # may open the recovery window (combat-state-002 fix A).
             self._engaged = True
             self._state = ENGAGING
-            self._out_of_combat_streak = 0
-            self._clean_run_started_at = None
+            self._confirmator.reset()
             return StepResult(ENGAGING, DECISION_HOLD_AND_OBSERVE,
                               (REASON_OUT_OF_COMBAT_NOT_YET_CONFIRMED,))
-        # A health-unknown sample always flags why the window is invalid;
-        # it resets the streak and never counts toward confirmation.
-        # Only reachable once combat was witnessed, so the unit is engaged.
+        # The confirmation rule lives in one place and is shared with the exit
+        # branch: one sample never confirms, an unknown sample never counts,
+        # and health that falls invalidates the window.
         self._engaged = True
-        health_unknown_now = False
         self._state = DISENGAGING
-        if observation.in_combat is not False:
-            # Unknown in-combat ends the clean run: no clean run is open
-            # until a later clean sample restarts one.
-            self._out_of_combat_streak = 0
-            self._clean_run_started_at = None
-        elif not observation.health_transmitted or observation.health is None:
-            # Unknown health ends the clean run and never counts.
-            self._out_of_combat_streak = 0
-            self._clean_run_started_at = None
-            health_unknown_now = True
-        elif observation.health <= 0:
-            # A transmitted zero seen here is death, decided next classify;
-            # for this step it merely ends the clean run.
-            self._out_of_combat_streak = 0
-            self._clean_run_started_at = None
-            health_unknown_now = False
-        elif (self._last_known_health is not None
-                and observation.health < self._last_known_health):
-            # Health fell during the window: the clean run is invalid and
-            # ends here; the minimum dwell must be covered by the current
-            # clean run only.
-            self._out_of_combat_streak = 0
-            self._clean_run_started_at = None
-            self._note_health(observation)
-            health_unknown_now = False
-        else:
-            self._note_health(observation)
-            self._out_of_combat_streak += 1
-            health_unknown_now = False
-            if self._out_of_combat_streak == 1:
-                # The first clean sample of a run anchors its dwell clock;
-                # it cannot confirm by itself.
-                self._clean_run_started_at = observation.sampled_at
-        if (self._out_of_combat_streak >= self.config.out_of_combat_confirmations
-                and self._clean_run_started_at is not None
-                and (observation.sampled_at - self._clean_run_started_at)
-                >= self.config.min_disengage_seconds):
+        confirmed = self._confirmator.observe(observation, observation.sampled_at)
+        if confirmed:
             return self._finish(observation, REASON_OUT_OF_COMBAT_CONFIRMED)
         reasons = [REASON_OUT_OF_COMBAT_NOT_YET_CONFIRMED]
-        if health_unknown_now:
+        if self._confirmator.health_unknown:
             reasons.append(REASON_HEALTH_UNKNOWN)
         return StepResult(self._state, DECISION_HOLD_AND_OBSERVE, tuple(reasons))
 
@@ -638,8 +711,7 @@ class CombatStateMachine:
             self._state = DISENGAGING
             # The post-kill window starts with the next counted clean
             # sample's clean-run anchor, not this sample.
-            self._clean_run_started_at = None
-            self._out_of_combat_streak = 0
+            self._confirmator.reset()
             return StepResult(self._state, DECISION_STOP_ATTACK, (reason,))
         if reason == REASON_TARGET_MISSING:
             # Capture ends with no target and no further sampling planned.

@@ -80,7 +80,8 @@ def fight(rpc, drain, target_guid, self_position, now_ms, budget=18,
           advisory=False, config=None, escape_path_planned=False, enforce=False,
           reapproach=None, max_reapproaches=3, chase_radius=25.0,
           target_position=None, refresh_target=None,
-          start_range=ATTACK_START_RANGE_YARDS, range_override=None):
+           start_range=ATTACK_START_RANGE_YARDS, range_override=None,
+           contact_evidence=None):
     """One bounded attack attempt against one target.
 
     ``target_position`` is a snapshot of the target's position. When it is
@@ -106,6 +107,17 @@ def fight(rpc, drain, target_guid, self_position, now_ms, budget=18,
             if not targets:outcome='target_missing';break
             target=targets[0]
             if target['health']==0:outcome='target_dead';break
+            if contact_evidence is not None and not sent:
+                from agent_wow_attackers import active_attackers
+                motion = target.get('server_motion') or {}
+                now = now_ms()
+                if (contact_evidence['target_guid'] != target_guid
+                        or now - contact_evidence['monotonic_ms'] > 500
+                        or now < contact_evidence['monotonic_ms']
+                        or motion.get('source_sequence') != contact_evidence['motion_sequence']
+                        or (me.get('in_combat') is True and
+                            [o['guid'] for o in active_attackers(observed, me['guid'])] != [target_guid])):
+                    outcome='preconditions_not_met';break
             if refresh_target is not None:
                 # The target object is replaced on every world-state update, so
                 # a stored one keeps its old motion and the position estimate
@@ -183,7 +195,7 @@ def fight(rpc, drain, target_guid, self_position, now_ms, budget=18,
                 # (2026-11-01 b21_u1), so gating on it is unreliable. The
                 # nav-verified distance is the target's position on the
                 # walkable surface, which is what "in reach" means.
-                check = distance if range_override is None else range_override
+                check = distance if range_override is None else max(distance, range_override)
                 if (me['health']<50 and me['in_combat'] is not True) or check>start_range:outcome='preconditions_not_met';break
                 row['start']=rpc('bridge.start_attack',{'guid':target_guid})
                 if 'error' in row['start']:outcome='start_rejected';break

@@ -7,7 +7,7 @@ import urllib.request
 import zipfile
 from pathlib import Path
 
-from wsl_lab_connect import Relay, Server, gateway, root
+from wsl_lab_connect import Relay, Server, relay_gateway, root
 import threading
 
 work = Path.home() / "wow-research"
@@ -29,7 +29,7 @@ subprocess.run(["go", "build", "-trimpath", "-o", "module", "./cmd"], cwd=module
 # Avoid unavailable Docker Hub builder image; identical Go service in scratch.
 (module / "Dockerfile").write_text('FROM scratch\nCOPY module /module\nENTRYPOINT ["/module"]\n')
 servers = []
-result = {"template_commit": commit, "core_commit": "f79739e3477d05060f91c2c15f67e76444ee3f02", "build_adaptation": "host Go build against fixed local core; scratch image, no Docker Hub builder", "gateway": gateway}
+result = {"template_commit": commit, "core_commit": "f79739e3477d05060f91c2c15f67e76444ee3f02", "build_adaptation": "host Go build against fixed local core; scratch image, no Docker Hub builder", "gateway": relay_gateway()}
 process = None
 logpath = root / "results/pure_network/agent_wow_linux_module.log"
 

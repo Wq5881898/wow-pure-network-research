@@ -45,6 +45,19 @@ def plan(**kwargs):
 
 
 class TaskExecutorTests(unittest.TestCase):
+    def test_accepted_logout_is_terminal_without_post_close_observation(self):
+        backend = FakeBackend(effects={'logout': {'status': 'closed'}})
+        executor = self.executor(backend)
+        report = executor.run([
+            Action('logout', 'logout', side_effecting=True,
+                   expectation=lambda b, a, e: e.get('status') == 'closed'),
+            Action('must_not_run', 'noop')])
+        self.assertEqual(report['status'], 'success')
+        self.assertEqual(backend.calls, ['logout'])
+        self.assertEqual(backend.observations, 1)
+        self.assertEqual(report['records'][0]['evidence']['post_observation_scope'],
+                         'unavailable after accepted logout')
+
     def setUp(self):
         self.folder = Path(tempfile.mkdtemp())
         self.log = self.folder / 'actions.jsonl'

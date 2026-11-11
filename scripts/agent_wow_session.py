@@ -11,9 +11,10 @@ import subprocess
 import threading
 import time
 import urllib.request
+from agent_wow_activity import ActivityRecorder, timed_operation
 from pathlib import Path
 
-from wsl_lab_connect import Relay, Server, gateway, root
+from wsl_lab_connect import Relay, Server, relay_gateway, root
 from agent_wow_combat_control import estimated_position, fight
 from agent_wow_exit_recovery import (ESCAPE_MIN_DISTANCE_YARDS,
                                     LEASH_RADIUS_YARDS)
@@ -23,12 +24,14 @@ from agent_wow_position import landing_evidence, movement_sequence
 from agent_wow_position_context import PositionContext
 from agent_wow_session_supervisor import settle
 from agent_wow_worldstate import IncrementalWorld, replay
+from agent_wow_transport_evidence import (ConnectionEvidence, session_process_evidence,
+                                         query_core_evidence)
 
 work = Path.home() / "wow-research"
 folder = work / "bridge-live"
 module = folder / "modules/bridge"
-MMAPS = r'C:\Azerothcore\azerothcore-wotlk\build\bin\Debug\data\mmaps'
-NAV = root / '.cache/agent-wow-nav-build/Release/agent_wow_nav.exe'
+MMAPS = os.environ.get('AGENT_WOW_MMAPS', r'C:\Azerothcore\azerothcore-wotlk\build\bin\Debug\data\mmaps')
+NAV = Path(os.environ.get('AGENT_WOW_NAV', str(root / '.cache/agent-wow-nav-build/Release/agent_wow_nav.exe')))
 
 # A drop is a cliff only when it is BOTH more than 5 yards AND steeper than
 # this ratio (about 35 degrees). The strict 5 yard rule refuses ramps as
@@ -74,7 +77,8 @@ class LiveSession:
             threading.Thread(target=server.serve_forever, daemon=True).start()
             self.servers.append(server)
         self.log = self.logpath.open("w")
-        self.process = subprocess.Popen([str(work / "agent-wow-cli"), "--config", str(folder / "config.yaml"), "char", "play", "9"], stdout=self.log, stderr=subprocess.STDOUT)
+        cli = os.environ.get('AGENT_WOW_CLI', str(work / 'agent-wow-cli'))
+        self.process = subprocess.Popen([cli, "--config", str(folder / "config.yaml"), "char", "play", "9"], stdout=self.log, stderr=subprocess.STDOUT)
         deadline = time.monotonic() + 60
         while time.monotonic() < deadline and self.process.poll() is None:
             self.log.flush()
@@ -150,17 +154,21 @@ class PureNetworkBackend:
         self._escape_route = None
         self._escape_route_target = None
         self.position_context = PositionContext()
+        self.connection_evidence = ConnectionEvidence()
         self.start_position = None
         self.retreat_points = []
         self._sample_wall = time.monotonic()
         self.session = None
-        self.result = {'status': 'INCOMPLETE', 'gateway': gateway,
+        self.result = {'status': 'INCOMPLETE', 'gateway': None,
                        'scope': 'pure-network task unit over Docker bridge', 'operations': []}
         self.logpath = root / f"results/pure_network/agent_wow_bridge_{run_id}.log"
         self.checkpoint_path = root / f"results/pure_network/agent_wow_bridge_{run_id}.checkpoint.packets.json"
         self.trace_path = root / f"results/pure_network/agent_wow_bridge_{run_id}.packets.json"
+        self.activity = ActivityRecorder(root / f'results/pure_network/activity_{run_id}')
 
     # --- transport -------------------------------------------------------
+    @timed_operation('rpc_wait', lambda method, params: {'method': method,
+                     'scope': 'transport response wait; payload excluded'})
     def rpc(self, method, params):
         request = urllib.request.Request("http://127.0.0.1:18086/rpc", data=json.dumps({"jsonrpc": "2.0", "id": 1, "method": method, "params": params}).encode(), headers={"Content-Type": "application/json"})
         with urllib.request.urlopen(request, timeout=35) as response:
@@ -169,11 +177,20 @@ class PureNetworkBackend:
     def stream_now(self):
         if not self.packets:
             return 0
-        return self.packets[-1]['monotonic_ms'] + (time.monotonic() - self._sample_wall) * 1000
+        estimate = self.packets[-1]['monotonic_ms'] + (time.monotonic() - self._sample_wall) * 1000
+        self._stream_high_water = max(getattr(self, '_stream_high_water', 0), estimate)
+        return self._stream_high_water
 
+    @timed_operation('receive_decode_checkpoint')
     def drain(self):
+        process_evidence = session_process_evidence(self.session)
+        cursor_before_poll = self.cursor
+        caught_up = False
         for _ in range(32):
-            body = self.rpc('bridge.poll', {'after': str(self.cursor), 'limit': 128})['result']
+            reply = self.rpc('bridge.poll', {'after': str(self.cursor), 'limit': 128})
+            if 'error' in reply:
+                raise RuntimeError('bridge poll failed; cached world state is unusable')
+            body = reply['result']
             if body.get('gap'):
                 raise RuntimeError('capture gap')
             if self.session_id and body['sessionId'] != self.session_id:
@@ -186,14 +203,32 @@ class PureNetworkBackend:
                 self.packets.append({'sequence': sequence, 'monotonic_ms': packet.get('monotonicMs', 0), 'opcode': packet['opcode'], 'payload_base64': packet['payload']})
                 self.cursor = sequence
             if self.cursor >= int(body.get('lastSequence', 0)):
+                caught_up = True
                 break
+        if not caught_up:
+            raise RuntimeError('receive queue not caught up; cached world state is unusable')
+        process_evidence = session_process_evidence(self.session)
         if self.incremental is None:
             self.incremental = IncrementalWorld(self.session_id, self.self_guid)
         decoded = self.incremental.apply(self.packets[self.incremental_cursor:])
+        if not hasattr(self, 'connection_evidence'):
+            self.connection_evidence = ConnectionEvidence()
+        self.connection_evidence.update(
+            self.session_id, self.packets[self.incremental_cursor:])
         self.incremental_cursor = len(self.packets)
         if decoded['errors']:
             raise RuntimeError('world state decode error: ' + str(decoded['errors']))
-        self._sample_wall = time.monotonic()
+        poll_wall = time.monotonic()
+        if self.cursor != cursor_before_poll:
+            self._sample_wall = poll_wall
+        self.last_poll_evidence = {
+            'polled_at_monotonic': poll_wall,
+            'cursor_before': cursor_before_poll, 'cursor_after': self.cursor,
+            'new_packets': self.cursor - cursor_before_poll,
+            'session_process': process_evidence,
+            'caught_up': caught_up,
+            'scope': 'bridge poll completed; cached self fields may be unchanged'}
+        decoded['transport_poll'] = dict(self.last_poll_evidence)
         self.checkpoint_path.write_text(json.dumps({'schema': 1, 'session_id': self.session_id, 'self_guid': self.self_guid, 'capture_complete': False, 'scope': 'live checkpoint; prefix only', 'packets': self.packets}))
         self.state = decoded
         if decoded.get('login'):
@@ -204,7 +239,9 @@ class PureNetworkBackend:
             self.observed_position = decoded['self']['movement']['position_xyzo'][:3]
         return decoded
 
+    @timed_operation('build_and_login')
     def open(self):
+        self.result['gateway'] = relay_gateway()
         ensure_bridge_module()
         self.session = LiveSession(self.run_id).start()
         for _ in range(12):
@@ -239,6 +276,11 @@ class PureNetworkBackend:
         constraint, not a convention, so a caller that forgets to resolve the
         combat state cannot kill the character by accident.
 
+        An UNKNOWN combat state is refused for the same reason: the character
+        may still be in a fight, and the server keeps hitting it after the
+        client is gone. Tearing the session down on "I do not know" is the
+        same failure as tearing it down in combat.
+
         ``force=True`` is the explicit escape hatch and is recorded.
         """
         in_combat = None
@@ -253,8 +295,15 @@ class PureNetworkBackend:
                                             'refusing to tear down the session')
             self._write_trace(capture_complete=False)
             raise RuntimeError('refusing to close: character is alive and still in combat')
+        if alive and in_combat is None and not force:
+            self.result['close_refused'] = ('character is alive and the combat state is '
+                                            'unknown; refusing to tear down the session')
+            self._write_trace(capture_complete=False)
+            raise RuntimeError('refusing to close: character is alive and the combat state is unknown')
         if force and alive and in_combat is True:
             self.result['close_forced_in_combat'] = True
+        if force and alive and in_combat is None:
+            self.result['close_forced_unknown_combat'] = True
         if self.session:
             self.session.close()
         self._write_trace(capture_complete=self.result.get('status') == 'PASS')
@@ -266,6 +315,22 @@ class PureNetworkBackend:
         self.trace_path.write_text(json.dumps(trace, indent=2) + '\n')
 
     # --- contract surface ------------------------------------------------
+    def read_connection_evidence(self):
+        """Explicit optional read; does not start a session or authorize actions."""
+        result = query_core_evidence(self.rpc, self.self_guid,
+                                     expected_session=getattr(self, 'core_session_identity', None),
+                                     previous_sample_ms=getattr(self, 'core_sample_ms', None))
+        if (result.get('session_id') and result.get('reason') in (
+                'recent_matched_pong', 'no_valid_pong_observed',
+                'expired_or_invalid_pong')):
+            self.core_session_identity = result['session_id']
+            self.core_sample_ms = result.get('remote_sample_ms')
+        return result
+
+    def acquire_attacker(self):
+        from agent_wow_attackers import bind_single_attacker
+        return bind_single_attacker(self)
+
     def observe(self):
         state = self.drain()
         me = state['self']
@@ -297,7 +362,13 @@ class PureNetworkBackend:
                            max_health=me['max_health'], ghost=me['ghost'],
                            in_combat=me['in_combat'], level=me['level'], quest_log=me['quest_log'],
                            item_totals=totals, available=tuple(sorted(state.keys())),
-                           context={'target': self.target and {'guid': self.target['guid'], 'entry': self.target['entry'], 'health': self.target['health']},
+                            context={'target': self.target and {'guid': self.target['guid'], 'entry': self.target['entry'], 'health': self.target['health']},
+                                      'transport_poll': dict(getattr(self, 'last_poll_evidence', {})),
+                                      'connection_evidence': self.connection_evidence.view(),
+                                      'combat_flag_evidence': {
+                                          'sequence': me.get('combat_flag_sequence'),
+                                          'packet_ms': me.get('combat_flag_packet_ms'),
+                                          'scope': 'last transmitted field 59; not refreshed by polling'},
                                      'target_health': live_target_health,
                                      'target_max_health': live_target_max_health,
                                      'position_evidence': {
@@ -335,6 +406,8 @@ class PureNetworkBackend:
         return {'target': {'guid': target['guid'], 'entry': target['entry'], 'health': target['health'],
                            'level': target['level'], 'position_source': estimated_position(target, self.stream_now())[1]}}
 
+    @timed_operation('navigation_query', lambda start, destination: {
+        'start': list(start)[:3], 'destination': list(destination)[:3]})
     def _nav(self, start, destination):
         args = [str(NAV), MMAPS, '1', *map(str, list(start)[:3]), *map(str, list(destination)[:3])]
         run = subprocess.run(args, capture_output=True, text=True, timeout=10)
@@ -379,7 +452,9 @@ class PureNetworkBackend:
                 previous = point
         return points
 
-    def _send_path(self, points, run=False):
+    @timed_operation('movement_submission', lambda points, run=False, contact_stop=False: {
+        'points': len(points), 'run': run, 'actual_motion_confirmed': False})
+    def _send_path(self, points, run=False, contact_stop=False):
         """Send densified points in bridge-sized chunks.
 
         The bridge rejects paths outside 0.05..50 yards, so chunks are kept
@@ -396,7 +471,7 @@ class PureNetworkBackend:
             if previous is None:
                 previous = xyz
             distance = math.dist(previous, xyz)
-            if chunk and length + distance > 30:
+            if chunk and length + distance > (7 if contact_stop else 30):
                 chunks.append((chunk, length))
                 chunk = []
                 length = 0.0
@@ -421,6 +496,14 @@ class PureNetworkBackend:
                 self.submitted_position = list(submitted[:3])
                 self.position_context.submitted(submitted, self.cursor,
                                                 f'{self.run_id}:path:{time.monotonic_ns()}', time.monotonic())
+            # A bridge-sized movement RPC may take several seconds. Consume
+            # its incoming stream before sending the next chunk, rather than
+            # walking an entire long route with a bounded queue unread.
+            state = self.drain()
+            if contact_stop and (state['self'].get('in_combat') is True
+                                 or state['self'].get('ghost')
+                                 or state['self'].get('health', 0) < state['self'].get('max_health', 0)*.7):
+                return replies, None
         return replies, None
 
     def escape_route(self, refresh=False, stale_distance=8.0):
@@ -509,6 +592,34 @@ class PureNetworkBackend:
         # around it exists because that bearing can be a cliff.
         base = math.atan2(current[1] - home[1], current[0] - home[0])
         errors = []
+        # A known safe anchor has a measured terrain height. Fan endpoints
+        # inherit the hostile's Z, which may be far above/below terrain 165
+        # yards away and correctly fail the endpoint projection gate.
+        # Most recent observed-clear route endpoints are relative refuges,
+        # not permanent safety guarantees. Replan and enforce escape distance.
+        history = getattr(self, 'relative_safe_history', [])
+        relative = [row['position'] for row in reversed(history)
+                    if row.get('in_combat') is False and time.time()-row['sampled_at'] <= 900]
+        for anchor in relative + list(getattr(self, 'escape_safe_anchors', [])):
+            if math.dist(list(anchor)[:3], home[:3]) < min_distance:
+                continue
+            try:
+                raw = self._nav(current[:3], anchor)
+                surface = raw.get('surface_samples') or raw['waypoints']
+                points = self._densify({**raw, 'waypoints': surface}, current,
+                                       slope_tolerance=SLOPE_TOLERANCE)
+                if not points:
+                    continue
+                end = [points[-1][k] for k in ('x','y','z')]
+                if math.dist(end, list(anchor)[:3]) > 1 or math.dist(end, home[:3]) < min_distance:
+                    continue
+                return {'points': points, 'origin': current[:3], 'safe_anchor': list(anchor),
+                        'hostile_home': home, 'planned_distance': min_distance,
+                        'source': ('ground route to recently observed clear endpoint'
+                                   if anchor in relative else
+                                   'ground route to independently verified safe anchor')}
+            except RuntimeError as exc:
+                errors.append(str(exc))
         for index in range(candidates):
             bearing = base + (0.0 if index == 0 else
                               math.copysign(((index + 1) // 2) * math.radians(30), index))
@@ -568,6 +679,8 @@ class PureNetworkBackend:
             if live is None:
                 return {'error': 'selected target no longer alive/visible', 'replies': replies}
             self.target = live
+            if self.state['self'].get('in_combat') is True:
+                return self._contact_gate()
             current = list((self.submitted_position or self.observed_position or self.current_position)[:3])
             target_position, source = estimated_position(self.target, self.stream_now())
             distance = math.dist(current, target_position)
@@ -589,7 +702,10 @@ class PureNetworkBackend:
             self.outbound_route = [{'x': p['x'], 'y': p['y'], 'z': p['z']} for p in points]
             self.outbound_origin = list(current)
             before_sequence = movement_sequence(self.state, self.self_guid)
-            sent, failure = self._send_path(points, run=run)
+            self.drain()
+            if self.state['self'].get('in_combat') is True:
+                return self._contact_gate()
+            sent, failure = self._send_path(points, run=True, contact_stop=True)
             replies.extend(sent)
             if failure:
                 return {'error': f'attempt {attempt} {failure}', 'replies': replies,
@@ -599,7 +715,12 @@ class PureNetworkBackend:
             time.sleep(.5)
             self.drain()
             confirmation = landing_evidence(self.state, self.self_guid, before_sequence, expected)
-            landed = list(self.observed_position[:3])
+            if self.state['self'].get('in_combat') is True:
+                contact = self._contact_gate()
+                return {**contact, 'reached': contact.get('ready', False),
+                        'replies': replies, 'attempts': attempts,
+                        'side_effect_applied': bool(sent)}
+            landed = list((self.submitted_position or self.observed_position)[:3])
             deviation = math.dist(landed, expected)
             # The server excludes the mover's own session from movement
             # broadcasts, so a fresh in-session position echo is not expected.
@@ -610,7 +731,7 @@ class PureNetworkBackend:
             # an unconfirmed side effect.
             motion_this_session = (self.session_start_position is not None
                                    and math.dist(self.session_start_position, landed) > 3)
-            if sent and not confirmation['confirmed'] and not motion_this_session:
+            if sent and not self.submitted_position and not confirmation['confirmed'] and not motion_this_session:
                 return {'reached': False, 'position_confirmation': confirmation,
                         'replies': replies, 'attempts': attempts,
                         'side_effect_applied': True,
@@ -622,7 +743,7 @@ class PureNetworkBackend:
                 # sent. Record the submitted endpoint; it becomes a server
                 # boundary only after a fresh-session login confirms it.
                 self.approach_confirmation = {
-                    'confirmed': True, 'submitted_position': list(expected),
+                    'confirmed': False, 'submitted_position': list(expected),
                     'chunk_deviation': round(deviation, 3),
                     'session_start_position': list(self.session_start_position or []),
                     'scope': 'session-scoped movement submission; not an in-session server position acknowledgement'}
@@ -700,18 +821,18 @@ class PureNetworkBackend:
             return {'error': 'no target'}
         me = self.drain()['self']
         if me.get('in_combat') is True:
-            return {'skipped': 'already in combat'}
+            return self._contact_gate()
         from agent_wow_combat_control import estimated_position
         walks = []
         for attempt in range(attempts):
             self._refresh_target()
-            if target_position is not None and attempt == 0:
-                position = list(target_position[:3])
-            else:
-                try:
-                    position = list(estimated_position(self.target, self.stream_now())[0][:3])
-                except Exception:  # noqa: BLE001
-                    return {'error': 'target position unknown'}
+            if self.state['self'].get('in_combat') is True:
+                return self._contact_gate()
+            # The caller snapshot predates refresh (and possibly navigation).
+            try:
+                position = list(estimated_position(self.target, self.stream_now())[0][:3])
+            except Exception:  # noqa: BLE001
+                return {'error': 'target position unknown'}
             here = list((self.submitted_position or self.current_position
                          or self.observed_position or self.start_position)[:3])
             if not here:
@@ -732,7 +853,8 @@ class PureNetworkBackend:
             else:
                 landing = None
                 on_surface = None
-            if on_surface is not None and on_surface <= max_range:
+            if (on_surface is not None and on_surface <= max_range
+                    and distance <= max_range and math.dist(landing, position) <= 1):
                 return {'skipped': 'already within reach',
                         'distance': round(distance, 2),
                         'nav_distance': round(on_surface, 2),
@@ -747,6 +869,8 @@ class PureNetworkBackend:
                           'error': result.get('error')})
             if result.get('error'):
                 break
+            if self.drain()['self'].get('in_combat') is True:
+                return result
         try:
             target_position = estimated_position(self.target, self.stream_now())[0]
             here = list((self.submitted_position or self.current_position
@@ -755,7 +879,53 @@ class PureNetworkBackend:
         except Exception:  # noqa: BLE001
             final = None
         return {'walked': True, 'walks': walks, 'distance_after': final,
-                'nav_distance': final}
+                'nav_distance': None}
+
+    def _contact_gate(self, seconds=3.0):
+        """Reconcile identity and motion before contact; never chase in combat."""
+        from agent_wow_attackers import active_attackers
+        deadline = time.monotonic() + seconds
+        samples = []
+        while True:
+            state = self.drain()
+            me = state['self']
+            guid = self.target['guid']
+            live = next((o for o in state.get('visible_objects', []) if o['guid'] == guid), None)
+            attackers = active_attackers(state, self.self_guid)
+            reason = None
+            if not live or live.get('health', 0) <= 0:
+                reason = 'target missing or dead'
+            elif me.get('ghost') or me.get('health', 0) < me.get('max_health', 0)*.7:
+                reason = 'unsafe contact health'
+            elif me.get('in_combat') is True and [o['guid'] for o in attackers] != [guid]:
+                reason = 'attacker identity mismatch; reconcile'
+            if reason:
+                return {'ready': False, 'reason': reason, 'target_guid': guid, 'samples': samples}
+            self.target = live
+            now = self.stream_now()
+            position, source = estimated_position(live, now)
+            here = list((self.submitted_position or self.current_position or self.observed_position)[:3])
+            distance = math.dist(here, position)
+            motion = live.get('server_motion') or {}
+            age = now - motion.get('received_monotonic_ms', now)
+            fresh = (not motion or (0 <= age <= motion.get('duration_ms', 0) + 1000
+                                      and not source.startswith('unsupported')))
+            sample = {'target_guid': guid, 'monotonic_ms': now,
+                      'motion_sequence': motion.get('source_sequence'),
+                      'target_position': position, 'reference_position': here,
+                      'position_source': source, 'distance': distance, 'fresh': fresh,
+                      'attackers': [o['guid'] for o in attackers]}
+            samples.append(sample)
+            if fresh and distance <= 5:
+                return {'ready': True, 'contact': sample, 'samples': samples}
+            # Only a fresh directed path towards us justifies a brief wait.
+            approaching = (fresh and motion.get('facing_guid') == self.self_guid
+                           and motion.get('path_xyz')
+                           and math.dist(here, motion['path_xyz'][-1]) < distance)
+            if not approaching or time.monotonic() >= deadline:
+                return {'ready': False, 'reason': 'contact stale or not approaching; reconcile',
+                        'target_guid': guid, 'samples': samples}
+            time.sleep(.1)
 
     def _await_engagement(self, timeout=10.0, poll_interval=0.3):
         """Wait for the hostile to engage, instead of chasing it.
@@ -792,7 +962,13 @@ class PureNetworkBackend:
         # request_escape decision and the exit branch's retreat have to be
         # about the SAME route. The route is planned away from the tracked
         # target, so the plan is refreshed when the target changes.
-        route = self.escape_route(refresh=True)
+        # Long planning belongs to the safe selection phase. An engaged unit
+        # uses the already prepared full route, without a new nav subprocess.
+        state = self.drain()
+        if state['self'].get('in_combat') is True:
+            route = self._escape_route or getattr(self, 'travel_return_route', None)
+        else:
+            route = self.escape_route()
         # ONE snapshot of the target's position, used by both the approach and
         # the fight's own range check. The estimate is extrapolated over time
         # and moves between two measurements of the same instant, which made
@@ -847,13 +1023,20 @@ class PureNetworkBackend:
                 snapshot = list(estimated_position(self.target, self.stream_now())[0][:3])
             except Exception:  # noqa: BLE001 - the fight will measure it itself
                 snapshot = None
+            contact = self._contact_gate()
+            closed['contact_gate'] = contact
+            if not contact.get('ready'):
+                break
+            snapshot = contact['contact']['target_position']
+            reference = contact['contact']['reference_position']
             phase, _observed = fight(self.rpc, self.drain, self.target['guid'], list(reference)[:3],
                                      self.stream_now, budget=params.get('budget', 35),
                                      advisory=self.advisory, enforce=self.enforce,
                                      config=self.combat_config,
-                                     escape_path_planned=bool(route),
-                                     target_position=snapshot,
-                                     range_override=closed.get('nav_distance'))
+                                      escape_path_planned=bool(route),
+                                      target_position=snapshot,
+                                      start_range=5.0,
+                                      contact_evidence=contact['contact'])
             rows = phase.get('observations') or []
             # Did the attack actually land? The server's own answer: the
             # target's health and the engagement flag. An attack that never
@@ -873,13 +1056,30 @@ class PureNetworkBackend:
                 break
 
 
-        return {'outcome': phase['outcome'], 'phase': phase,
+        result = {'outcome': phase['outcome'], 'phase': phase,
                 'side_effect_applied': bool(phase.get('start_sent_once')),
                 'approach': closed,
                 'attempts': attempts,
                 'engagement': engagement,
                 'escape_path_planned': bool(route),
-                'reference_position': list(reference)[:3]}
+                 'reference_position': list(reference)[:3]}
+        if (phase['outcome'] == 'preconditions_not_met'
+                and not phase.get('start_sent_once')
+                and self.drain()['self'].get('in_combat') is True):
+            # Contact is not legal melee range. Do not chase or spend a
+            # passive window waiting at full health while already engaged.
+            from agent_wow_exit_recovery import resolve_combat_before_exit
+            recovery = resolve_combat_before_exit(self, passive_seconds=0,
+                                                  finish_budget_seconds=0)
+            result['precondition_recovery'] = {
+                k: v for k, v in recovery.items() if k not in ('final', 'retreat')}
+            retreat = recovery.get('retreat') or {}
+            result['precondition_recovery']['retreat'] = {
+                k: retreat.get(k) for k in ('outcome', 'chunks_sent', 'route_length', 'samples')}
+            result['precondition_recovery']['retreat']['route_selection'] = {
+                k: (retreat.get('route') or {}).get(k)
+                for k in ('source', 'origin', 'safe_anchor', 'full_escape_distance')}
+        return result
 
     def _do_recover_combat(self, params, timeout):
         """Resolve an unresolved combat as an explicit, recorded action.
@@ -897,7 +1097,13 @@ class PureNetworkBackend:
         """
         from agent_wow_exit_recovery import resolve_combat_before_exit
         observation = self.observe()
-        if observation.in_combat is not True:
+        if observation.in_combat is None:
+            # The combat state is unknown, which is not the same as "no
+            # combat". Reporting a clearance here would let the caller treat
+            # an unresolved state as a finished one.
+            return {'combat_cleared': False, 'reason': 'combat_state_unknown',
+                    'ending': None}
+        if observation.in_combat is False:
             # Nothing to recover. The absence of a side effect here is not a
             # failed dispatch: the action had no work to do. Claiming
             # "no side effect applied" would read as a failure.
@@ -987,13 +1193,16 @@ class PureNetworkBackend:
                         'reason': 'capture cursor regressed; no take dispatched',
                         'side_effect_applied': True}
             if any(take['item']['entry'] == item['entry'] for take in takes):
-                # SMSG_ITEM_PUSH_RESULT identifies an item entry and inventory
-                # total, not the source loot slot. Do not claim a late push for
-                # an earlier same-entry slot as proof of this second take.
-                return {'loot': loot, 'takes': takes, 'confirmed_item_pushes': pushes,
-                        'attempted_take_entries': [take['item']['entry'] for take in takes],
-                        'side_effect_applied': True,
-                        'reason': 'another loot slot has the same entry; slot attribution unavailable'}
+                # Before another same-entry request, the preceding take needs
+                # BOTH its matching push and a fresh removal of its own slot.
+                # Otherwise a late push could be attributed to the next take.
+                previous = next(t for t in reversed(takes)
+                                if t['item']['entry'] == item['entry'])
+                if not previous.get('slot_removed_sequence'):
+                    return {'loot': loot, 'takes': takes, 'confirmed_item_pushes': pushes,
+                            'attempted_take_entries': [take['item']['entry'] for take in takes],
+                            'side_effect_applied': True,
+                            'reason': 'another loot slot has the same entry; slot attribution unavailable'}
             before_take = self.cursor
             try:
                 reply = self.rpc('bridge.take_loot', {'slot': item['slot']})
@@ -1011,8 +1220,25 @@ class PureNetworkBackend:
                         'attempted_take_entries': [take['item']['entry'] for take in takes],
                         'side_effect_applied': True,
                         'observation_error': f'{type(exc).__name__}: {exc}'}
+            failures = [e for e in observed['event_log']
+                        if e.get('opcode') == 0x112 and e['sequence'] > before_take]
+            if failures:
+                return {'loot': loot, 'takes': takes, 'confirmed_item_pushes': pushes,
+                        'attempted_take_entries': [take['item']['entry'] for take in takes],
+                        'inventory_failure': failures[-1], 'side_effect_applied': True,
+                        'reason': 'server rejected inventory change; no retry dispatched'}
             confirmed = item_pushes(observed, before_take, self.self_guid, item['entry'],
                                     inventory_before.get(item['entry'], 0))
+            removed = [e['sequence'] for e in observed['event_log']
+                       if e.get('opcode') == 0x162 and e['sequence'] > before_take
+                       and e.get('loot', {}).get('slot_removed') == item['slot']]
+            if removed:
+                takes[-1]['slot_removed_sequence'] = max(removed)
+            repeated_entry = sum(i['entry'] == item['entry']
+                                 for i in loot.get('items', [])) > 1
+            if repeated_entry:
+                confirmed = [p for p in confirmed
+                             if p['count'] == item.get('count', 1)]
             pushes.extend(confirmed)
             if confirmed:
                 inventory_before[item['entry']] = max(p['inventory_count'] for p in confirmed)
@@ -1027,7 +1253,12 @@ class PureNetworkBackend:
                 return {'loot': loot, 'takes': takes, 'confirmed_item_pushes': pushes,
                         'attempted_take_entries': [take['item']['entry'] for take in takes],
                         'side_effect_applied': True,
-                        'reason': 'take item push not observed; no further requests sent'}
+                         'reason': 'take item push not observed; no further requests sent'}
+            if repeated_entry and not removed:
+                return {'loot': loot, 'takes': takes, 'confirmed_item_pushes': pushes,
+                        'attempted_take_entries': [take['item']['entry'] for take in takes],
+                        'side_effect_applied': True,
+                        'reason': 'another loot slot has the same entry; slot attribution unavailable'}
         if time.monotonic() >= deadline:
             return {'loot': loot, 'takes': takes, 'confirmed_item_pushes': pushes,
                     'attempted_take_entries': [take['item']['entry'] for take in takes],

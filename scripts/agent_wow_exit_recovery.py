@@ -31,7 +31,21 @@ import math
 import time
 
 from agent_wow_combat_state_machine import (ENDING_ESCAPE, ENDING_FIGHT,
-                                            ENDING_FINISH_TARGET)
+                                            ENDING_FINISH_TARGET,
+                                            OutOfCombatConfirmator)
+
+
+class _SampleView:
+    """A retreat sample in the shape the shared confirmation rule reads."""
+
+    __slots__ = ('in_combat', 'health', 'health_transmitted', 'context', 'ghost')
+
+    def __init__(self, sample):
+        self.in_combat = sample.get('in_combat')
+        self.health = sample.get('health')
+        self.ghost = sample.get('ghost', False)
+        self.health_transmitted = sample.get('health') is not None
+        self.context = {'transport_poll': sample['transport_poll']} if 'transport_poll' in sample else {}
 
 # Server-side facts, taken from the local AzerothCore sources:
 #   CONFIG_CREATURE_LEASH_RADIUS ("CreatureLeashRadius") = 30.0 yards
@@ -116,6 +130,8 @@ def _target_health(observation):
 def _sample(observation):
     return {'health': observation.health, 'ghost': observation.ghost,
             'in_combat': observation.in_combat,
+            'transport_poll': (getattr(observation, 'context', None) or {}).get('transport_poll'),
+            'combat_flag_evidence': (getattr(observation, 'context', None) or {}).get('combat_flag_evidence'),
             'target_health': _target_health(observation)}
 
 
@@ -147,6 +163,8 @@ def _request_label(actions):
 def resolve_combat_before_exit(backend, *, budget_seconds=60, poll_interval=0.5,
                                 min_health=25, passive_seconds=6.0,
                                 finish_budget_seconds=20.0,
+                                confirmations=3, min_dwell_seconds=2.0,
+                                confirm_seconds=10.0,
                                 sleep=time.sleep, clock=time.monotonic):
     """Leave an unresolved combat without re-engaging.
 
@@ -171,18 +189,80 @@ def resolve_combat_before_exit(backend, *, budget_seconds=60, poll_interval=0.5,
          confirmed in-session (docs/88).
 
     The retreat is a single movement request; no attack, no loot.
+
+    "The combat is over" is decided by the shared confirmation rule
+    (agent_wow_combat_state_machine.OutOfCombatConfirmator): the server has
+    to say so, more than once, over a dwell. The branch used to read
+    "in_combat is not True" as "combat cleared", which turned an UNKNOWN
+    combat state into a reported success.
     """
     started = clock()
     samples = []
     actions = []
+    # Samples taken while the passive wait was running. The wait has to end as
+    # soon as the hostile is seen to keep hitting: standing still only spends
+    # the character's health (2026-11-01 esc013).
+    wait_samples = 0
     observation = backend.observe()
-    samples.append(_sample(observation))
+    # The shared rule: the server has to say the combat is over, more than
+    # once, over a dwell. An unknown combat state is never a confirmation.
+    confirmator = OutOfCombatConfirmator(confirmations=confirmations,
+                                         min_seconds=min_dwell_seconds)
+
+    def feed(current):
+        """Record one sample and ask the shared rule whether it confirms."""
+        samples.append(_sample(current))
+        return confirmator.observe(current, clock())
+
+    def confirm_by(deadline):
+        """Sample until the rule confirms out of combat, or the deadline."""
+        nonlocal observation
+        while clock() < deadline:
+            sleep(poll_interval)
+            observation = backend.observe()
+            if feed(observation):
+                return True
+            if observation.in_combat is True:
+                return False  # Resume recovery immediately on re-engagement.
+        return False
+
+    def settled(reason, **extra):
+        """The combat is confirmed over."""
+        result = {'combat_cleared': True, 'samples': samples,
+                  'elapsed_s': round(clock() - started, 3),
+                  'final': observation, 'requests': _request_label(actions),
+                  'actions': actions, 'cleared_reason': reason,
+                  'reason': None, 'wait_samples': wait_samples,
+                  'out_of_combat_confirmations': confirmator.streak}
+        result.update(extra)
+        return result
+
+    def unsettled(reason, **extra):
+        """The combat was never confirmed over; say what is known."""
+        result = {'combat_cleared': False, 'samples': samples,
+                  'elapsed_s': round(clock() - started, 3),
+                  'final': observation, 'requests': _request_label(actions),
+                  'actions': actions, 'cleared_reason': None,
+                  'reason': reason, 'wait_samples': wait_samples,
+                  'combat_state_unknown': observation.in_combat is None,
+                  'out_of_combat_confirmations': confirmator.streak}
+        result.update(extra)
+        return result
+
+    feed(observation)
     if observation.in_combat is not True:
-        return {'combat_cleared': True, 'samples': samples,
-                'elapsed_s': round(clock() - started, 3),
-                'final': observation, 'requests': _request_label(actions),
-                'actions': actions, 'cleared_reason': 'not_in_combat',
-                'reason': None, 'retreat': None}
+        # Either the combat is already over, or its state is unknown. Neither
+        # may be reported as a success on a single sample, so the rule has to
+        # confirm it before the character counts as safe. Nothing is attacked
+        # here: the server already says there is nothing to fight.
+        already_clear = observation.in_combat is False
+        if confirm_by(clock() + confirm_seconds):
+            return settled('not_in_combat' if already_clear
+                           else _cleared_reason(samples, retreated=False),
+                           retreat=None)
+        if observation.in_combat is not True:
+            return unsettled('the combat state was never confirmed out of combat',
+                             retreat=None)
 
     # Stage 1: stop swinging. Without this the wait below is not passive: the
     # character keeps hitting the hostile, which is how esc008 turned a kill
@@ -199,27 +279,44 @@ def resolve_combat_before_exit(backend, *, budget_seconds=60, poll_interval=0.5,
     # between two samples. As soon as it does, the wait is abandoned and the
     # retreat starts, instead of burning the health floor (esc013, where the
     # character lost 43 HP standing still and died).
+    #
+    # The wait also ends as soon as the server says the combat is over: the
+    # branch must not start a new fight in that case. It still has to
+    # CONFIRM the clearance before reporting it.
     deadline = started + passive_seconds
+    server_clear = False
     while clock() < deadline:
         if observation.health is not None and observation.health <= min_health:
             break
         previous_health = observation.health
         sleep(poll_interval)
         observation = backend.observe()
-        samples.append(_sample(observation))
-        if observation.in_combat is not True:
-            return {'combat_cleared': True, 'samples': samples,
-                    'elapsed_s': round(clock() - started, 3),
-                    'final': observation, 'requests': _request_label(actions),
-                    'actions': actions,
-                    'cleared_reason': _cleared_reason(samples, retreated=False),
-                    'reason': None, 'retreat': None}
+        wait_samples += 1
+        if feed(observation):
+            return settled(_cleared_reason(samples, retreated=False), retreat=None)
+        if observation.in_combat is False:
+            # The server says the combat is over: stop acting, only confirm.
+            server_clear = True
+            break
         if observation.health is not None and observation.health <= min_health:
             break
         if (observation.health is not None and previous_health is not None
                 and observation.health < previous_health):
             # The mob is still hitting: waiting cannot end the combat.
             break
+
+    if server_clear:
+        # Confirm the clearance. No fight is started in this state: the server
+        # said the combat is over, so acting would be a new, unwanted fight.
+        if confirm_by(clock() + confirm_seconds):
+            return settled(_cleared_reason(samples, retreated=False), retreat=None)
+        if observation.in_combat is not True:
+            return unsettled('the combat state was never confirmed out of combat',
+                             retreat=None)
+
+    if observation.in_combat is not True:
+        return unsettled('combat state unknown; no offensive action authorized',
+                         retreat=None)
 
     # Stage 3: choose how to end the combat.
     #
@@ -232,6 +329,12 @@ def resolve_combat_before_exit(backend, *, budget_seconds=60, poll_interval=0.5,
     #
     # The route is planned first, because "no route" changes the decision:
     # with no route, standing still guarantees death, so fighting wins.
+    acquire = getattr(backend, 'acquire_attacker', None)
+    if acquire is not None and acquire():
+        actions.append('acquire_attacker')
+        observation = backend.observe()
+        if feed(observation):
+            return settled(_cleared_reason(samples, retreated=False), retreat=None)
     route = _plan_escape_route(backend)
     retreat = None
     ending = _combat_ending(observation, route, min_health=min_health,
@@ -243,16 +346,11 @@ def resolve_combat_before_exit(backend, *, budget_seconds=60, poll_interval=0.5,
                                       min_health=min_health, clock=clock)
         actions.append('finish_target')
         observation = fallback.get('final', observation)
-        if observation.in_combat is not True:
-            return {'combat_cleared': True, 'samples': samples,
-                    'elapsed_s': round(clock() - started, 3),
-                    'final': observation, 'requests': _request_label(actions),
-                    'actions': actions,
-                    'cleared_reason': _cleared_reason(samples, retreated=False,
-                                                       final=observation),
-                    'reason': None, 'retreat': None,
-                    'fallback': fallback, 'ending': ending}
-        if fallback.get('outcome') == 'preconditions_not_met':
+        if feed(observation):
+            return settled(_cleared_reason(samples, retreated=False, final=observation),
+                           retreat=None, fallback=fallback, ending=ending)
+        if fallback.get('outcome') in ('preconditions_not_met', 'no_target_to_finish',
+                                       'finish_failed', 'no_budget_left'):
             # The kill ending was not executable after all: the target broke
             # contact and could not be reached. Falling back to the escape is
             # the only ending left (2026-11-01 huntD: standing there while
@@ -264,44 +362,41 @@ def resolve_combat_before_exit(backend, *, budget_seconds=60, poll_interval=0.5,
         retreat = _perform_retreat(backend, observation, route, sleep=sleep, clock=clock)
         if retreat is not None:
             actions.append('retreat')
-            samples.extend(retreat.get('samples', []))
+            # The retreat already polled the server's combat flag while it
+            # waited. Those samples are the evidence, so they are fed to the
+            # shared rule instead of being sampled again here.
+            for raw in retreat.get('samples', []):
+                sample = {'health': raw.get('hp'), 'ghost': raw.get('ghost'),
+                          'in_combat': raw.get('in_combat'),
+                          'target_health': _target_health(observation)}
+                if 'transport_poll' in raw:
+                    sample['transport_poll'] = raw['transport_poll']
+                samples.append(sample)
+                if raw.get('at') is not None:
+                    confirmator.observe(_SampleView(sample), raw['at'])
             observation = retreat.get('final', observation)
-        if observation.in_combat is not True:
-            return {'combat_cleared': True, 'samples': samples,
-                    'elapsed_s': round(clock() - started, 3),
-                    'final': observation, 'requests': _request_label(actions),
-                    'actions': actions,
-                    'cleared_reason': _cleared_reason(samples, retreated=True,
-                                                       final=observation),
-                    'reason': None, 'retreat': retreat, 'ending': ending}
+        if confirmator.confirmed:
+            return settled(_cleared_reason(samples, retreated=True, final=observation),
+                           retreat=retreat, ending=ending)
 
     # Still in combat: keep observing, but never below the health floor.
     while clock() - started < budget_seconds:
         sleep(poll_interval)
         observation = backend.observe()
-        samples.append(_sample(observation))
-        if observation.in_combat is not True:
+        if feed(observation):
             break
         if observation.health is not None and observation.health <= min_health:
-            return {'combat_cleared': False, 'samples': samples,
-                    'elapsed_s': round(clock() - started, 3),
-                    'final': observation, 'requests': _request_label(actions),
-                    'actions': actions, 'cleared_reason': None,
-                    'reason': 'health floor reached while still in combat',
-                    'retreat': retreat, 'ending': ending}
-    cleared = observation.in_combat is not True
-    return {'combat_cleared': cleared, 'samples': samples,
-            'elapsed_s': round(clock() - started, 3),
-            'final': observation,
-            'requests': _request_label(actions),
-            'actions': actions,
-            'cleared_reason': (_cleared_reason(samples, retreated=retreat is not None,
-                                               final=observation)
-                               if cleared else None),
-            'reason': None if cleared else 'combat did not clear within budget',
-            'retreat': retreat,
-            'ending': ending,
-            'fallback': fallback if retreat is None else None}
+            return unsettled('health floor reached while still in combat',
+                             retreat=retreat, ending=ending)
+    cleared = confirmator.confirmed
+    if cleared:
+        return settled(_cleared_reason(samples, retreated=retreat is not None,
+                                       final=observation),
+                       retreat=retreat, ending=ending,
+                       fallback=fallback if retreat is None else None)
+    return unsettled('combat did not clear within budget',
+                     retreat=retreat, ending=ending,
+                     fallback=fallback if retreat is None else None)
 
 
 def _finish_the_target(backend, observation, *, started, budget_seconds=60,
@@ -442,10 +537,17 @@ def _perform_retreat(backend, observation, route, sleep=time.sleep, clock=time.m
     # keyed by field name. The rest of this module works with Observation
     # objects, so a dict here would make the caller read `.in_combat` off a
     # dict and raise AttributeError.
-    result['final'] = _as_observation(backend, observation, state)
     result['wait_seconds'] = wait_seconds
     result['route_length'] = round(length, 3)
     result['route'] = route
+    landing = _actual_landing(result.get('movement'))
+    if landing:
+        backend.submitted_position = list(landing)
+        backend.current_position = list(landing)
+        # Subsequent recovery must plan from the landing, never the old route.
+        backend._escape_route = None
+        backend._escape_route_target = None
+    result['final'] = _as_observation(backend, observation, state)
     # Did the character actually move? The bridge reports the position the
     # SERVER confirms, so this is measurable now: a retreat that does not
     # advance is blocked where it is, and saying so is worth more than a
@@ -517,9 +619,38 @@ def _plan_escape_route(backend, min_distance=ESCAPE_MIN_DISTANCE_YARDS):
     The reversed outbound route is the fallback: it is the only route that is
     known to be walkable, and it is used when no fresh route can be planned.
     """
+    current = (getattr(backend, 'submitted_position', None)
+               or getattr(backend, 'current_position', None)
+               or getattr(backend, 'observed_position', None))
+
+    def usable(route, trim=False):
+        if not route or not route.get('points'):
+            return None
+        points = route['points']
+        here = list(current[:3]) if current else route.get('origin')
+        if not here:
+            return None
+        if trim:
+            # Only resume at a coincident visited waypoint. Merely replacing
+            # origin would send the character back to the old route start.
+            matches = [i for i, p in enumerate(points)
+                       if math.dist(here, [p[k] for k in ('x', 'y', 'z')]) <= 1.0]
+            if not matches:
+                return None
+            points = points[max(matches):]
+        first = [points[0][k] for k in ('x', 'y', 'z')]
+        if math.dist(here, first) > 8.0:
+            return None
+        if _route_length([dict(zip(('x','y','z'), here))] + points) < .05:
+            return None
+        return {**route, 'points': points, 'origin': here}
+
     shared = getattr(backend, 'escape_route', None)
     if shared is not None:
-        route = shared()
+        try:
+            route = usable(shared(refresh=True))
+        except Exception:  # A failed planner still permits emergency reversal.
+            route = None
         if route:
             return route
     nav = getattr(backend, 'plan_escape_route', None)
@@ -528,8 +659,15 @@ def _plan_escape_route(backend, min_distance=ESCAPE_MIN_DISTANCE_YARDS):
             planned = nav(min_distance=min_distance)
         except Exception:  # noqa: BLE001 - fall back to the known route
             planned = None
-        if planned and planned.get('points'):
+        planned = usable(planned)
+        if planned:
             return planned
+    travel_return = usable(getattr(backend, 'travel_return_route', None), trim=True)
+    if travel_return:
+        length = _route_length(travel_return['points'])
+        return {**travel_return, 'fallback_distance_yards': round(length, 3),
+                'full_escape_distance': length >= min_distance,
+                'fallback_reason': 'fresh escape unavailable; emergency visited corridor only'}
     route = getattr(backend, 'outbound_route', None) or []
     origin = getattr(backend, 'outbound_origin', None)
     if not route or not origin:
@@ -538,10 +676,10 @@ def _plan_escape_route(backend, min_distance=ESCAPE_MIN_DISTANCE_YARDS):
     # route that starts and ends on the same spot, and the bridge refuses a
     # path whose length is 0 ("path length must be .05..50 yards",
     # 2026-11-01 b39_u1), so the character did not move at all.
-    return {'points': list(reversed(route)) + [dict(zip(('x', 'y', 'z'), origin[:3]))],
-            'origin': list(origin[:3]),
+    return usable({'points': list(reversed(route)) + [dict(zip(('x', 'y', 'z'), origin[:3]))],
+            'origin': list(current[:3]) if current else list(origin[:3]),
             'source': 'reversed submitted outbound route',
-            'planned_distance': None}
+            'planned_distance': None})
 
 
 def _as_observation(backend, previous, state):
@@ -585,6 +723,7 @@ def close_session(backend, *, report, budget_seconds=60, poll_interval=0.5,
     the session alive and supervise it instead of abandoning the character.
     """
     observation = backend.observe()
+    recovery = None
     result = {'initial_self': {'health': observation.health,
                                'ghost': observation.ghost,
                                'in_combat': observation.in_combat}}
@@ -622,6 +761,9 @@ def close_session(backend, *, report, budget_seconds=60, poll_interval=0.5,
             'retreat_rejection': retreat.get('rejection'),
             'retreat_chunks_sent': retreat.get('chunks_sent'),
             'retreat_path_source': retreat.get('path_source'),
+            'retreat_route_selection': {k: (retreat.get('route') or {}).get(k)
+                                       for k in ('source', 'origin', 'safe_anchor',
+                                                 'fallback_distance_yards', 'full_escape_distance')},
         }
         observation = recovery['final']
     if not living(observation):
@@ -640,6 +782,27 @@ def close_session(backend, *, report, budget_seconds=60, poll_interval=0.5,
                             'and be supervised - do not log out and do not close')
         report['finalize'] = result
         return result
+    poll = (getattr(observation, 'context', None) or {}).get('transport_poll')
+    poll_valid = (poll is None or (
+        poll.get('caught_up') is True
+        and isinstance(poll.get('polled_at_monotonic'), (int, float))
+        and 0 <= clock() - poll['polled_at_monotonic'] <= 2.0))
+    if observation.in_combat is None or not poll_valid:
+        # The combat state is unknown, which is not the same as "no combat".
+        # Logging out on an unknown state would tear the session down on a
+        # guess, and the server keeps hitting a character that is still in
+        # combat after the client is gone. The session stays open and the
+        # caller supervises it.
+        result['status'] = 'combat_state_unknown'
+        result['reason'] = ('the combat state was never confirmed; the session must stay '
+                            'open and be supervised - do not log out and do not close')
+        report['finalize'] = result
+        return result
+    if recovery is not None and recovery['combat_cleared'] is not True:
+        result['status'] = 'unresolved'
+        result['reason'] = 'out-of-combat confirmation incomplete; no logout attempted'
+        report['finalize'] = result
+        return result
     result['status'] = 'resolved'
     result['logout'] = backend.execute(_logout_action())
     if result['logout'].get('status') != 'closed':
@@ -653,3 +816,84 @@ def close_session(backend, *, report, budget_seconds=60, poll_interval=0.5,
 def _logout_action():
     from agent_wow_contract import Action
     return Action('logout', 'logout', {}, timeout=45)
+
+
+def finish_session(backend, *, report, budget_seconds=120, poll_interval=0.5,
+                   hold_ownership=False, checkpoint=None,
+                   finish_budget_seconds=20.0,
+                   sleep=time.sleep, clock=time.monotonic):
+    """Share guarded teardown across runners, including their exception paths.
+
+    Recovery/confirmation is retried while this function owns supervision.
+    Only an accepted logout or observed death/ghost permits transport close.
+    With hold_ownership, expiry starts another recovery window in this same
+    process. Otherwise expiry returns an explicit handoff requirement.
+    The budget bounds retries; a backend RPC already in progress has its own
+    timeout and may finish after this deadline.
+    """
+    if budget_seconds <= 0 or poll_interval <= 0:
+        raise ValueError('supervision budget and poll interval must be positive')
+    deadline = clock() + budget_seconds
+    attempts = []
+    result = {'status': 'requires_supervision', 'transport_closed': False,
+              'attempts': attempts, 'attempt_count': 0, 'windows_expired': 0}
+    report['session_ending'] = result
+    while True:
+        if clock() >= deadline:
+            result['windows_expired'] += 1
+            if not hold_ownership:
+                break
+            result['status'] = 'supervising'
+            deadline = clock() + budget_seconds
+        if checkpoint is not None:
+            try:
+                checkpoint(report)
+            except Exception as exc:
+                result['checkpoint_error'] = f'{type(exc).__name__}: {exc}'
+        try:
+            final = close_session(
+                backend, report=report,
+                budget_seconds=max(0, min(60, deadline - clock())),
+                finish_budget_seconds=finish_budget_seconds,
+                poll_interval=poll_interval, sleep=sleep, clock=clock)
+            attempts.append(final)
+            result['attempt_count'] += 1
+            del attempts[:-20]
+            logout_closed = (final.get('logout') or {}).get('status') == 'closed'
+            dead_or_ghost = False
+            if not logout_closed:
+                observation = backend.observe()
+                health = getattr(observation, 'health', None)
+                dead_or_ghost = (getattr(observation, 'ghost', False) is True
+                                 or (getattr(observation, 'health_transmitted', True)
+                                     and health is not None and health <= 0))
+            if logout_closed or dead_or_ghost:
+                backend.close()
+                result.update(status='closed', transport_closed=True,
+                              closed_after='logout' if logout_closed else 'death_or_ghost')
+                break
+        except Exception as exc:  # Preserve ownership on observation/recovery errors.
+            attempts.append({'error': f'{type(exc).__name__}: {exc}'})
+            result['attempt_count'] += 1
+            del attempts[:-20]
+            # There is no session to supervise if startup never produced an
+            # owner process or the owner has already exited. Do not claim the
+            # character is safe, but return for explicit reconciliation rather
+            # than spin forever on a dead RPC endpoint.
+            session = getattr(backend, 'session', None)
+            process = getattr(session, 'process', None)
+            if session is None or (process is not None and process.poll() is not None):
+                result['status'] = 'connection_lost_requires_reconciliation'
+                result['reason'] = 'no live session owner; character state not inferred'
+                break
+        sleep(poll_interval)
+    if not result['transport_closed']:
+        result['reason'] = ('safe termination not established; transport left open; '
+                            'an active supervisor must take ownership')
+    report['session_ending'] = result
+    if checkpoint is not None:
+        try:
+            checkpoint(report)
+        except Exception as exc:
+            result['checkpoint_error'] = f'{type(exc).__name__}: {exc}'
+    return result

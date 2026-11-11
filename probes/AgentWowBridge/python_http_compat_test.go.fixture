@@ -1,0 +1,32 @@
+package worldrpc
+
+import (
+ "net/http/httptest"
+ "os"
+ "os/exec"
+ "testing"
+
+ "github.com/agent-wow/agent-wow/pkg/world"
+)
+
+type pythonEvidenceSession struct { fakeSession }
+func (*pythonEvidenceSession) ConnectionEvidenceV1() world.ConnectionEvidenceV1 {
+ at := int64(900)
+ id := uint32(7)
+ return world.ConnectionEvidenceV1{SchemaVersion:1, SessionID:"isolated-http-session",
+  Status:world.InWorld, CharacterGUID:9007199254740993, SampledAtMS:1000,
+  LastValidPongMS:&at, PingID:&id, ValidForMS:90000, ValidPong:true}
+}
+
+func TestPythonHTTPConnectionEvidenceCompatibility(t *testing.T) {
+ script := os.Getenv("PYTHON_HTTP_COMPAT_SCRIPT")
+ if script == "" { t.Skip("explicit offline Python probe path required") }
+ current := httptest.NewServer(Handler(&pythonEvidenceSession{}))
+ defer current.Close()
+ legacy := httptest.NewServer(Handler(&fakeSession{}))
+ defer legacy.Close()
+ output, err := exec.Command("python3", "-B", script,
+  current.URL+"/rpc", legacy.URL+"/rpc").CombinedOutput()
+ if err != nil { t.Fatalf("%v\n%s",err,output) }
+ t.Log(string(output))
+}

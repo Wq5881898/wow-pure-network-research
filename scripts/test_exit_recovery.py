@@ -339,8 +339,14 @@ class ExitRecoveryTests(unittest.TestCase):
                                             clock=Clock())
         self.assertIn('rpc:bridge.follow_path', backend.requests,
                       'a hostile that keeps hitting must trigger the retreat')
-        self.assertLessEqual(len(result['samples']), 4,
+        # The guard is about the WAIT, not about the total sample count: the
+        # wait must not run the full passive window while the hostile keeps
+        # hitting. The samples after the wait belong to the retreat's own
+        # confirmation of the cleared combat, and they cost no health.
+        self.assertLessEqual(result['wait_samples'], 3,
                              'the wait must not run the full passive window')
+        self.assertLessEqual(len(result['samples']), 8,
+                             'the whole branch must stay bounded')
 
     def test_a_stationary_mob_gets_the_full_passive_window(self):
         backend = FakeBackend([Observation(71, in_combat=True),

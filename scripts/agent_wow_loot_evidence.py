@@ -1,6 +1,26 @@
 """Identify item-push replies strictly after the corresponding take request."""
 
 
+def loot_confirmed(before, after, evidence, required_entry=None):
+    """Require actual matching inventory gain, not an unrelated default item."""
+    if any(evidence.get(key) for key in ('take_error', 'observation_error', 'reason',
+                                       'release_error', 'loot_open_error')):
+        return False
+    if (evidence.get('released') or {}).get('result') is None:
+        return False
+    attempted = set(evidence.get('attempted_take_entries') or [])
+    for push in evidence.get('confirmed_item_pushes') or []:
+        entry = push.get('entry')
+        if entry not in attempted or (required_entry is not None and entry != required_entry):
+            continue
+        start = before.get('item_totals', {}).get(str(entry), 0)
+        end = after.get('item_totals', {}).get(str(entry), 0)
+        if (type(start) is int and type(end) is int and type(push.get('count')) is int
+                and push['count'] > 0 and end >= start + push['count']):
+            return True
+    return False
+
+
 def item_pushes(state, after_sequence, player_guid, item_entry, before_inventory_count=None):
     return [
         {'sequence': event['sequence'], **event['loot']}

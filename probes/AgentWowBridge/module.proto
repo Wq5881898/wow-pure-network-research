@@ -8,12 +8,15 @@ message CreatureQueryRequest { uint32 entry = 1; uint64 guid = 2; }
 message StepRequest { float distance = 1; }
 message StepResponse { repeated float submitted_position = 1; uint32 elapsed_ms = 2; }
 message Waypoint { float x = 1; float y = 2; float z = 3; }
-message PathRequest { repeated Waypoint points = 1; bool run = 2; }
+message PathRequest { repeated Waypoint points = 1; bool run = 2; bool swim = 3; }
 message AttackRequest { uint64 guid = 1; }
 message FaceRequest { float angle = 1; }
 message LootRequest { uint64 guid = 1; }
 message LootSlotRequest { uint32 slot = 1; }
 message QuestRequest { uint64 guid = 1; uint32 quest = 2; }
+message SellRequest { uint64 vendor_guid = 1; uint64 item_guid = 2; uint32 count = 3; }
+message RepairRequest { uint64 vendor_guid = 1; uint64 item_guid = 2; }
+message EquipRequest { uint64 item_guid = 1; uint32 slot = 2; }
 message Packet { uint64 sequence = 1; uint32 monotonic_ms = 2; uint32 opcode = 3; bytes payload = 4; }
 message PollResponse {
  string session_id = 1;
@@ -25,6 +28,10 @@ message PollResponse {
  uint64 dropped = 7;
 }
 service Bridge {
+ rpc EquipItem(EquipRequest) returns (google.protobuf.Empty);
+ rpc RepairItem(RepairRequest) returns (google.protobuf.Empty);
+ rpc VendorInventory(LootRequest) returns (google.protobuf.Empty);
+ rpc SellItem(SellRequest) returns (google.protobuf.Empty);
  rpc SpiritHealer(LootRequest) returns (google.protobuf.Empty);
  rpc StartAttack(AttackRequest) returns (google.protobuf.Empty);
  rpc ReleaseSpirit(google.protobuf.Empty) returns (google.protobuf.Empty);

@@ -85,25 +85,27 @@ def main():
             out.write_text(json.dumps(report, indent=2), encoding='utf-8')
             report['complete_reply'] = backend.rpc(
                 'bridge.complete_quest', {'guid': report['npc'], 'quest': quest})
-            deadline = time.monotonic() + 8.0
-            while time.monotonic() < deadline:
-                time.sleep(.5)
-                now = backend.observe().to_dict()
-                report['after'] = now
-                if quest_state(now, quest) is None or quest_state(now, quest).get('state') != 1:
-                    report['status'] = 'turned_in'
-                    break
-            if report['status'] == 'unknown':
-                report['reward_reply'] = backend.rpc(
-                    'bridge.reward_quest', {'guid': report['npc'], 'quest': quest})
+            with backend.activity.phase('quest_complete_wait', quest=quest, budget_seconds=8):
                 deadline = time.monotonic() + 8.0
                 while time.monotonic() < deadline:
                     time.sleep(.5)
                     now = backend.observe().to_dict()
                     report['after'] = now
                     if quest_state(now, quest) is None or quest_state(now, quest).get('state') != 1:
-                        report['status'] = 'turned_in_after_reward'
+                        report['status'] = 'turned_in'
                         break
+            if report['status'] == 'unknown':
+                report['reward_reply'] = backend.rpc(
+                    'bridge.reward_quest', {'guid': report['npc'], 'quest': quest})
+                with backend.activity.phase('quest_reward_wait', quest=quest, budget_seconds=8):
+                    deadline = time.monotonic() + 8.0
+                    while time.monotonic() < deadline:
+                        time.sleep(.5)
+                        now = backend.observe().to_dict()
+                        report['after'] = now
+                        if quest_state(now, quest) is None or quest_state(now, quest).get('state') != 1:
+                            report['status'] = 'turned_in_after_reward'
+                            break
                 if report['status'] == 'unknown':
                     report['status'] = 'still_listed'
         final = backend.observe().to_dict()

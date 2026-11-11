@@ -36,7 +36,8 @@ def main():
                'recovery': inspect(OUT / 'recovery/vss11_2026-10-29' / name)}
         for number in (8, 9, 10, 11):
             source = Path('\\\\?\\GLOBALROOT\\Device\\HarddiskVolumeShadowCopy' + str(number))
-            original_root = ROOT.parent if ROOT.name == 'pure-network' else ROOT
+            # VSS contains the pre-split parent directory, not the current checkout.
+            original_root = Path(r'C:\APP\opencode\project\WoW自动化预研')
             path = source / original_root.relative_to(original_root.anchor) / 'results' / name
             row[f'vss{number}'] = inspect(path)
         rows.append(row)

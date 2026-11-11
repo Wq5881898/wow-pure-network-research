@@ -121,6 +121,22 @@ class CloseGuardTests(unittest.TestCase):
         backend.session.close.assert_called_once()
         self.assertTrue(backend.result.get('close_forced_in_combat'))
 
+    def test_refuses_to_close_a_living_character_with_an_unknown_state(self):
+        # An unknown combat state may still be a fight, and the server keeps
+        # hitting a character that is in combat after the client is gone.
+        backend = self.make_backend(71, False, None)
+        with self.assertRaises(RuntimeError) as ctx:
+            backend.close()
+        self.assertIn('combat state is unknown', str(ctx.exception))
+        backend.session.close.assert_not_called()
+        self.assertIn('close_refused', backend.result)
+
+    def test_force_overrides_the_unknown_state_refusal(self):
+        backend = self.make_backend(71, False, None)
+        backend.close(force=True)
+        backend.session.close.assert_called_once()
+        self.assertTrue(backend.result.get('close_forced_unknown_combat'))
+
     def test_refusal_still_writes_the_trace(self):
         backend = self.make_backend(71, False, True)
         with self.assertRaises(RuntimeError):

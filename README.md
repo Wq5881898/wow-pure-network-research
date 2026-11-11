@@ -4,6 +4,9 @@ AzerothCore 本地实验的独立工程，使用协议会话、JSON-RPC 事件�
 
 ## 入口
 
+- 当前独立目录：`C:\APP\opencode\project\wow pure network`（WSL：`/mnt/c/APP/opencode/project/wow pure network`）。所有命令以此目录为 workdir。
+- 迁移与来源清单：`docs/migration/`。原始历史报告中的旧目录仅供溯源，不代表当前执行入口。
+
 - `docs/00_上下文交接.md`：目标、实验状态、约束与后续任务。
 - `docs/66_删除事故直接证据与快照恢复_2026-10-29.md`：事故直接证据。
 - `scripts/agent_wow_batch.py`：有界批次协调器。

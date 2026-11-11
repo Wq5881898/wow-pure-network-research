@@ -7,6 +7,10 @@ compose:
 grpc:
   descriptor_set: module.pb
 rpc:
+  equip_item: /research.bridge.v1.Bridge/EquipItem
+  repair_item: /research.bridge.v1.Bridge/RepairItem
+  vendor_inventory: /research.bridge.v1.Bridge/VendorInventory
+  sell_item: /research.bridge.v1.Bridge/SellItem
   spirit_healer: /research.bridge.v1.Bridge/SpiritHealer
   start_attack: /research.bridge.v1.Bridge/StartAttack
   release_spirit: /research.bridge.v1.Bridge/ReleaseSpirit
@@ -28,6 +32,9 @@ rpc:
   query_creature: /research.bridge.v1.Bridge/QueryCreature
   poll: /research.bridge.v1.Bridge/Poll
 packets:
+  SMSG_LIST_INVENTORY: /research.bridge.v1.Bridge/OnPacket
+  SMSG_SELL_ITEM: /research.bridge.v1.Bridge/OnPacket
+  SMSG_INVENTORY_CHANGE_FAILURE: /research.bridge.v1.Bridge/OnPacket
   SMSG_SPELLNONMELEEDAMAGELOG: /research.bridge.v1.Bridge/OnPacket
   SMSG_PERIODICAURALOG: /research.bridge.v1.Bridge/OnPacket
   MSG_CORPSE_QUERY: /research.bridge.v1.Bridge/OnPacket

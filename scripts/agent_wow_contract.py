@@ -344,7 +344,15 @@ class TaskExecutor:
                 evidence = dict(evidence) if isinstance(evidence, dict) else {'evidence': evidence}
                 evidence['executor_deadline_exceeded'] = True
             try:
-                after = self.observe()
+                if (action.kind == 'logout' and evidence.get('status') == 'closed'
+                        and not evidence.get('error')):
+                    # Logout destroys the observation channel. Its explicit
+                    # server-confirmed acknowledgement is the terminal evidence;
+                    # retaining before is not a fresh post-logout observation.
+                    after = before
+                    evidence['post_observation_scope'] = 'unavailable after accepted logout'
+                else:
+                    after = self.observe()
             except Exception as exc:  # noqa: BLE001 - a closed session must not crash the run
                 after = before
                 evidence = dict(evidence) if isinstance(evidence, dict) else {}
@@ -389,6 +397,8 @@ class TaskExecutor:
                 self._write_checkpoint(status)
                 break
             self._write_checkpoint(status)
+            if outcome == SUCCESS and action.kind == 'logout':
+                break  # No further action or observation on a closed session.
         if status == SUCCESS:
             self._write_checkpoint(status)
         return {'run_id': self.run_id, 'status': status, 'results': [r.to_dict() for r in results],

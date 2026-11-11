@@ -4,8 +4,8 @@ docs/73: stop outside the spawn area, then a fresh login observes whether a
 live level<=3 3101 is there and whether it has a workable approach route.
 Static spawn points are not live target evidence.
 
-This logs in, lists the visible creatures with their entry and level, and
-checks the quest counter. It attacks nothing.
+This logs in, lists creatures and checks quest counters. Cleanup may stop
+attacks or retreat, but it is not allowed to resume offensive combat.
 """
 import argparse
 import json
@@ -75,15 +75,19 @@ def main():
         report['verdict'] = ('live level<=%d %d present' % (args.max_level, args.target_entry)
                               if candidates else
                               'no live level<=%d %d in view' % (args.max_level, args.target_entry))
-        report['status'] = 'PASS'
-        report['logout'] = backend._do_logout({}, 45)
+        report['status'] = 'OBSERVED'
     except SystemExit:
         raise
     except Exception as exc:
         report['error'] = f'{type(exc).__name__}: {exc}'
     finally:
         try:
-            backend.close(force=True)
+            from agent_wow_exit_recovery import finish_session
+            ending = finish_session(backend, report=report, hold_ownership=True,
+                                    finish_budget_seconds=0)
+            if (ending.get('closed_after') == 'logout'
+                    and report.get('status') == 'OBSERVED'):
+                report['status'] = 'PASS'
         except Exception as exc:
             report.setdefault('close_error', f'{type(exc).__name__}: {exc}')
         with (folder / f'agent_wow_huntobs_{args.run_id}.json').open('x', encoding='utf-8') as handle:

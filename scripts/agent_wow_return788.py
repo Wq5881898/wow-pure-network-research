@@ -6,7 +6,8 @@ import sys
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
-LINUX='/mnt/c/APP/opencode/project/WoW自动化预研/pure-network'
+from project_paths import wsl_path
+LINUX=wsl_path(ROOT)
 previous=ROOT/'results/pure_network/agent_wow_bridge_run66_quest788_controlled.json'
 data=json.loads(previous.read_text())
 current=data.get('approach_refreshes',[])

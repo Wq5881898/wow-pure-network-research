@@ -9,11 +9,26 @@ accepts.
 import math
 import time
 
+from agent_wow_combat_state_machine import OutOfCombatConfirmator
+
 MAX_SEGMENT_YARDS = 15.0
 MAX_TOTAL_YARDS = 50.0
 MAX_HEIGHT_YARDS = 3.0
 MAX_POINTS = 128
 MAX_MIN_YARDS = 0.05
+
+
+class _SampleView:
+    """A retreat sample in the shape the shared confirmation rule reads."""
+
+    __slots__ = ('in_combat', 'health', 'health_transmitted', 'context', 'ghost')
+
+    def __init__(self, sample):
+        self.in_combat = sample.get('in_combat')
+        self.health = sample.get('hp')
+        self.ghost = sample.get('ghost', False)
+        self.health_transmitted = sample.get('hp') is not None
+        self.context = {'transport_poll': sample['transport_poll']} if 'transport_poll' in sample else {}
 
 
 def _chunk_ok(chunk, anchor, max_segment=MAX_SEGMENT_YARDS,
@@ -128,16 +143,17 @@ def _chunks(points, origin=None, max_segment=MAX_SEGMENT_YARDS,
 
 
 def retreat(rpc, drain, outbound_points, origin, wait_seconds=15,
-            sleep=time.sleep, clock=time.monotonic, route=None):
+            sleep=time.sleep, clock=time.monotonic, route=None,
+            confirmations=3, min_dwell_seconds=2.0):
     # Reverse the actual submitted route rather than invent a straight escape,
     # unless the caller already planned an ordered escape route (a route that
     # ends far from the hostile, planned on the navmesh).
     if route is None:
         # The reversed outbound route, walked back to where the character
         # started. The far end of the outbound route has to be kept:
-        # dropping it left a route that starts and ends on the same spot,
-        # and a path like that is refused by the bridge (its length is 0),
-        # so the character did not move at all.
+        # dropping it left a route that starts and ends on the same spot, and
+        # a path like that is refused by the bridge (its length is 0), so the
+        # character did not move at all.
         points = list(reversed(outbound_points)) + [dict(zip(('x', 'y', 'z'), origin[:3]))]
         source = 'reversed submitted navmesh route'
     else:
@@ -148,25 +164,51 @@ def retreat(rpc, drain, outbound_points, origin, wait_seconds=15,
     # so the walk is submitted in the sizes it accepts.
     sent = []
     rejected = []
+    result['samples'] = []
+    confirmator = OutOfCombatConfirmator(confirmations=confirmations,
+                                         min_seconds=min_dwell_seconds)
+
+    def sample_state():
+        state = drain()
+        me = state['self']
+        sample = {'hp': me['health'], 'ghost': me['ghost'],
+                  'in_combat': me['in_combat'], 'at': clock()}
+        if 'transport_poll' in state:
+            sample['transport_poll'] = state['transport_poll']
+        result['samples'].append(sample)
+        confirmator.observe(_SampleView(sample), sample['at'])
+        return state
+
     for chunk in _chunks(points, origin):
         reply = rpc('bridge.follow_path', {'points': chunk, 'run': True})
         sent.append(reply)
+        state = sample_state()
         if 'error' in reply:
             rejected.append(reply['error'].get('message', 'path rejected'))
             break
+        if state['self']['health'] == 0 or state['self']['ghost']:
+            result.update(movement=sent, chunks_sent=len(sent), outcome='dead')
+            return result, state
+        # Continue to the planned safe endpoint even across transient clean
+        # flags. Drain each chunk so death/re-engagement is never hidden by
+        # the whole long route's unread packet queue.
     result['movement'] = sent
     result['chunks_sent'] = len(sent)
     if rejected:
         result['outcome'] = 'retreat_movement_rejected'
         result['rejection'] = rejected[-1]
-        return result, drain()
+        return result, state
+    # "The combat is over" is decided by the shared rule: the server has to
+    # say so, more than once, over a dwell. The first clean sample used to
+    # end the wait, which turned a single reading into a reported success.
     deadline = clock() + wait_seconds
-    result['samples'] = []
     while True:
-        state = drain(); me = state['self']
-        result['samples'].append({'hp': me['health'], 'ghost': me['ghost'], 'in_combat': me['in_combat']})
+        state = sample_state(); me = state['self']
+        confirmed = confirmator.confirmed
         if me['health'] == 0 or me['ghost']: result['outcome'] = 'dead'; break
-        if me['in_combat'] is False: result['outcome'] = 'out_of_combat'; break
+        if confirmed: result['outcome'] = 'out_of_combat'; break
         if clock() >= deadline: result['outcome'] = 'still_in_combat'; break
         sleep(.3)
+    result['combat_cleared'] = confirmator.confirmed
+    result['out_of_combat_confirmations'] = confirmator.streak
     return result, state

@@ -366,8 +366,24 @@ def replay(trace, _resume=None):
                 decoded = []
             elif op in (0x143,0x144,0x14a):
                 # Preserve combat samples; minimal semantic parse added separately.
+                if op==0x143:
+                    r=Reader(data)
+                    attack={'attacker_guid':str(r.unpack('Q')[0]),'target_guid':str(r.unpack('Q')[0])}
+                    r.end()
+                    events.append({'sequence':seq,'kind':'attack_start','attack':attack})
                 if op==0x144: events.append({"sequence":seq,"kind":"attack_stop","attack":attack_stop(data)})
                 if op==0x14a: events.append({"sequence":seq,"kind":"attacker_state","attack":attacker_state(data)})
+                decoded = []
+            elif op in (0x19f, 0x1a1):
+                events.append({'sequence': seq, 'kind': 'vendor', 'opcode': op,
+                               'payload_base64': base64.b64encode(data).decode()})
+                decoded = []
+            elif op == 0x112:
+                if not data:
+                    raise DecodeError('empty inventory failure payload')
+                events.append({'sequence': seq, 'kind': 'inventory_failure',
+                               'opcode': op, 'inventory_error_code': data[0],
+                               'payload_base64': base64.b64encode(data).decode()})
                 decoded = []
             elif op in (0x160,0x161,0x162,0x166):
                 events.append({'sequence':seq,'kind':'loot','opcode':op,'loot':loot_packet(op,data)})
@@ -410,6 +426,9 @@ def replay(trace, _resume=None):
                     if guid not in objects: raise DecodeError(f"delta without create: {guid}")
                     obj = objects[guid]
                     obj["fields"].update(e.get("fields", {}))
+                    if "59" in e.get("fields", {}):
+                        obj['combat_flag_sequence'] = seq
+                        obj['combat_flag_packet_ms'] = packet.get('monotonic_ms')
                     if "movement" in e: obj["movement"] = e["movement"]
                     obj["last_seq"] = seq
                 events.append({"sequence": seq, **e})
@@ -439,12 +458,13 @@ class IncrementalWorld:
         self.self_guid=self_guid
         self._state=[{},[],[],0,None,{},[]]
         self.packet_count=0
+        self.max_packets=4096
 
     def apply(self,packets):
         if packets and packets[0]['sequence']!=self._state[3]+1:
             raise DecodeError('incremental cursor mismatch')
         self.packet_count+=len(packets)
-        if self.packet_count>4096:raise DecodeError('incremental packet budget exceeded')
+        if self.packet_count>self.max_packets:raise DecodeError('incremental packet budget exceeded')
         return replay({'session_id':self.session_id,'self_guid':self.self_guid,'capture_complete':True,'packets':packets},self._state)
 
 

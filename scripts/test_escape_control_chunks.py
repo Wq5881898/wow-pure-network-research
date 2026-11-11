@@ -41,6 +41,37 @@ def line(from_xyz, to_xyz, step=3.0):
 
 
 class EscapeChunkTests(unittest.TestCase):
+    def test_long_retreat_drains_each_chunk_and_continues_after_transient_clear(self):
+        from agent_wow_escape_control import retreat
+        events = []
+        flags = iter([False, True, False, False, False, False])
+        def rpc(method, params):
+            events.append(method)
+            return {'result':{'submittedPosition':[params['points'][-1][k]
+                       for k in ('x','y','z')]}} if 'points' in params else {}
+        def drain():
+            events.append('drain')
+            return {'self':{'health':100,'ghost':False,'in_combat':next(flags,False)}}
+        from test_exit_recovery import Clock
+        result, _ = retreat(rpc,drain,[],[0,0,0],route=line([0,0,0],[140,0,0]),
+                            sleep=lambda _:None,clock=Clock())
+        self.assertEqual(result['chunks_sent'],3)
+        for i,event in enumerate(events):
+            if event == 'bridge.follow_path':
+                self.assertEqual(events[i+1],'drain')
+        self.assertEqual(result['outcome'],'out_of_combat')
+
+    def test_death_between_chunks_prevents_further_movement(self):
+        from agent_wow_escape_control import retreat
+        calls = []
+        def rpc(method,params):
+            calls.append(method)
+            return {}
+        result, _ = retreat(rpc,lambda:{'self':{'health':0,'ghost':False,'in_combat':True}},
+                            [],[0,0,0],route=line([0,0,0],[140,0,0]))
+        self.assertEqual(result['outcome'],'dead')
+        self.assertEqual(calls.count('bridge.follow_path'),1)
+
     def test_every_chunk_is_accepted_by_the_bridge(self):
         origin = [0.0, 0.0, 0.0]
         route = line([0.0, 0.0, 0.0], [120.0, 0.0, 0.0])

@@ -15,10 +15,12 @@ instead of looping forever.
 import argparse
 import json
 import os
+import shlex
 import subprocess
 import sys
 import time
 from pathlib import Path
+from project_paths import wsl_path
 
 ROOT = Path(__file__).resolve().parents[1]
 FOLDER = ROOT / 'results' / 'pure_network'
@@ -58,7 +60,7 @@ def alive_state():
     script = Path('/mnt/c/Users/qrz/AppData/Local/Temp/opencode/esc010_check.py')
     result = subprocess.run(['wsl', '-d', 'WoWLab', '--', 'bash', '-lc',
                              'cd %s && PYTHONPATH=scripts python3 %s'
-                             % (ROOT, script)],
+                             % (shlex.quote(wsl_path(ROOT)), shlex.quote(str(script)))],
                             capture_output=True, text=True, timeout=300)
     text = result.stdout
     ghost = '"ghost": true' in text
@@ -69,7 +71,7 @@ def revive(run_id):
     script = Path('/mnt/c/Users/qrz/AppData/Local/Temp/opencode/recover.py')
     result = subprocess.run(['wsl', '-d', 'WoWLab', '--', 'bash', '-lc',
                              'cd %s && PYTHONPATH=scripts python3 %s'
-                             % (ROOT, script)],
+                             % (shlex.quote(wsl_path(ROOT)), shlex.quote(str(script)))],
                             capture_output=True, text=True, timeout=600)
     return '"status": "revived"' in result.stdout
 
@@ -164,7 +166,7 @@ def main():
              'cd %s && timeout 900 python3 scripts/agent_wow_quest_batch.py '
              '--batch-id %s --kill-slot 0 --objective-total 1 --combat-entry %d '
              '--max-target-level %d --units %d --combat-budget 90 '
-             '--objective-optional' % (ROOT, batch_id, options.entry,
+             '--objective-optional' % (shlex.quote(wsl_path(ROOT)), batch_id, options.entry,
                                        options.max_level, options.units)],
             timeout=1200)
         report = FOLDER / ('agent_wow_quest_batch_%s.json' % batch_id)

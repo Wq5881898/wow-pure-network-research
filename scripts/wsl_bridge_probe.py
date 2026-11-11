@@ -9,7 +9,7 @@ import threading
 import time
 import urllib.request
 from pathlib import Path
-from wsl_lab_connect import Relay, Server, root, gateway
+from wsl_lab_connect import Relay, Server, root, relay_gateway
 from agent_wow_session import ensure_bridge_module
 from agent_wow_worldstate import replay, IncrementalWorld
 from agent_wow_combat_control import fight, estimated_position
@@ -47,7 +47,7 @@ if not options.run_id.replace('_','').isalnum():raise SystemExit("invalid run ID
 folder = work/"bridge-live"
 ensure_bridge_module()
 
-result={"status":"INCOMPLETE","gateway":gateway,"scope":"Docker bridge world-state substream","operations":[]}
+result={"status":"INCOMPLETE","gateway":relay_gateway(),"scope":"Docker bridge world-state substream","operations":[]}
 packets=[];cursor=0;session_id=None
 incremental=None;incremental_cursor=0
 servers=[];process=None

@@ -1,0 +1,188 @@
+diff --git a/pkg/world/session.go b/pkg/world/session.go
+--- a/pkg/world/session.go
++++ b/pkg/world/session.go
+@@ -26,6 +26,7 @@ type Session struct {
+ 	logger       *slog.Logger
+ 	mu           sync.RWMutex
+ 	state        State
++	connectionEvidence connectionEvidence
++	connectionID string
+ 	err          error
+ 	done         chan struct{}
+ 	abort        chan struct{}
+@@ -3,6 +3,7 @@
+ import (
+ 	"context"
++	"crypto/rand"
+ 	"encoding/json"
+ 	"errors"
+ 	"fmt"
+@@ -109,2 +110,3 @@
++	s.connectionID = rand.Text()
+ 	ready := make(chan struct{})
+ 	go s.run(ready, timing)
+diff --git a/pkg/world/protocol.go b/pkg/world/protocol.go
+--- a/pkg/world/protocol.go
++++ b/pkg/world/protocol.go
+@@ -45,6 +45,9 @@ func (e *engine) handle(op uint16, body []byte) (bool, error) {
+ 					delete(e.pings, id)
+ 				}
+ 			}
++			e.s.mu.Lock()
++			e.s.connectionEvidence = connectionEvidence{received: time.Now(), validFor: e.timing.pong, pingID: sequence}
++			e.s.mu.Unlock()
+ 			e.pongTimer.Reset(e.timing.pong)
+ 		}
+ 	case opcode.SMSGCharacterLoginFailed:
+diff --git a/pkg/world/connection_evidence.go b/pkg/world/connection_evidence.go
+new file mode 100644
+--- /dev/null
++++ b/pkg/world/connection_evidence.go
+@@ -0,0 +1,50 @@
++package world
++
++import "time"
++
++// connectionEvidence is updated only after the owner matches an unexpired Ping.
++type connectionEvidence struct {
++	received time.Time
++	validFor time.Duration
++	pingID uint32
++}
++
++// ConnectionEvidenceV1 is a read-only snapshot, not permission for gameplay.
++// All times are relative to this process's session origin, never wall time.
++type ConnectionEvidenceV1 struct {
++	SchemaVersion int `json:"schema_version"`
++	SessionID string `json:"session_id"`
++	Status Status `json:"status"`
++	CharacterGUID uint64 `json:"character_guid,string"`
++	SampledAtMS int64 `json:"sampled_at_ms"`
++	LastValidPongMS *int64 `json:"last_valid_pong_ms"`
++	PingID *uint32 `json:"ping_id"`
++	ValidForMS int64 `json:"valid_for_ms"`
++	ValidPong bool `json:"valid_pong"`
++	Error string `json:"error,omitempty"`
++}
++
++func (s *Session) ConnectionEvidenceV1() ConnectionEvidenceV1 {
++	s.mu.RLock()
++	defer s.mu.RUnlock()
++	now := time.Now()
++	out := ConnectionEvidenceV1{
++		SchemaVersion: 1, Status: s.state.Status,
++		SessionID: s.connectionID,
++		CharacterGUID: s.state.Character.GUID,
++		SampledAtMS: now.Sub(s.started).Milliseconds(),
++		Error: s.state.Error,
++	}
++	if !s.connectionEvidence.received.IsZero() {
++		e := s.connectionEvidence
++		at := e.received.Sub(s.started).Milliseconds()
++		id := e.pingID
++		out.LastValidPongMS = &at
++		out.PingID = &id
++		out.ValidForMS = e.validFor.Milliseconds()
++		out.ValidPong = now.Sub(e.received) >= 0 && now.Sub(e.received) < e.validFor &&
++			(s.state.Status == InWorld || s.state.Status == LoggingOut)
++	}
++	return out
++}
++
++// Querying this snapshot performs no writes and never resets the watchdog.
++// A missing or expired Pong remains false, even if the RPC is responsive.
+diff --git a/pkg/worldrpc/router.go b/pkg/worldrpc/router.go
+--- a/pkg/worldrpc/router.go
++++ b/pkg/worldrpc/router.go
+@@ -22,6 +22,18 @@ type Session interface {
+ // mapping. HTTP handling and JSON-RPC envelopes remain in server.go.
+ func routeMethod(ctx context.Context, session Session, method string, params json.RawMessage) (any, *rpcError) {
+ 	switch method {
++	case "session.connectionEvidenceV1":
++		if !emptyParams(params) {
++			return nil, &rpcError{Code: -32602, Message: "Invalid params: this method takes no arguments"}
++		}
++		provider, ok := session.(interface {
++			ConnectionEvidenceV1() world.ConnectionEvidenceV1
++		})
++		if !ok {
++			return nil, &rpcError{Code: -32601, Message: "Connection evidence v1 unavailable"}
++		}
++		return provider.ConnectionEvidenceV1(), nil
+ 	case "session.logout":
+ 		if !emptyParams(params) {
+ 			return nil, &rpcError{Code: -32602, Message: "Invalid params: this method takes no arguments"}
+diff --git a/pkg/world/connection_evidence_test.go b/pkg/world/connection_evidence_test.go
+new file mode 100644
+--- /dev/null
++++ b/pkg/world/connection_evidence_test.go
+@@ -0,0 +1,31 @@
++package world
++
++import (
++ "encoding/binary"
++ "testing"
++ "time"
++)
++
++func TestConnectionEvidenceValidation(t *testing.T) {
++ s := &Session{started: time.Now(), state: State{Status: InWorld}}
++ timer := time.NewTimer(time.Minute)
++ defer timer.Stop()
++ e := engine{s:s, timing:timings{pong:time.Second}, pongTimer:timer,
++  pings:map[uint32]time.Time{7:time.Now(), 8:time.Now().Add(-2*time.Second)}}
++ for _, id := range []uint32{99,8} {
++  if _, err := e.handle(0x1dd,binary.LittleEndian.AppendUint32(nil,id)); err != nil { t.Fatal(err) }
++  if s.ConnectionEvidenceV1().LastValidPongMS != nil { t.Fatal("invalid Pong recorded") }
++ }
++ if _, err := e.handle(0x1dd,binary.LittleEndian.AppendUint32(nil,7)); err != nil { t.Fatal(err) }
++ at := s.connectionEvidence.received
++ for i:=0; i<3; i++ { if !s.ConnectionEvidenceV1().ValidPong { t.Fatal("matched Pong rejected") } }
++ if !s.connectionEvidence.received.Equal(at) { t.Fatal("query renewed watchdog") }
++ s.connectionEvidence.received = time.Now().Add(-2*time.Second)
++ if s.ConnectionEvidenceV1().ValidPong { t.Fatal("expired evidence accepted") }
++ s.connectionEvidence.received = time.Now()
++ s.state.Status = Failed
++ if s.ConnectionEvidenceV1().ValidPong { t.Fatal("failed session accepted") }
++}
++
++func TestConnectionEvidenceIdentityDiffersAcrossSessions(t *testing.T) {
++ first := startTestSession(t, quietTimings(), func(p *testPeer) { p.login(); p.closed() })
++ second := startTestSession(t, quietTimings(), func(p *testPeer) { p.login(); p.closed() })
++ a, b := first.ConnectionEvidenceV1().SessionID, second.ConnectionEvidenceV1().SessionID
++ if a == "" || b == "" || a == b { t.Fatal("session identity is absent or reused") }
++ if err := first.Close(); err != nil { t.Fatal(err) }
++ if err := second.Close(); err != nil { t.Fatal(err) }
++}
+diff --git a/pkg/worldrpc/connection_evidence_test.go b/pkg/worldrpc/connection_evidence_test.go
+new file mode 100644
+--- /dev/null
++++ b/pkg/worldrpc/connection_evidence_test.go
+@@ -0,0 +1,35 @@
++package worldrpc
++
++import (
++ "strings"
++ "testing"
++ "github.com/agent-wow/agent-wow/pkg/world"
++)
++
++type evidenceSession struct { fakeSession }
++func (*evidenceSession) ConnectionEvidenceV1() world.ConnectionEvidenceV1 {
++ return world.ConnectionEvidenceV1{SchemaVersion:1, Status:world.InWorld,
++  CharacterGUID:9007199254740993}
++}
++func TestConnectionEvidenceRouteV1(t *testing.T) {
++ request := `{"jsonrpc":"2.0","id":1,"method":"session.connectionEvidenceV1"}`
++ reply := call(Handler(&evidenceSession{}),request).Body.String()
++ if !strings.Contains(reply,`"schema_version":1`) ||
++  !strings.Contains(reply,`"character_guid":"9007199254740993"`) ||
++  !strings.Contains(reply,`"valid_pong":false`) {
++  t.Fatal(reply)
++ }
++ legacy := call(Handler(&fakeSession{}),request).Body.String()
++ if !strings.Contains(legacy,`"code":-32601`) { t.Fatal(legacy) }
++ args := call(Handler(&evidenceSession{}),
++  `{"jsonrpc":"2.0","id":1,"method":"session.connectionEvidenceV1","params":{"probe":true}}`).Body.String()
++ if !strings.Contains(args,`"code":-32602`) { t.Fatal(args) }
++}

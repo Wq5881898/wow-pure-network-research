@@ -6,6 +6,31 @@ from unittest.mock import Mock, patch
 
 @unittest.skipUnless(shutil.which('ip'), 'backend bootstrap requires WSL')
 class LootBackendEvidenceTests(unittest.TestCase):
+    @patch('agent_wow_session.time.sleep', return_value=None)
+    def test_same_entry_two_slots_need_separate_removal_and_inventory_growth(self, _sleep):
+        backend = self.backend([])
+        loot = {'sequence': 11, 'opcode': 0x160, 'loot': {'guid': '123', 'items': [
+            {'slot': 0, 'entry': 4862, 'count': 1},
+            {'slot': 1, 'entry': 4862, 'count': 1}]}}
+        def drain():
+            count = backend.rpc_calls.count('bridge.take_loot')
+            events = [loot]
+            for index in range(count):
+                events.extend([
+                    {'sequence': 12 + index * 3, 'opcode': 0x162,
+                     'loot': {'slot_removed': index}},
+                    {'sequence': 13 + index * 3, 'opcode': 0x166, 'loot': {
+                        'player_guid': '9', 'entry': 4862, 'received': 0,
+                        'created': 0, 'count': 1, 'inventory_count': index + 1}}])
+            backend.cursor = 11 + count * 3
+            return {'event_log': events}
+        backend.drain.side_effect = drain
+        result = backend._do_loot({}, 30)
+        self.assertEqual(backend.rpc_calls.count('bridge.take_loot'), 2)
+        self.assertIn('bridge.release_loot', backend.rpc_calls)
+        self.assertEqual([p['inventory_count'] for p in result['confirmed_item_pushes']], [1, 2])
+        self.assertEqual([t['slot_removed_sequence'] for t in result['takes']], [12, 15])
+
     def backend(self, events, take_reply=None):
         from agent_wow_session import PureNetworkBackend
         backend = PureNetworkBackend.__new__(PureNetworkBackend)

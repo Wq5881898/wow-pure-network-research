@@ -1,0 +1,666 @@
+{
+  "source_root": "C:\\APP\\opencode\\project\\WoW自动化预研",
+  "copies": [
+    {
+      "source_relative": "AGENTS.md",
+      "archive_relative": "docs/migration/parent_sources/AGENTS.md",
+      "bytes": 6035,
+      "sha256": "98bd386e70b69c07fa6721164bee702d6a3f63f450c5f630791b6ff739bed86d",
+      "reason": "拆分治理与网络历史纪律，作为来源归档，不作为本工程指令入口"
+    },
+    {
+      "source_relative": "docs/拆分前交接索引_历史快照.md",
+      "archive_relative": "docs/migration/parent_sources/docs/拆分前交接索引_历史快照.md",
+      "bytes": 22084,
+      "sha256": "7a49ef85b89e7c5fd7b22c98b01248f4f6cc92f01491108bdd12641d0f49b1ac",
+      "reason": "包含纯网络任务、实验和恢复历史索引"
+    },
+    {
+      "source_relative": "docs/文档审阅验证任务分工_2026-11-05.md",
+      "archive_relative": "docs/migration/parent_sources/docs/文档审阅验证任务分工_2026-11-05.md",
+      "bytes": 6268,
+      "sha256": "31272819a1819ce7e5a9f86fbda2e186aa74cde2d24ac20fd544dd43cca44041",
+      "reason": "含纯网络 B 组只读核查任务及跨工程边界"
+    },
+    {
+      "source_relative": "docs/客户端危险区死亡恢复与撤离_2026-11-02.md",
+      "archive_relative": "docs/migration/parent_sources/docs/客户端危险区死亡恢复与撤离_2026-11-02.md",
+      "bytes": 12228,
+      "sha256": "4f4b20f6b4862dc58886fd46693a233219d1b27fb90172c46392e1fbe8671b04",
+      "reason": "明确比较纯网络 Detour 与客户端恢复，保留对照来源"
+    },
+    {
+      "source_relative": "docs/客户端发布与恢复审核.md",
+      "archive_relative": "docs/migration/parent_sources/docs/客户端发布与恢复审核.md",
+      "bytes": 4407,
+      "sha256": "4f70babe7fd9963208bd2c1e7f550c484d8939e5dfbd9e85039dab772247fd69",
+      "reason": "含独立纯网络仓库拆分与恢复范围来源"
+    }
+  ],
+  "review_decisions": [
+    {
+      "path": "00_交接索引.md",
+      "sha256": "0f46676b57b882dfafd91191f0097737750c1a0c74a47d36b60a43f5d840f55f",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "01_一致性核对.md",
+      "sha256": "66caefeab528e2cdff6decadc1bada63197f25d412b287e1f4cb884649d750c3",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "02_工作审视与路线校准.md",
+      "sha256": "226ae44c9bed492ca0b431d857e68dbf323b7ebf17a36a0c57863becfcd66956",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "98bd386e70b69c07fa6721164bee702d6a3f63f450c5f630791b6ff739bed86d",
+      "copied": true,
+      "reason": "拆分治理与网络历史纪律，作为来源归档，不作为本工程指令入口"
+    },
+    {
+      "path": "README.md",
+      "sha256": "a5eaa2ac6d958134f1d55a4e5b4f422fbeeca5819f1b3c63fc5a28777e683335",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/03_决策后工作计划.md",
+      "sha256": "fbaba8d5e89189edb4b09c5780b66f6216d2a1e9285b44159e222fd70f7558b1",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/04_用户访谈方案.md",
+      "sha256": "c46491bc3a49bfc214de8a65d4034c4c7788e0f4cc8b4e1a58d2afd917387751",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/05_T1最小探针执行清单.md",
+      "sha256": "ea627f052c756886e0110fdfd7e69c538f3112ae012381a9db05b8ebaad15dd7",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/06_15C官方澄清与专业审查问题包.md",
+      "sha256": "71d81aad57cba87e750e197662d69eff2eb4a5c52cac23751d4aecf869e1a4c5",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/07_T2单动作输入执行清单.md",
+      "sha256": "ba254f53d469d5d1492ae6acf676b1efc025f4595d5fa45a55f99f415a10a2cb",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/08_接手审阅_2026-09-23_grok-4.6.md",
+      "sha256": "05f5941e13ad8119951a73bbfe1894e2b35818e3ba036243de6d7e659a72be74",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/09_纸面预研候选工作_2026-09-24_grok-4.6.md",
+      "sha256": "14e62f4901e3d5a5a4122ba8d491969e8195d781f56234cf334518abc2473011",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/10_技术方向路径与竞品开源_2026-09-24_grok-4.6.md",
+      "sha256": "93ab5ee233da5c6649e085ff42e11953e084b87c67e5b46cd189b391d349a82b",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/11_竞品开源线索与路径推断_2026-09-27_grok-4.6.md",
+      "sha256": "06614c747298366e2e84e7d48ab43af394075ec853450191d645f54e2f523b53",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/12_本地实验环境对接_2026-10-19.md",
+      "sha256": "67d38b9af0217ff5dcd3d0d03f8932698cea25a6beb547afc35e584d6ce20d12",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/13_输入注入风险说明_2026-10-19.md",
+      "sha256": "33576e13cd0e656959e7aa2fd2324f549de51340fdd4616f0b1700ce3e596cd4",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/14_控制台交互通道修正_2026-10-20.md",
+      "sha256": "680d6128e4600a31f07b313209b5551eb81b0e4668dc4ceb0da5a3d66f5fad0b",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/16_交互会话恢复验证_2026-10-20.md",
+      "sha256": "40cb7ef9fa40a06a26d65de792362b566c1fa245132aa8aada564cbd3e3f8717",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/17_目标选择对照实测_2026-10-20.md",
+      "sha256": "1067943961e17b5b094e0bf63782f0ccba7e68c583dc50a18c1982044eafcfb8",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/18_移动与距离条件对照_2026-10-21.md",
+      "sha256": "8485589dd94ccdfb14d5e1f65c029ba69610333bb88ec7b3f72db0b931096990",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/19_平坦区域短步位置对照_2026-10-21.md",
+      "sha256": "3ac8e863d5c22ba51fbdab2e2e591e7cdd2372138298cc13153047ae46440e6e",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/20_新手角色与北郡测试基线_2026-10-21.md",
+      "sha256": "22fcde9eff5a652d1abee9f4fc49d15ea04fd10085afbc4de2c3877a784ec9a3",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/34_新手区短步与转向任务汇总_2026-10-24.md",
+      "sha256": "36c182cd8b470d2d5982830e9946a872fec47f73ee97e306ae07ce1e8ea3adcd",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/35_北郡同次运行静止复测_2026-10-24.md",
+      "sha256": "5a8c330aecb2498440bf6b784a396ec1510e04ad735ab815b4855dbdcfe16d4e",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/36_北郡同次运行短步往返_2026-10-24.md",
+      "sha256": "35d9508a5d2182ba42a6bb50f4b8d415d23a1f3acffea730f8db4905f77c8e13",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/37_北郡速度补偿往返_2026-10-28.md",
+      "sha256": "e5139916b0d9f1d11a54c6f0810933baf541dded676e92221ae0dd84def257ae",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/38_补偿往返三轮重复精度_2026-10-28.md",
+      "sha256": "13f3496b615d4e949c3ac30164f7831cad832885f1511ed596ad4f12ae847263",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/39_位置反馈到位判定_2026-10-28.md",
+      "sha256": "00a2d7e65cd8fce5918465dbcd7cfa94639810c656b4c81523e5dde857adb436",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/40_单次位置反馈纠偏_2026-10-28.md",
+      "sha256": "4cbe1c5584352e9caa40f56406ddd1930285f51c919fb949d1b5fbbd91d31ac4",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/41_反向位置纠偏与超调边界_2026-10-28.md",
+      "sha256": "0a7c94779557ea92cb0ad5961b291cac20c474fdd23b62486b51a096e61400a1",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/42_短时输入计时与位移标定_2026-10-28.md",
+      "sha256": "0c5c62021112e840365bd43c4bda25324f8c1470c121df030c6b6a47fb51482a",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/43_96毫秒重复输入离散性_2026-10-28.md",
+      "sha256": "96ef7fe5d067506c5aa39af8b26cb8a2bb2c2a71db4fbe9f0cf298ff61234c13",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/44_移动逐帧只读观测_2026-10-28.md",
+      "sha256": "410592871e0cd4ce52783721f81b5d6ff28046e678d2a7e9c9ccc13df2721ac2",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/45_三次逐帧输入对照_2026-10-28.md",
+      "sha256": "a76ac4c91c2270e066b235b96ba9393b0ee749416c4b7652fff77130437c7cf2",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/46_相邻时长与移动帧数对照_2026-10-28.md",
+      "sha256": "31b804333fa9b800e61f416e8f9684732a22846922dba231f9e4687a8830a743",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/47_步行速度与模式恢复验证_2026-10-28.md",
+      "sha256": "a47972e387b06db8c2aa56264f0aca81196db06dc9fbd5241be3f8a4160c7f94",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/48_步行重复与跑步五帧样本_2026-10-28.md",
+      "sha256": "66bd385bb44c3c475e00a11cf128a553f5da45a811b72ea601067785efc55209",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/Herdr_中文api窗口测试交接_2026-11-05.md",
+      "sha256": "a47c929d2c8e9d42e2f489216b63998bf61ace2090d1cb16d0277ce680f1def6",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/wow-autopilot-预研报告.md",
+      "sha256": "9fd8ef041fcdd8ea44388ab5c1c1c8d58aa034f42633ace862b3eeff23c05f33",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/wow自动化-商业与法律边界.md",
+      "sha256": "e59b2d116ddb5ff17c33cd1d3329bef3c83172783124c0c002f524a5bbfce6df",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/wow自动化-探针设计-00.md",
+      "sha256": "cf0f0f938e66b83a80a48d0e8585cbcb984c3d10053d09c249fedcdd6f024f9b",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/wow自动化-条款与反作弊原文知识库.md",
+      "sha256": "8371819ad6786cc673a9ccdb11c146de39e186e5df447719665b1e329fd09edb",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/北郡NPC对话实测_2026-10-29.md",
+      "sha256": "6b912cc957bffdcff43678c01e2e0d042aa91f456222b37a2d35aff9b89a370c",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端下一阶段_观测任务与历史缺口.md",
+      "sha256": "02c188df2f315431489293cafccf5c3a17275cc6b77123c4cccb46c512dad126",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端修理商人与报价验证_2026-11-08.md",
+      "sha256": "63c5a0b8b192edeb10e084aa981297ef23f14e7ca23ea8a85457493eb1033938",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端像素路线成熟实现与提速建议_2026-11-05.md",
+      "sha256": "51b685d943ade415bf35b9dafa7e86ac84840266487783ec395bbd27bc465bf1",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端光标反馈v15闭环验证_2026-11-07.md",
+      "sha256": "e641c993579fb43db384412b75adbda5f93ddcf6a2a5ba864efb9246a615bc1c",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端内部光标越界定位_2026-11-07.md",
+      "sha256": "23b7348c03b103303b2248c5ee8e8152c2049ee25ded8b96ff7e2741f34eb0de",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端北郡十只逐只拾取记录_2026-11-08.md",
+      "sha256": "87fe4ee68e49e713a1fe0041908f0e1d1ff4ad483ac4f5780c88c6cbe56bd9bf",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端北郡商人开窗验证_2026-11-07.md",
+      "sha256": "79ba92436069c971527176bedfd3054e1b906780c7a88b63cd71f38bc2b5d70e",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端北郡续战收益核对_2026-11-08.md",
+      "sha256": "995499df2f41172944f8350051163c939e8c01051c375a37baa6222ae4a698da",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端升级出售修理整链验证_2026-11-08.md",
+      "sha256": "a09ed236218e2ee4a94094a9f7f53755d6b1881efce2cdb77aa29696a7ba1430",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端协议v6与v7_2026-11-02.md",
+      "sha256": "b125739d6fc75f09aacfcddcc81e228336b4057d3595b023efed7cc2e47c152f",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端协议v8与v9_2026-11-05.md",
+      "sha256": "f6acc87c1680b595b3cb6054ad70e69c5e51c86e0695c19c983819ad9bb0e6a5",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端单只拾取与计时验证_2026-11-08.md",
+      "sha256": "e99934b6ec8d62f8d1be7c8634dd0ed7af147d93638560689702681bac84b253",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端卖灰装与修理_研究_2026-11-05.md",
+      "sha256": "750de4aea5bcc0c1a9d3c2a8672b9e26a40633f9a6238ceb929338084e3e82a3",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端危险区死亡恢复与撤离_2026-11-02.md",
+      "sha256": "4f4b20f6b4862dc58886fd46693a233219d1b27fb90172c46392e1fbe8671b04",
+      "copied": true,
+      "reason": "明确比较纯网络 Detour 与客户端恢复，保留对照来源"
+    },
+    {
+      "path": "docs/客户端历史拾取复现与前置光标对照_2026-11-09.md",
+      "sha256": "7f7159dd3443770b3687dd88d0091fb6a72f243d37ce5524062e95fa950e8014",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端发布与恢复审核.md",
+      "sha256": "4f70babe7fd9963208bd2c1e7f550c484d8939e5dfbd9e85039dab772247fd69",
+      "copied": true,
+      "reason": "含独立纯网络仓库拆分与恢复范围来源"
+    },
+    {
+      "path": "docs/客户端受伤恢复演练验收_2026-11-01.md",
+      "sha256": "afb5bcbd57b6be52e8e5ece78b45d764e11ecc6c4496bb4083d32095855f03e9",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端后台练级与暂停接管验证_2026-11-10.md",
+      "sha256": "ccaf171401dff51364258d642dd9382bc2e5d78804c2c7b3f1c2a1c2a420ad6a",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端大范围逐级缩框拾取实测_2026-11-09.md",
+      "sha256": "c44e34a052f86970ef696c3730b51aec7033934f11df568fe3af98a965f8bcd0",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端实时屏幕观测验收_2026-10-30.md",
+      "sha256": "8de41b60041d1736e30e3b39ff705d5d3c53f223174ad3b977e48cfe6f132861",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端实时控制判定_2026-10-30.md",
+      "sha256": "37028d7e87464d51743737abe803f950eb4469e5728556e565bd29570c3ff032",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端实机基线与驱动修复_2026-11-06.md",
+      "sha256": "2deb116c0a6d0f85b939d4f6108d06496a7c38835d861160e1a28a9cb658ce38",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端实验指导手册.md",
+      "sha256": "47c34ee7bf6981146cefedac095f6a1215002997e30f4236e8301b642af07e07",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端审阅验证回报_2026-11-05.md",
+      "sha256": "95289b6fbd320b2a716a715176cb3f1a6fc2dc9c14abd4e189f7b07a0c20c19e",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端尸体定位失败根因与拾取光标方案_2026-11-09.md",
+      "sha256": "12fd8e54c2fb3df3649d74dac905749cda92003606f653547a56da6adca59038",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端屏幕协议v3与动作原语_2026-11-01.md",
+      "sha256": "f288ae16dad713ef6c30045527a679ffae951e3abe8fdce7e86021a135583ed2",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端战斗回血机制与选目标约束_2026-11-01.md",
+      "sha256": "51977fb24b67ff287b1cd4585eaf62c430e19920e4db6c04606b3ca5c7d94357",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端战斗期控制状态机_2026-11-01.md",
+      "sha256": "59dba34defa2f1ab42d14d00955084f4a10846fc6e898aa3c4f7721aa75c6e13",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端战斗闭环实机验收_2026-11-01.md",
+      "sha256": "5f15af0d66a21955d26f6a1131eb39b84b030eab224ecd598d2b19a7ae417931",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端拾取光标距离对照实测_2026-11-09.md",
+      "sha256": "e513da8862d0d9f54ebec0874cc97ef51080511e503011beea570f70202c4a33",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端拾取无响应与光标输入研究_2026-11-09.md",
+      "sha256": "751994cd675adc2d023b169c4e156e1d2fc598a4b597ad7e91d30833503a8533",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端新观测任务端到端验收_2026-10-29.md",
+      "sha256": "147ecae4c7b8ebae6aa410e5353cf35f8f577a9019f0a8d547a1b35dd611324a",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端施法与战斗失败复盘_2026-10-29.md",
+      "sha256": "37b57df58556850427ef3b5a93e2a41130043f14099a6dd7b0ec68c90cce087e",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端施法反馈非战斗验收_2026-10-30.md",
+      "sha256": "e5f5995018ce41234c5fc26a08aed02a7110cdf535cfb906a96f91ec0bd1dc39",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端旧朝向错误重复转向离线验证_2026-11-11.md",
+      "sha256": "1435b225642b6fe5c727117f7a4ee826b685e7a4ba5d9e2dca27ecacc3712ff9",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端普通基线恢复与鼠标对照_2026-11-06.md",
+      "sha256": "565d5354295887f68dc29c2881cb6f28a6ed4e6236b89fb1049a79f4adb11619",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端朝向闭环与恢复演练_2026-11-01.md",
+      "sha256": "6feeda4e0aee74708c9270cbe02c251f515f35901f7b485f37fb0d4915563c62",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端朝向闭环实机验收_2026-11-01.md",
+      "sha256": "209b5892278ec17432f0ab167fa7181596cc3f345f6e1f81c0f1f41b1e1e816c",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端本轮审查闭环_2026-11-06.md",
+      "sha256": "c392028d148cc649c1e14f92b41de4022f06f86bf97e8c19ca90419977aa67f7",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端标准验收_2026-11-04.md",
+      "sha256": "7555fb40cb47a3ca5b3b05485e1ee8af47cb77473b709244d222c42320c7d2dc",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端正前方靠近拾取尝试_2026-11-09.md",
+      "sha256": "5dc453519e0d5c549b56d72aa8ab9829995010b927c25b636bdbccb4f872da4f",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端正常跑尸恢复_2026-10-29.md",
+      "sha256": "fab06b4b5daf2aafc96d11adb4b2d56aaffad869b368596bf2e8d5f0be873303",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端死亡后自动跑尸体_2026-11-02.md",
+      "sha256": "cd1593b295ddcc29875effec835dee82a2ebb9585c01391b94eff7976fe7ad5a",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端狗头人三轮拾取对照_2026-11-09.md",
+      "sha256": "4d4474e526569c83354f3ffff3d803f329f0b273c733576ff1f0e24e90a527b0",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端知识库可用性检查_2026-11-05.md",
+      "sha256": "e07671f8c32eeeacbdcb46ccfc5e2701ac7f1809fdc3569310eac010d09b7f4f",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端移动停顿与交任务静止时间记录_2026-11-10.md",
+      "sha256": "8aa9ca13f6d5cb2901abebffc9059a63416069c8c887e8f22cc7a62e238b5422",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端练级拾取与附近任务双线测试_2026-11-10.md",
+      "sha256": "018271b320beed10da99ea2c1d4567c102fae82d6dfb085a306f79c0c0b234e0",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端续战失控与恢复责任复盘_2026-11-10.md",
+      "sha256": "ecff4acd04b31011d601e4a7ad33cd92ea15ba29e57361ecb43030626905683a",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端路线综合审阅_2026-11-05.md",
+      "sha256": "a7db2a13a6042629675e53768c2c300a413980b2e2eef4be56a0b32a800667fa",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端输入期间连续观测_2026-10-30.md",
+      "sha256": "7a5b408d98dcd28e22015da1ddc7d6d9d0edd4a28438b8a4839d6c68b541bf0f",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端输入通道缺陷_2026-11-02.md",
+      "sha256": "032719529bdb6e60fc251462ffcb4fdb922e5cf687b95caae073c4365c71d4ac",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端闪金镇撤离连续采样验证_2026-11-11.md",
+      "sha256": "903553d51b2a7d68c133114c537e4cc35ac7d309e70356234207e49626467f7e",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端闪金镇近级目标探索失败记录_2026-11-11.md",
+      "sha256": "fbcf5d1c7c9a666e448b028f5719d33d5e72bc4665a40375469e3e2805b50572",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端闭环修复与执行验证_2026-11-06.md",
+      "sha256": "6b4980c546633228c99ebe0f05eb25aae11a2413e94f8dae3e649685ca3ed560",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/客户端鼠标按钮最小对照_2026-11-06.md",
+      "sha256": "0b4f0b79dde9f601f15d816286fb8e7ad81e817386d8b605fb70d34e06aabb51",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/工作日志_2026-11-01.md",
+      "sha256": "06200a4160ad64113b23b407eb8c4fdc3e541e365dc32c7858472db2f72a2bab",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/工作日志_2026-11-02_危险区恢复.md",
+      "sha256": "6dd91b77dbf674a27845bc5d33eb389e787513ad6f18bf1d6add1a61d95e654b",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/工作日志_2026-11-02_跑尸体任务.md",
+      "sha256": "896eb63c7a6dc84088384732bfcd5e4f86ad1b478c3659ddcb40723ab97328a5",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/战斗复盘规避条件销账_2026-11-05.md",
+      "sha256": "dec57f7c16de05e5713e2e0ee140bc9c4c9a77961cec8b16ec45fb86811c93cb",
+      "copied": false,
+      "reason": "现存客户端/通用研究文档；非纯网络原件，不按编号替换网络文档"
+    },
+    {
+      "path": "docs/拆分前交接索引_历史快照.md",
+      "sha256": "7a49ef85b89e7c5fd7b22c98b01248f4f6cc92f01491108bdd12641d0f49b1ac",
+      "copied": true,
+      "reason": "包含纯网络任务、实验和恢复历史索引"
+    },
+    {
+      "path": "docs/文档审阅验证任务分工_2026-11-05.md",
+      "sha256": "31272819a1819ce7e5a9f86fbda2e186aa74cde2d24ac20fd544dd43cca44041",
+      "copied": true,
+      "reason": "含纯网络 B 组只读核查任务及跨工程边界"
+    }
+  ]
+}

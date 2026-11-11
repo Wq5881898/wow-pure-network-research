@@ -1,0 +1,67 @@
+diff --git a/cmd/char.go b/cmd/char.go
+--- a/cmd/char.go
++++ b/cmd/char.go
+@@ -78,6 +78,10 @@
+ 		if !realm.Selectable() {
+ 			return auth.Realm{}, nil, fmt.Errorf("selected realm %q is %s", realm.Name, realm.Status())
+ 		}
++		address, overrideErr := localRealmAddress(realm.ID, realm.Address)
++		if overrideErr != nil { return auth.Realm{}, nil, overrideErr }
++		realm.Address = address
+ 		return realm, session, nil
+ 	}
+diff --git a/cmd/local_realm_override.go b/cmd/local_realm_override.go
+new file mode 100644
+--- /dev/null
++++ b/cmd/local_realm_override.go
+@@ -0,0 +1,28 @@
++package cmd
++
++import (
++ "fmt"
++ "net"
++ "os"
++ "strconv"
++)
++
++// Explicit local lab transport override. Never changes realm identity or storage.
++func localRealmAddress(id uint8, advertised string) (string,error) {
++ address := os.Getenv("AGENT_WOW_LOCAL_REALM_ADDRESS")
++ selector := os.Getenv("AGENT_WOW_LOCAL_REALM_ID")
++ if address=="" && selector=="" { return advertised,nil }
++ expected,err := strconv.ParseUint(selector,10,32)
++ if err!=nil || expected==0 || expected!=uint64(id) {
++  return "",fmt.Errorf("local realm override ID missing, invalid or mismatched")
++ }
++ host,port,err := net.SplitHostPort(address)
++ if err!=nil { return "",fmt.Errorf("invalid local realm override address") }
++ ip:=net.ParseIP(host)
++ number,err:=strconv.Atoi(port)
++ if ip==nil || !ip.IsLoopback() || err!=nil || number<1 || number>65535 {
++  return "",fmt.Errorf("local realm override requires a literal loopback IP and valid port")
++ }
++ return address,nil
++}
+diff --git a/cmd/local_realm_override_test.go b/cmd/local_realm_override_test.go
+new file mode 100644
+--- /dev/null
++++ b/cmd/local_realm_override_test.go
+@@ -0,0 +1,23 @@
++package cmd
++import "testing"
++func TestLocalRealmOverride(t *testing.T){
++ t.Setenv("AGENT_WOW_LOCAL_REALM_ADDRESS","")
++ t.Setenv("AGENT_WOW_LOCAL_REALM_ID","")
++ a,err:=localRealmAddress(1,"public.example:8085")
++ if err!=nil||a!="public.example:8085"{t.Fatal(a,err)}
++ t.Setenv("AGENT_WOW_LOCAL_REALM_ADDRESS","127.0.0.1:8085")
++ if _,err=localRealmAddress(1,"public.example:8085");err==nil{t.Fatal("missing ID accepted")}
++ t.Setenv("AGENT_WOW_LOCAL_REALM_ID","1")
++ a,err=localRealmAddress(1,"public.example:8085")
++ if err!=nil||a!="127.0.0.1:8085"{t.Fatal(a,err)}
++ if _,err=localRealmAddress(2,"public.example:8085");err==nil{t.Fatal("wrong ID accepted")}
++ for _,bad:=range []string{"192.168.1.99:8085","example.com:8085","127.0.0.1:0"}{
++  t.Setenv("AGENT_WOW_LOCAL_REALM_ADDRESS",bad)
++  if _,err=localRealmAddress(1,"public.example:8085");err==nil{t.Fatal(bad)}
++ }
++}
