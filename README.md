@@ -11,6 +11,7 @@ AzerothCore 本地实验的独立工程，使用协议会话、JSON-RPC 事件�
 - `docs/66_删除事故直接证据与快照恢复_2026-10-29.md`：事故直接证据。
 - `scripts/agent_wow_batch.py`：有界批次协调器。
 - `scripts/wsl_task_runner.py`：单任务及跨会话核对。
+- `python -X utf8 scripts/leveling_catalog.py 12`：查询当前等级对应的历史路线、试验和证据。跨角色复跑的验收口径见 [路线资产说明](docs/238_跨角色升级复用与路线资产.md)。
 - `probes/AgentWowBridge/`、`probes/AgentWowSDK/`、`probes/AgentWowNav/`：协议与导航工程。
 - `results/pure_network/`：当前证据目录，保留内层目录以兼容现有脚本。
 
